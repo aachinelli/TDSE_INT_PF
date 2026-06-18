@@ -1,0 +1,17 @@
+19:50:51 **** Incremental Build of configuration Debug for project proof_lcd ****
+make -j4 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "proof_lcd.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\Users\ericsson\Desktop\Taller embebidos\Proyecto final\proof_lcd\STM32F103RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="proof_lcd.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: proof_lcd.elf
+ 
+arm-none-eabi-size  proof_lcd.elf 
+arm-none-eabi-objdump -h -S proof_lcd.elf  > "proof_lcd.list"
+   text	   data	    bss	    dec	    hex	filename
+  15928	    108	   2284	  18320	   4790	proof_lcd.elf
+Finished building: default.size.stdout
+ 
+Finished building: proof_lcd.list
+ 
+
+19:50:52 Build Finished. 0 errors, 0 warnings. (took 1s.248ms)
+
