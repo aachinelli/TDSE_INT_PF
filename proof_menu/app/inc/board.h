@@ -66,28 +66,28 @@ extern "C" {
 /* STM32 Nucleo Boards - 64 Pins */
 #if ((BOARD == NUCLEO_F103RC) || (BOARD == NUCLEO_F401RE) || (BOARD == NUCLEO_F446RE))
 
-#define BTN_A_PIN		B1_Pin
-#define BTN_A_PORT		B1_GPIO_Port
-#define BTN_A_PRESSED	GPIO_PIN_RESET
-#define BTN_A_HOVER		GPIO_PIN_SET
-
 #define BTN_PRESSED		BTN_A_PRESSED
 #define BTN_HOVER		BTN_A_HOVER
 
-#define BTN_ENT_PIN		D10_Pin
-#define BTN_ENT_PORT	D10_GPIO_Port
-#define BTN_ENT_PRESSED	GPIO_PIN_RESET
-#define BTN_ENT_HOVER	GPIO_PIN_SET
+// Botón Arriba (D12)
+#define BTN_UP_PIN       D12_arriba_Pin
+#define BTN_UP_PORT      D12_arriba_GPIO_Port
+#define BTN_UP_PRESSED   GPIO_PIN_RESET
 
-#define BTN_NEX_PIN		D11_Pin
-#define BTN_NEX_PORT	D11_GPIO_Port
-#define BTN_NEX_PRESSED	GPIO_PIN_RESET
-#define BTN_NEX_HOVER	GPIO_PIN_SET
+// Botón Abajo (D11)
+#define BTN_DOWN_PIN     D11_abajo_Pin
+#define BTN_DOWN_PORT    D11_abajo_GPIO_Port
+#define BTN_DOWN_PRESSED GPIO_PIN_RESET
 
-#define BTN_ESC_PIN		D12_Pin
-#define BTN_ESC_PORT	D12_GPIO_Port
-#define BTN_ESC_PRESSED	GPIO_PIN_RESET
-#define BTN_ESC_HOVER	GPIO_PIN_SET
+// Botón Enter (D10)
+#define BTN_ENTER_PIN    D10_enter_Pin
+#define BTN_ENTER_PORT   D10_enter_GPIO_Port
+#define BTN_ENTER_PRESSED GPIO_PIN_RESET
+
+// Botón Volver (D9)
+#define BTN_BACK_PIN     D9_volver_Pin
+#define BTN_BACK_PORT    D9_volver_GPIO_Port
+#define BTN_BACK_PRESSED GPIO_PIN_RESET
 
 #define LED_A_PIN		LD2_Pin
 #define LED_A_PORT		LD2_GPIO_Port

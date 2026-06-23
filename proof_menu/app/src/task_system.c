@@ -52,389 +52,433 @@
 #include "task_system_interface.h"
 
 /********************** macros and definitions *******************************/
-#define DEL_SYS_MIN			0ul
-#define DEL_SYS_MED			250ul
-#define DEL_SYS_MAX			500ul
+#define DEL_SYS_MIN     0ul
+#define DEL_SYS_MED     250ul
+#define DEL_SYS_MAX     500ul
 
-/* Modes to excite Task System */
-typedef enum task_system_mode {NORMAL, SETUP, MODE_QTY} task_system_mode_t;
+/* Rangos de configuración */
+#define TEMP_MIN        20
+#define TEMP_MAX        40
+#define TEMP_DEFAULT    37
 
-#define SYSTEM_DTA_QTY	MODE_QTY
+#define HUM_MIN         40
+#define HUM_MAX         80
+#define HUM_DEFAULT     60
+
+#define DAYS_MIN        1
+#define DAYS_MAX        30
+#define DAYS_DEFAULT    21
+
+#define HOURS_MIN       0
+#define HOURS_MAX       23
+#define HOURS_DEFAULT   0
+
+#define SYSTEM_DTA_QTY  1ul
 
 /********************** internal data declaration ****************************/
 task_system_dta_t task_system_dta_list[SYSTEM_DTA_QTY];
 
-/********************** internal functions declaration ***********************/
-void task_system_normal_statechart(void);
-void task_system_setup_statechart(void);
+/* Variables de configuración de la incubadora */
+static uint8_t cfg_temp  = TEMP_DEFAULT;
+static uint8_t cfg_hum   = HUM_DEFAULT;
+static uint8_t cfg_days  = DAYS_DEFAULT;
+static uint8_t cfg_hours = HOURS_DEFAULT;
 
-void task_system_set_mode(task_system_mode_t);
+/********************** internal functions declaration ***********************/
+static void task_system_statechart(void);
+static void display_main_new(void);
+static void display_main_cont(void);
+static void display_set_temp(void);
+static void display_set_hum(void);
+static void display_set_days(void);
+static void display_set_hours(void);
 
 /********************** internal data definition *****************************/
-const char *p_task_system 		= "Task System (System Statechart)";
-const char *p_task_system_ 		= "Non-Blocking Code";
-const char *p_task_system__ 	= "(Update by Time Code, period = 1mS)";
-
-/********************** external data declaration ****************************/
-task_system_mode_t g_task_system_mode;
+const char *p_task_system      = "Task System (Incubadora Statechart)";
+const char *p_task_system_     = "Non-Blocking Code";
+const char *p_task_system__    = "(Update by Time Code, period = 1mS)";
 
 /********************** external functions definition ************************/
 void task_system_init(void *parameters)
 {
-	uint32_t index;
-	task_system_dta_t 	*p_task_system_dta;
-	task_system_state_t	state;
-	task_system_ev_t	event;
-	bool b_event;
+    uint32_t index;
+    task_system_dta_t   *p_task_system_dta;
+    task_system_state_t  state;
+    task_system_ev_t     event;
+    bool b_event;
 
-	/* Print out: Task Initialized */
-	LOGGER_INFO(" ");
-	LOGGER_INFO("  %s is running - Tick [mS] = %lu", GET_NAME(task_system_init), HAL_GetTick());
-	LOGGER_INFO("   %s is a %s", GET_NAME(task_system), p_task_system);
-	LOGGER_INFO("   %s is a %s", GET_NAME(task_system), p_task_system_);
-	LOGGER_INFO("   %s is a %s", GET_NAME(task_system), p_task_system__);
+    /* Print out: Task Initialized */
+    LOGGER_INFO(" ");
+    LOGGER_INFO("  %s is running - Tick [mS] = %lu", GET_NAME(task_system_init), HAL_GetTick());
+    LOGGER_INFO("   %s is a %s", GET_NAME(task_system), p_task_system);
+    LOGGER_INFO("   %s is a %s", GET_NAME(task_system), p_task_system_);
+    LOGGER_INFO("   %s is a %s", GET_NAME(task_system), p_task_system__);
 
-	init_event_task_system();
+    init_event_task_system();
 
-	task_system_set_mode(NORMAL);
+    for (index = 0; SYSTEM_DTA_QTY > index; index++)
+    {
+        p_task_system_dta = &task_system_dta_list[index];
 
-	for (index = 0; SYSTEM_DTA_QTY > index; index++)
-	{
-		/* Update Task System Data Pointer */
-		p_task_system_dta = &task_system_dta_list[index];
+        state = ST_SYS_IDLE;
+        p_task_system_dta->state = state;
 
-		/* Init & Print out: Task execution FSM */
-		state = ST_SYS_IDLE;
-		p_task_system_dta->state = state;
+        event = EV_SYS_IDLE;
+        p_task_system_dta->event = event;
 
-		event = EV_SYS_IDLE;
-		p_task_system_dta->event = event;
+        b_event = false;
+        p_task_system_dta->flag = b_event;
 
-		b_event = false;
-		p_task_system_dta->flag = b_event;
+        LOGGER_INFO(" ");
+        LOGGER_INFO("   %s = %lu   %s = %lu   %s = %s",
+                    GET_NAME(state),   (uint32_t)state,
+                    GET_NAME(event),   (uint32_t)event,
+                    GET_NAME(b_event), (b_event ? "true" : "false"));
+    }
 
-		LOGGER_INFO(" ");
-		LOGGER_INFO("   %s = %lu   %s = %lu   %s = %s",
-					GET_NAME(state), (uint32_t)state,
-					GET_NAME(event), (uint32_t)event,
-					GET_NAME(b_event), (b_event ? "true" : "false"));
-	}
-
-	put_event_task_display(0, 0, "task_system_mode");
-	put_event_task_display(0, 1, " NORMAL         ");
-
-	task_system_set_mode(NORMAL);
+    /* Pantalla de bienvenida */
+    put_event_task_display(0, 0, "   INCUBADORA");
+    put_event_task_display(0, 1, "ACHINELLI-MADERO");
 }
 
 void task_system_update(void *parameters)
 {
-	/* Run Task Statechart */
-	switch (g_task_system_mode)
-	{
-		case NORMAL:
-
-			task_system_normal_statechart();
-
-			break;
-
-		case SETUP:
-
-			task_system_setup_statechart();
-
-			break;
-
-		default:
-
-			task_system_set_mode(NORMAL);
-
-			break;
-		}
+    task_system_statechart();
 }
 
-void task_system_normal_statechart(void)
+/********************** internal functions definition ************************/
+
+/* Helpers de display ----------------------------------------------------- */
+static void display_main_new(void)
 {
-	task_system_dta_t *p_task_system_dta;
-
-	/* Update Task System Data Pointer */
-	p_task_system_dta = &task_system_dta_list[NORMAL];
-
-	if (true == any_event_task_system())
-	{
-		p_task_system_dta->flag = true;
-		p_task_system_dta->event = get_event_task_system();
-	}
-
-	switch (p_task_system_dta->state)
-	{
-		case ST_SYS_IDLE:
-
-			if ((true == p_task_system_dta->flag) && (EV_SYS_BTN_A == p_task_system_dta->event))
-			{
-				p_task_system_dta->flag = false;
-				put_event_task_actuator(EV_LED_ACTIVE, ID_LED_A);
-				//p_task_system_dta->state = ST_SYS_ACTIVE;
-
-				put_event_task_display(0, 0, "task_system_mode");
-				put_event_task_display(0, 1, " SETUP          ");
-
-				task_system_set_mode(SETUP);
-			}
-
-			break;
-
-		case ST_SYS_ACTIVE:
-
-			if ((true == p_task_system_dta->flag) && (EV_SYS_IDLE == p_task_system_dta->event))
-			{
-				p_task_system_dta->flag = false;
-				put_event_task_actuator(EV_LED_IDLE, ID_LED_A);
-				p_task_system_dta->state = ST_SYS_IDLE;
-			}
-
-			break;
-
-		default:
-
-			p_task_system_dta->tick  = DEL_SYS_MIN;
-			p_task_system_dta->state = ST_SYS_IDLE;
-			p_task_system_dta->event = EV_SYS_IDLE;
-			p_task_system_dta->flag = false;
-
-			break;
-	}
+    put_event_task_display(0, 0, ">NUEVO INICIO   ");
+    put_event_task_display(0, 1, " CONTINUAR      ");
 }
 
-void task_system_setup_statechart(void)
+static void display_main_cont(void)
 {
-	task_system_dta_t *p_task_system_dta;
-
-	/* Update Task System Data Pointer */
-	p_task_system_dta = &task_system_dta_list[SETUP];
-
-	if (true == any_event_task_system())
-	{
-		p_task_system_dta->flag = true;
-		p_task_system_dta->event = get_event_task_system();
-	}
-
-	switch (p_task_system_dta->state)
-	{
-        // =========================================================
-        // NIVEL MAIN (REPOSO)
-        // =========================================================
-	case ST_SYS_IDLE:
-
-				if (true == p_task_system_dta->flag)
-				{
-					// 1. Si presiona el BOTÓN AZUL -> Cambia de modo (Sale de Setup)
-					if (EV_SYS_BTN_A == p_task_system_dta->event)
-					{
-						p_task_system_dta->flag = false;
-						put_event_task_actuator(EV_LED_ACTIVE, ID_LED_A);
-						//p_task_system_dta->state = ST_SYS_ACTIVE;
-
-						put_event_task_display(0, 0, "task_system_mode");
-						put_event_task_display(0, 1, " NORMAL         ");
-
-						task_system_set_mode(NORMAL);
-					}
-					// 2. Si presiona ENTER (En el teclado) -> Arranca el menú
-					else if (EV_SYS_ENTER == p_task_system_dta->event)
-					{
-						p_task_system_dta->flag = false;
-						p_task_system_dta->state = ST_SYS_MENU1_MOTOR1;
-
-						put_event_task_display(0, 0, "   Menu #1      ");
-						put_event_task_display(0, 1, "> Motor 1       ");
-					}
-				}
-				break;
-		// =========================================================
-        // NIVEL MENU #1 (SELECCIÓN DE MOTOR)
-        // =========================================================
-		case ST_SYS_MENU1_MOTOR1:
-			if (true == p_task_system_dta->flag)
-			{
-				p_task_system_dta->flag = false;
-
-				if (EV_SYS_NEXT == p_task_system_dta->event)
-				{
-					p_task_system_dta->state = ST_SYS_MENU1_MOTOR2;
-					put_event_task_display(0, 1, "> Motor 2       ");
-				}
-				else if (EV_SYS_ENTER == p_task_system_dta->event)
-				{
-					p_task_system_dta->state = ST_SYS_MENU2_M1_POWER;
-					put_event_task_display(0, 0, "   Menu #2      ");
-					put_event_task_display(0, 1, "> Power         ");
-				}
-				else if (EV_SYS_ESCAPE == p_task_system_dta->event)
-				{
-					p_task_system_dta->state = ST_SYS_IDLE;
-					put_event_task_display(0, 0, "Motor 1: ON,8,L ");
-					put_event_task_display(0, 1, "Motor 2: ON,8,L ");
-				}
-			}
-			break;
-
-		case ST_SYS_MENU1_MOTOR2:
-			if (true == p_task_system_dta->flag)
-			{
-				p_task_system_dta->flag = false;
-
-				if (EV_SYS_NEXT == p_task_system_dta->event)
-				{
-					p_task_system_dta->state = ST_SYS_MENU1_MOTOR1;
-					put_event_task_display(0, 1, "> Motor 1       ");
-				}
-				else if (EV_SYS_ENTER == p_task_system_dta->event)
-				{
-					p_task_system_dta->state = ST_SYS_MENU2_M2_POWER;
-					put_event_task_display(0, 0, "   Menu #2      ");
-					put_event_task_display(0, 1, "> Power         ");
-				}
-				else if (EV_SYS_ESCAPE == p_task_system_dta->event)
-				{
-					p_task_system_dta->state = ST_SYS_IDLE;
-					put_event_task_display(0, 0, "Motor 1: ON,8,L ");
-					put_event_task_display(0, 1, "Motor 2: ON,8,L ");
-				}
-			}
-			break;
-
-			// =========================================================
-			// NIVEL MENU #2 (CONFIGURACIÓN MOTOR 2)
-			// =========================================================
-		case ST_SYS_MENU2_M2_POWER:
-			if (true == p_task_system_dta->flag){
-
-				p_task_system_dta->flag = false;
-
-				if (EV_SYS_ESCAPE == p_task_system_dta->event){
-			         // ¡ESTA ES LA CLAVE PARA NO QUEDAR TRABADO!
-					p_task_system_dta->state = ST_SYS_MENU1_MOTOR2;
-					put_event_task_display(0, 0, "   Menu #1      ");
-					put_event_task_display(0, 1, "> Motor 2       ");
-				}
-			}
-			break;
-
-			// =========================================================
-			// NIVEL MENU #2 (CONFIGURACIÓN MOTOR 1)
-			// =========================================================
-		case ST_SYS_MENU2_M1_POWER:
-			if (true == p_task_system_dta->flag){
-					p_task_system_dta->flag = false;
-
-					if (EV_SYS_NEXT == p_task_system_dta->event)
-					{
-						p_task_system_dta->state = ST_SYS_MENU2_M1_SPEED;
-						put_event_task_display(0, 1, "> Speed         ");
-					}
-					else if (EV_SYS_ENTER == p_task_system_dta->event)
-					{
-						p_task_system_dta->state = ST_SYS_MENU3_M1_PWR_ON;
-						put_event_task_display(0, 0, "   Menu #3      ");
-						put_event_task_display(0, 1, "> ON            ");
-					}
-					else if (EV_SYS_ESCAPE == p_task_system_dta->event)
-					{
-						p_task_system_dta->state = ST_SYS_MENU1_MOTOR1;
-						put_event_task_display(0, 0, "   Menu #1      ");
-						put_event_task_display(0, 1, "> Motor 1       ");
-					}
-			}
-		break;
-
-
-		case ST_SYS_MENU2_M1_SPEED:
-			if (true == p_task_system_dta->flag)
-			{
-				p_task_system_dta->flag = false;
-
-				if (EV_SYS_NEXT == p_task_system_dta->event)
-				{
-					p_task_system_dta->state = ST_SYS_MENU2_M1_SPIN;
-					put_event_task_display(0, 1, "> Spin          ");
-				}
-				else if (EV_SYS_ESCAPE == p_task_system_dta->event)
-				{
-					p_task_system_dta->state = ST_SYS_MENU1_MOTOR1;
-					put_event_task_display(0, 0, "   Menu #1      ");
-					put_event_task_display(0, 1, "> Motor 1       ");
-				}
-			}
-		break;
-
-		case ST_SYS_MENU2_M1_SPIN:
-			if (true == p_task_system_dta->flag)
-			{
-				p_task_system_dta->flag = false;
-
-				if (EV_SYS_NEXT == p_task_system_dta->event)
-				{
-					p_task_system_dta->state = ST_SYS_MENU2_M1_POWER;
-					put_event_task_display(0, 1, "> Power         ");
-				}
-				else if (EV_SYS_ESCAPE == p_task_system_dta->event)
-				{
-					p_task_system_dta->state = ST_SYS_MENU1_MOTOR1;
-					put_event_task_display(0, 0, "   Menu #1      ");
-					put_event_task_display(0, 1, "> Motor 1       ");
-				}
-			}
-		break;
-
-        // =========================================================
-        // NIVEL MENU #3 (CONFIGURACIÓN VALOR - POWER MOTOR 1)
-        // =========================================================
-		case ST_SYS_MENU3_M1_PWR_ON:
-			if (true == p_task_system_dta->flag)
-			{
-				p_task_system_dta->flag = false;
-
-				if (EV_SYS_NEXT == p_task_system_dta->event)
-				{
-					p_task_system_dta->state = ST_SYS_MENU3_M1_PWR_OFF;
-					put_event_task_display(0, 1, "> OFF           ");
-				}
-				else if (EV_SYS_ENTER == p_task_system_dta->event || EV_SYS_ESCAPE == p_task_system_dta->event)
-				{
-					// Al pulsar ENTER o ESCAPE regresamos al nivel superior
-					p_task_system_dta->state = ST_SYS_MENU2_M1_POWER;
-					put_event_task_display(0, 0, "   Menu #2      ");
-					put_event_task_display(0, 1, "> Power         ");
-				}
-			}
-			break;
-
-		case ST_SYS_MENU3_M1_PWR_OFF:
-			if (true == p_task_system_dta->flag)
-			{
-				p_task_system_dta->flag = false;
-
-				if (EV_SYS_NEXT == p_task_system_dta->event)
-				{
-					p_task_system_dta->state = ST_SYS_MENU3_M1_PWR_ON;
-					put_event_task_display(0, 1, "> ON            ");
-				}
-				else if (EV_SYS_ENTER == p_task_system_dta->event || EV_SYS_ESCAPE == p_task_system_dta->event)
-				{
-					p_task_system_dta->state = ST_SYS_MENU2_M1_POWER;
-					put_event_task_display(0, 0, "   Menu #2      ");
-					put_event_task_display(0, 1, "> Power         ");
-				}
-			}
-			break;
-
-		default:
-			break;
-	}
+    put_event_task_display(0, 0, " NUEVO INICIO   ");
+    put_event_task_display(0, 1, ">CONTINUAR      ");
 }
 
-void task_system_set_mode(task_system_mode_t task_system_mode)
+static void display_set_temp(void)
 {
-	g_task_system_mode = task_system_mode;
+    char buf[20];
+    put_event_task_display(0, 0, "EST. TEMPERATURA");
+    snprintf(buf, sizeof(buf), "T: %2u           ", (unsigned)cfg_temp);
+    put_event_task_display(0, 1, buf);
+}
+
+static void display_set_hum(void)
+{
+    char buf[20];
+    put_event_task_display(0, 0, "EST. HUMEDAD    ");
+    snprintf(buf, sizeof(buf), "H: %2u%%          ", (unsigned)cfg_hum);
+    put_event_task_display(0, 1, buf);
+}
+
+static void display_set_days(void)
+{
+    char buf[20];
+    put_event_task_display(0, 0, "EST. DIAS       ");
+    snprintf(buf, sizeof(buf), "D: %2u           ", (unsigned)cfg_days);
+    put_event_task_display(0, 1, buf);
+}
+
+static void display_set_hours(void)
+{
+    char buf[20];
+    put_event_task_display(0, 0, "EST. HORAS      ");
+    snprintf(buf, sizeof(buf), "H: %2u           ", (unsigned)cfg_hours);
+    put_event_task_display(0, 1, buf);
+}
+
+/* Statechart principal --------------------------------------------------- */
+static void task_system_statechart(void)
+{
+    task_system_dta_t *p_task_system_dta = &task_system_dta_list[0];
+
+    if (true == any_event_task_system())
+    {
+        p_task_system_dta->flag  = true;
+        p_task_system_dta->event = get_event_task_system();
+    }
+
+    switch (p_task_system_dta->state)
+    {
+        /* ================================================================
+         * PANTALLA RAÍZ: INCUBADORA / ACHINELLI-MADERO
+         * Espera ENTER para avanzar al menú principal.
+         * ================================================================ */
+        case ST_SYS_IDLE:
+
+            if (p_task_system_dta->flag && EV_SYS_ENTER == p_task_system_dta->event)
+            {
+                p_task_system_dta->flag  = false;
+                p_task_system_dta->state = ST_SYS_MAIN_NEW;
+                display_main_new();
+            }
+            else
+            {
+                /* Ignorar cualquier otro botón; BACK no hace nada aquí */
+                p_task_system_dta->flag = false;
+            }
+            break;
+
+        /* ================================================================
+         * MENÚ PRINCIPAL — cursor en NUEVO INICIO
+         * UP/DOWN cambia selección; ENTER confirma.
+         * ================================================================ */
+        case ST_SYS_MAIN_NEW:
+
+            if (p_task_system_dta->flag)
+            {
+                p_task_system_dta->flag = false;
+
+                if (EV_SYS_DOWN == p_task_system_dta->event)
+                {
+                    p_task_system_dta->state = ST_SYS_MAIN_CONT;
+                    display_main_cont();
+                }
+                else if (EV_SYS_ENTER == p_task_system_dta->event)
+                {
+                    cfg_temp  = TEMP_DEFAULT;
+                    cfg_hum   = HUM_DEFAULT;
+                    cfg_days  = DAYS_DEFAULT;
+                    cfg_hours = HOURS_DEFAULT;
+                    p_task_system_dta->state = ST_SYS_SET_TEMP;
+                    display_set_temp();
+                }
+                /* UP y BACK no hacen nada en este estado */
+            }
+            break;
+
+        /* ================================================================
+         * MENÚ PRINCIPAL — cursor en CONTINUAR
+         * ================================================================ */
+        case ST_SYS_MAIN_CONT:
+
+            if (p_task_system_dta->flag)
+            {
+                p_task_system_dta->flag = false;
+
+                if (EV_SYS_UP == p_task_system_dta->event)
+                {
+                    p_task_system_dta->state = ST_SYS_MAIN_NEW;
+                    display_main_new();
+                }
+                else if (EV_SYS_ENTER == p_task_system_dta->event)
+                {
+                    p_task_system_dta->state = ST_SYS_READING;
+                    put_event_task_display(0, 0, "    LEYENDO     ");
+                    put_event_task_display(0, 1, "     DATOS      ");
+                }
+                /* DOWN y BACK no hacen nada en este estado */
+            }
+            break;
+
+        /* ================================================================
+         * CONFIGURACIÓN — TEMPERATURA
+         * UP/DOWN ajustan valor; ENTER avanza; BACK vuelve al menú.
+         * ================================================================ */
+        case ST_SYS_SET_TEMP:
+
+            if (p_task_system_dta->flag)
+            {
+                p_task_system_dta->flag = false;
+
+                if (EV_SYS_UP == p_task_system_dta->event)
+                {
+                    if (cfg_temp < TEMP_MAX) cfg_temp++;
+                    display_set_temp();
+                }
+                else if (EV_SYS_DOWN == p_task_system_dta->event)
+                {
+                    if (cfg_temp > TEMP_MIN) cfg_temp--;
+                    display_set_temp();
+                }
+                else if (EV_SYS_ENTER == p_task_system_dta->event)
+                {
+                    p_task_system_dta->state = ST_SYS_SET_HUM;
+                    display_set_hum();
+                }
+                else if (EV_SYS_BACK == p_task_system_dta->event)
+                {
+                    p_task_system_dta->state = ST_SYS_MAIN_NEW;
+                    display_main_new();
+                }
+            }
+            break;
+
+        /* ================================================================
+         * CONFIGURACIÓN — HUMEDAD
+         * ================================================================ */
+        case ST_SYS_SET_HUM:
+
+            if (p_task_system_dta->flag)
+            {
+                p_task_system_dta->flag = false;
+
+                if (EV_SYS_UP == p_task_system_dta->event)
+                {
+                    if (cfg_hum < HUM_MAX) cfg_hum++;
+                    display_set_hum();
+                }
+                else if (EV_SYS_DOWN == p_task_system_dta->event)
+                {
+                    if (cfg_hum > HUM_MIN) cfg_hum--;
+                    display_set_hum();
+                }
+                else if (EV_SYS_ENTER == p_task_system_dta->event)
+                {
+                    p_task_system_dta->state = ST_SYS_SET_DAYS;
+                    display_set_days();
+                }
+                else if (EV_SYS_BACK == p_task_system_dta->event)
+                {
+                    p_task_system_dta->state = ST_SYS_SET_TEMP;
+                    display_set_temp();
+                }
+            }
+            break;
+
+        /* ================================================================
+         * CONFIGURACIÓN — DÍAS Y HORAS
+         * UP/DOWN ajustan días; ENTER avanza a incubando; BACK vuelve.
+         * ================================================================ */
+        case ST_SYS_SET_DAYS:
+
+            if (p_task_system_dta->flag)
+            {
+                p_task_system_dta->flag = false;
+
+                if (EV_SYS_UP == p_task_system_dta->event)
+                {
+                    if (cfg_days < DAYS_MAX) cfg_days++;
+                    display_set_days();
+                }
+                else if (EV_SYS_DOWN == p_task_system_dta->event)
+                {
+                    if (cfg_days > DAYS_MIN) cfg_days--;
+                    display_set_days();
+                }
+                else if (EV_SYS_ENTER == p_task_system_dta->event)
+                {
+                    p_task_system_dta->state = ST_SYS_SET_HOURS;
+                    display_set_hours();
+                }
+                else if (EV_SYS_BACK == p_task_system_dta->event)
+                {
+                    p_task_system_dta->state = ST_SYS_SET_HUM;
+                    display_set_hum();
+                }
+            }
+            break;
+
+        /* ================================================================
+         * CONFIGURACIÓN — HORAS
+         * UP/DOWN ajustan horas; ENTER avanza a incubando; BACK vuelve a días.
+         * ================================================================ */
+        case ST_SYS_SET_HOURS:
+
+            if (p_task_system_dta->flag)
+            {
+                p_task_system_dta->flag = false;
+
+                if (EV_SYS_UP == p_task_system_dta->event)
+                {
+                    if (cfg_hours < HOURS_MAX) cfg_hours++;
+                    display_set_hours();
+                }
+                else if (EV_SYS_DOWN == p_task_system_dta->event)
+                {
+                    if (cfg_hours > HOURS_MIN) cfg_hours--;
+                    display_set_hours();
+                }
+                else if (EV_SYS_ENTER == p_task_system_dta->event)
+                {
+                    p_task_system_dta->state = ST_SYS_INCUBATING;
+                    put_event_task_display(0, 0, "   EN PROCESO   ");
+                    put_event_task_display(0, 1, "   INCUBANDO    ");
+                }
+                else if (EV_SYS_BACK == p_task_system_dta->event)
+                {
+                    p_task_system_dta->state = ST_SYS_SET_DAYS;
+                    display_set_days();
+                }
+            }
+            break;
+
+        /* ================================================================
+         * EN PROCESO / INCUBANDO (desde NUEVO INICIO)
+         * ================================================================ */
+        case ST_SYS_INCUBATING:
+            /* Placeholder: lógica de incubación */
+            p_task_system_dta->flag = false;
+            break;
+
+        /* ================================================================
+         * LEYENDO DATOS (desde CONTINUAR)
+         * ================================================================ */
+        case ST_SYS_READING:
+            /* TODO: leer memoria y transicionar a NO_DATA o LAST_DATA */
+            p_task_system_dta->flag = false;
+            break;
+
+        /* ================================================================
+         * NO SE ENCUENTRAN DATOS EN MEMORIA
+         * ================================================================ */
+        case ST_SYS_NO_DATA:
+
+            if (p_task_system_dta->flag)
+            {
+                p_task_system_dta->flag = false;
+                p_task_system_dta->state = ST_SYS_MAIN_NEW;
+                display_main_new();
+            }
+            break;
+
+        /* ================================================================
+         * ÚLTIMO DATO ENCONTRADO EN MEMORIA
+         * ENTER arranca incubación; BACK vuelve al menú.
+         * ================================================================ */
+        case ST_SYS_LAST_DATA:
+
+            if (p_task_system_dta->flag)
+            {
+                p_task_system_dta->flag = false;
+
+                if (EV_SYS_ENTER == p_task_system_dta->event)
+                {
+                    p_task_system_dta->state = ST_SYS_INCUBATING_CONT;
+                    put_event_task_display(0, 0, "   EN PROCESO   ");
+                    put_event_task_display(0, 1, "   INCUBANDO    ");
+                }
+                else if (EV_SYS_BACK == p_task_system_dta->event)
+                {
+                    p_task_system_dta->state = ST_SYS_MAIN_CONT;
+                    display_main_cont();
+                }
+            }
+            break;
+
+        /* ================================================================
+         * EN PROCESO / INCUBANDO (desde CONTINUAR)
+         * ================================================================ */
+        case ST_SYS_INCUBATING_CONT:
+            /* Placeholder: lógica de incubación con parámetros recuperados */
+            p_task_system_dta->flag = false;
+            break;
+
+        default:
+            p_task_system_dta->tick  = DEL_SYS_MIN;
+            p_task_system_dta->state = ST_SYS_IDLE;
+            p_task_system_dta->event = EV_SYS_IDLE;
+            p_task_system_dta->flag  = false;
+            put_event_task_display(0, 0, "   INCUBADORA");
+            put_event_task_display(0, 1, "ACHINELLI-MADERO");
+            break;
+    }
 }
 
 /********************** end of file ******************************************/

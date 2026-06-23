@@ -76,12 +76,12 @@ void HAL_SYSTICK_Callback(void)
   * @retval None
   */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
+{/*
 	// Check which version of the gpio triggered this callback
 	if (GPIO_Pin == BTN_A_PIN)
 	{
-		/* Work to be done. */
-	}
+		 Work to be done.
+	}*/
 }
 
 /********************** end of file ******************************************/

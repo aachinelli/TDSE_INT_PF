@@ -56,10 +56,12 @@ typedef enum task_sensor_st {ST_BTN_UP,
 						     ST_BTN_RISING} task_sensor_st_t;
 
 /* Identifier of Task Sensor */
-typedef enum task_sensor_id {ID_BTN_A,
-							 ID_BTN_ENT,
-							 ID_BTN_NEX,
-							 ID_BTN_ESC} task_sensor_id_t;
+typedef enum task_sensor_id {
+	ID_BTN_UP,      // Para D12
+	ID_BTN_DOWN,    // Para D11
+	ID_BTN_ENTER,   // Para D10
+	ID_BTN_BACK     // Para D9
+} task_sensor_id_t;
 
 typedef struct
 {

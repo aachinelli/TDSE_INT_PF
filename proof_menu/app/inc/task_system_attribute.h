@@ -47,49 +47,34 @@ extern "C" {
 /********************** typedef **********************************************/
 /* Events to excite Task System */
 typedef enum task_system_ev {EV_SYS_IDLE,
-							 EV_SYS_BTN_A,
+							 EV_SYS_UP,
+							 EV_SYS_DOWN,
 							 EV_SYS_ENTER,
-							 EV_SYS_NEXT,
-							 EV_SYS_ESCAPE} task_system_ev_t;
+							 EV_SYS_BACK} task_system_ev_t;
 
 /* State of Task System */
-//typedef enum task_system_st {ST_SYS_IDLE,
-							 //ST_SYS_ACTIVE} task_system_st_t;
 
 
-typedef enum task_system_st
-{
+typedef enum task_system_st{
+	/* Pantalla inicial: muestra nombre del proyecto, espera ENTER */
 	ST_SYS_IDLE,
-	ST_SYS_ACTIVE,
 
-	// Nivel Main
-    ST_SYS_MAIN,
+	/* Menú raíz: NUEVO INICIO / CONTINUAR */
+	ST_SYS_MAIN_NEW,        /* cursor en NUEVO INICIO  */
+	ST_SYS_MAIN_CONT,       /* cursor en CONTINUAR     */
 
-    // Nivel Menu #1
-    ST_SYS_MENU1_MOTOR1,
-    ST_SYS_MENU1_MOTOR2,
+	/* Rama NUEVO INICIO -> configuración paso a paso */
+	ST_SYS_SET_TEMP,        /* EST. TEMPERATURA  T: XX  */
+	ST_SYS_SET_HUM,         /* EST. HUMEDAD      H: XX% */
+	ST_SYS_SET_DAYS,        /* EST. DIAS   D: XX        */
+	ST_SYS_SET_HOURS,       /* EST. HORAS  H: XX        */
+	ST_SYS_INCUBATING,      /* EN PROCESO / INCUBANDO   */
 
-    // Nivel Menu #2 (Opciones de Motor 1)
-    ST_SYS_MENU2_M1_POWER,
-    ST_SYS_MENU2_M1_SPEED,
-    ST_SYS_MENU2_M1_SPIN,
+	ST_SYS_READING,         /* LEYENDO / DATOS          */
+	ST_SYS_NO_DATA,         /* NO SE ENCUENTRAN DATOS   */
+	ST_SYS_LAST_DATA,       /* ULTIMO T:XX / H:XX R:XX  */
+	ST_SYS_INCUBATING_CONT  /* EN PROCESO / INCUBANDO (desde continuar) */
 
-    // Nivel Menu #3 (Valores de Motor 1 - Power)
-    ST_SYS_MENU3_M1_PWR_ON,
-    ST_SYS_MENU3_M1_PWR_OFF,
-	// Nivel Menu #2 (Opciones Motor 2)
-
-	ST_SYS_MENU2_M2_POWER,
-    ST_SYS_MENU2_M2_SPEED,
-    ST_SYS_MENU2_M2_SPIN,
-
-    // Nivel Menu #3 (Valores Motor 2)
-    ST_SYS_MENU3_M2_PWR_ON,
-    ST_SYS_MENU3_M2_PWR_OFF
-
-
-    // Nota: Aquí deberías agregar los estados para Speed (0..9), Spin (LEFT/RIGHT)
-    // y repetir la estructura para el Motor 2 según tu diagrama.
 } task_system_state_t;
 
 typedef struct
