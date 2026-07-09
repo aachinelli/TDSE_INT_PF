@@ -1,4 +1,6 @@
- <img src="https://www.fi.uba.ar/images/logo-fiuba.png" alt="image2" width="50%">
+<p align="center">
+ <img src="https://www.fi.uba.ar/images/logo-fiuba.png" aling="center" alt="image2" width="50%">
+</p>
 
 # Memoria del trabajo final: [Incubadora de huevos automática]
 
@@ -138,13 +140,27 @@ En la siguiente tabla se pueden agrupar por módulos los requerimientos del proy
 ||7\.2|El sistema preservará la configuración activa y el día del ciclo ante cortes de energía.|
 
 
-
-## 2.5. Servomotor
+## 2.2. Servomotor
 Para simular la rotación del soporte para los huevos, fue conveniente considerar una salida PWM del microcontrolador y controlar el servomotor SG90, 
 que si bien tiene un bajo consumo de corriente es uno de los dispositivos que se debe alimentar por fuera de la placa ya que por algún esfuerzo en particular puede superar la corriente máxima del pin y quemar este puerto.
 
-<img src="" alt="image2" width="50%">
+<p align="center">
+ <img src="https://github.com/aachinelli/TDSE_INT_PF/blob/85cc1a70a32646fde2cac301acd4e5d191e399b5/servo.jpg" alt="image2" width="40%">
+</p>
 
+## 2.3. Sensor DHT22
+Este sensor se eligió ya que integra ambos sensores y se puede controlar mediante un solo pin de datos. Mide temperaturas de -40°C a 80°C con ± 0.5°C de precisión gracias a su termistor interno y humedad del 0% al 100% con una exactitud del 2% gracias un sensor capacitivo que envían señales analógicas a un pequeño chip integrado que se encarga de convertirlas en una señal digital.
+
+<p align="center">
+ <img src="" alt="image2" width="40%">
+</p>
+
+## 2.4. Sensor LCD 16X2
+Este display alfanumérico se consideró a modo de interfaz con el usuario para poder establecer comunicación con el sistema a través de la selección en el menú, los modos de incubación y realizar una visualización en tiempo real del estado actual.
+
+<p align="center">
+ <img src="https://github.com/aachinelli/TDSE_INT_PF/blob/85cc1a70a32646fde2cac301acd4e5d191e399b5/lcd_16x2.jpg" alt="image2" width="40%">
+</p>
 
 # CAPÍTULO 3
 # Diseño e implementación
@@ -152,27 +168,16 @@ que si bien tiene un bajo consumo de corriente es uno de los dispositivos que se
 ## 3.1. Hardware
 
 
-
 ### 3.1.1. Placa con microcontrolador
-
-
-
 
 
 ### 3.1.3. LEDs y display de 7 segmentos
 
 
 
-
-### 3.1.8. Servomotor
-
-El servomotor utilizado ha sido presentado en el punto 2.5. Se lo alimentó con el pin de 5V de la placa NUCLEO, (...) detalles de la conexión (...).
-
 ## 3.2. Firmware del microcontrolador
 
 El firmware ha sido desarrolado implementando en lenguaje C un gestor cíclico de tareas con cuatro tareas bajo su control. A excepción de Actuator, cada tarea tiene una interfaz asociada para recibir eventos provenientes de las otras tareas. En la figura 3.2 se presenta un esquema entendible de los bloques principales del firmware. 
-
-
 
 
 El código comienza realmente en el main.c, el cual únicamente inicializa los periféricos y pasa el control a cyclic_executive.c. Seguidamente, cyclic_executive se encarga de inicializar el DWT (Data Watchpoint and Trace) para poder medir el tiempo con alta precisión, posteriormente inicializa todas las tareas, para comenzar a ejecutar todas, cada vez que se produce un SysTick, una vez por milisegundo.
