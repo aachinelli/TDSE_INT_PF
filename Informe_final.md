@@ -194,27 +194,41 @@ Se tendrán en consideración 3 leds testigos que indiquen estratégicamente fal
 
 ## 3.2. Firmware del microcontrolador
 
-El firmware ha sido desarrolado implementando en lenguaje C un gestor cíclico de tareas con cuatro tareas bajo su control. A excepción de Actuator, cada tarea tiene una interfaz asociada para recibir eventos provenientes de las otras tareas. En la figura 3.2 se presenta un esquema entendible de los bloques principales del firmware. 
+El firmware ha sido desarrolado implementando en lenguaje C un gestor cíclico de tareas con cuatro tareas bajo su control. A excepción de Actuator, cada tarea tiene una interfaz asociada para recibir eventos provenientes de las otras tareas.
 
-
-El código comienza realmente en el main.c, el cual únicamente inicializa los periféricos y pasa el control a cyclic_executive.c. Seguidamente, cyclic_executive se encarga de inicializar el DWT (Data Watchpoint and Trace) para poder medir el tiempo con alta precisión, posteriormente inicializa todas las tareas, para comenzar a ejecutar todas, cada vez que se produce un SysTick, una vez por milisegundo.
-
-Una vez actualizadas todas las tareas, entra en modo sleep sin suspender el tick del sistema, dejando los relojes de los periféricos y de la SRAM activos para continuar de forma correcta las transferencias vía DMA presentes en cada tarea. De esa manera, espera la siguiente interrupción para volver a actualizar las tareas y así ahorrar energía en el intervalo libre. Si la interrupción ocurre debido a la finalización de una transferencia DMA, continúa el ciclio sin actualizar las tareas ya que g_cyclic_executive_tick_cnt es 0 y vuelve a entrar en modo sleep.
+Se toma como base, uno de los códigos utilizados en la práctica de la cátedra donde el código comienza en el main.c, el cual únicamente inicializa los periféricos y pasa el control a cyclic_executive.c. Seguidamente, cyclic_executive se encarga de inicializar el DWT (Data Watchpoint and Trace) para poder medir el tiempo con alta precisión, posteriormente inicializa todas las tareas, para comenzar a ejecutar todas, cada vez que se produce un SysTick, una vez por milisegundo.
 
 Cyclic_executive se encarga también de medir el peor tiempo de ejecución (WCET) de cada tarea, contando el tiempo que le lleva a cada una actualizarse, cada vez que da dicha orden. Esto permite mantener los márgenes de ejecución de cada tarea dentro de un marco lo más estable y predecible posible.
 
-Hasta el presente punto, se trabajó de igual manera que se lo hizo durante la cursada, el código es completamente estándard, sin particularidades.
+Una vez actualizadas todas las tareas, entra en modo sleep sin suspender el tick del sistema, dejando los relojes de los periféricos y de la SRAM activos para continuar de forma correcta las transferencias vía DMA presentes en cada tarea. De esa manera, espera la siguiente interrupción para volver a actualizar las tareas y así ahorrar energía en el intervalo libre. Si la interrupción ocurre debido a la finalización de una transferencia DMA, continúa el ciclio sin actualizar las tareas ya que g_cyclic_executive_tick_cnt es 0 y vuelve a entrar en modo sleep.
 
-
-
-
+El flujo general del código está orientado en el archivo 'task_system.c' donde 
 
 # CAPÍTULO 4
 # Ensayos y resultados
 
 ## 4.1. Pruebas funcionales del hardware
 
-Tres veces se recurrió a realizar pruebas estrictamente sobre el hardware, debido a que se trabajó principalmente realizando pruebas de integración a medida que se fue avanzando el trabajo.
+Se propuso que el eje principal del proyecto como así de los ensayos previos, sea la codificación del menú ya que es el que va a dictar sobre el caso de uso que se le esté dando a la incubadora, y a raíz de esto comenzar a integrar para cada caso las partes externas que se requieran en cada momento del proceso.
+
+En primera instancia se procese a diseñar un menu interactivo con los distintos flujos que puede tener a partir de la interacción con los botones programados.
+
+<p align="center">
+ <img src="flujo del menu" alt="image2" width="40%">
+</p>
+
+Una vez codificado se debuggea para depurar posibles errores y corroborar que funciones con la lógica del ejecutor.
+
+<p align="center">
+ <img src="https://github.com/aachinelli/TDSE_INT_PF/blob/4341f2d81e6b30fb72fb8ade3ceb7649e71eb6a2/menu_0.jpg" alt="image2" width="42%">
+ <img src="https://github.com/aachinelli/TDSE_INT_PF/blob/4341f2d81e6b30fb72fb8ade3ceb7649e71eb6a2/menu_1.jpg" alt="image2" width="40%">
+</p>
+
+En lo que respecta al sensor principal de temperatura y humedad, tambíen se pudo realizar un ensayo para probar el funcionamiento de su librería, su inicialización dentro de código y el protocolo de comunicación interno dado por su hoja de características. Si bien no está integrado aún, con el osciloscopio se pudo extraer una imagen tomada desde el pin de datos cada vez que actualiza la medición y desde el debugger se comprobó el correcto funcionamiento.
+
+<p align="center">
+ <img src="https://github.com/aachinelli/TDSE_INT_PF/blob/4341f2d81e6b30fb72fb8ade3ceb7649e71eb6a2/osc_dht.jpg" alt="image2" width="45%">
+</p>
 
 
 ## 4.2. Pruebas funcionales del firmware
