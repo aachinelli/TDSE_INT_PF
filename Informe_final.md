@@ -214,7 +214,7 @@ Se propuso que el eje principal del proyecto como así de los ensayos previos, s
 En primera instancia se procese a diseñar un menu interactivo con los distintos flujos que puede tener a partir de la interacción con los botones programados.
 
 <p align="center">
- <img src="flujo del menu" alt="image2" width="40%">
+ <img src="https://github.com/aachinelli/TDSE_INT_PF/blob/9063ff282824e0079197323261d128a90a2382f7/flujo_menu.png" alt="image2" width="85%">
 </p>
 
 Una vez codificado se debuggea para depurar posibles errores y corroborar que funciones con la lógica del ejecutor.
