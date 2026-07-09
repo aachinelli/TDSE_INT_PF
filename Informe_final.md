@@ -48,20 +48,18 @@ La idea del mismo es integrar en conjunto los conceptos vistos en la cátedra ta
 - [Registro de versiones](#registro-de-versiones)
 - [Introducción general](#introducción-general)
   - [1.1. Objetivo del trabajo](#11-objetivo-del-trabajo)
-  - [1.2. Motivaciones para realizar el trabajo](#12-motivaciones-para-realizar-el-trabajo)
-  - [1.3. Funcionamiento de un órgano de tubos](#13-funcionamiento-de-un-órgano-de-tubos)
-  - [1.4. Desarrollo de las funcionalidades en el microcontrolador](#14-desarrollo-de-las-funcionalidades-en-el-microcontrolador)
+  - [1.2. Funcionamiento de una incubadora](#13-funcionamiento-de-una-incubadora)
+  - [1.3. Desarrollo de las funcionalidades en el microcontrolador](#14-desarrollo-de-las-funcionalidades-en-el-microcontrolador)
 - [Introducción específica](#introducción-específica)
   - [2.1. Requisitos](#21-requisitos)
-  - [2.2. Casos de uso](#22-casos-de-uso)
-  - [2.5. Servomotor](#25-servomotor)
+  - [2.2. Servomotor](#25-servomotor)
+  - [2.3. Sensor DHT22](#25-sensor)
+  - [2.4. LCD 16X2](#25-lcd)
 - [Diseño e implementación](#diseño-e-implementación)
   - [3.1. Hardware](#31-hardware)
     - [3.1.1. Placa con microcontrolador](#311-placa-con-microcontrolador)
-    - [3.1.2. Potenciómetro](#312-potenciómetro)
-    - [3.1.3. LEDs y display de 7 segmentos](#313-leds-y-display-de-7-segmentos)
-    - [3.1.4. Botones](#314-botones)
-    - [3.1.8. Servomotor](#318-servomotor)
+    - [3.1.2. Teclado de membrana](#313-teclado)
+    - [3.1.3. LEDs](#314-leds)
   - [3.2. Firmware del microcontrolador](#32-firmware-del-microcontrolador)
 - [Ensayos y resultados](#ensayos-y-resultados)
   - [4.1. Pruebas funcionales del hardware](#41-pruebas-funcionales-del-hardware)
@@ -95,13 +93,13 @@ registrar y modificar variables ambientales (temperatura y humedad) en un ambien
 Además, se proyecta diseñar distintos modos de funcionamiento según el tipo de huevo y etapa de su desarrollo, seleccionables a través de una interfaz gráfica compuesta por un display LCD y un teclado matricial.
 
 
-## 1.3. Funcionamiento de una incubadora
+## 1.2. Funcionamiento de una incubadora
 
 La idea general de una incubadora doméstica, que es a lo que se apunta con este proyecto, es que una vez encendido el prototipo se pueda comenzar a incubar un nuevo tipo de especie, cargando los parámetros que se requieren desde 0, ya precargados en la memoria, o bien continuar con este proceso en caso de alguna interrupción externa. 
 Luego de haber seteado los parámetros de una u otra forma, comienza a calentar o ventilar el interior de la incubadora hasta llegar a los valores fijados que serán sensados cada cierto tiempo para obtener el control del mismo. Es importante que durante lo que dure el proceso según el tipo de huevo se muestren por pantalla los valores actuales del interior y notifique en caso de un exceso o disminución de los mismos.
 
 
-## 1.4. Desarrollo de las funcionalidades en el microcontrolador
+## 1.3. Desarrollo de las funcionalidades en el microcontrolador
 Para llevar a cabo las funciones, desde la programación se diseña un ejecutor cíclico el cuál va realizando el llamado a las distintas tareas que se requieren dentro del sistema la limitación en recorrer todas las operaciones es de un milisegundo de forma que se vaya ejecutando en tiempo real.
 Para sensar la temperatura y humedad se optó por el DHT22 que integra ambas funciones y se maneja gracias a una librería externa; El LCD 16X2 que se utiliza para mostrar al usuario se maneja con el protocolo SPI y también es llamado con funciones de librería externa.
 El control para las opciones dentro del menú se realiza con una botonera del tipo membrana 4X1 configurada como pines de entrada a la placa y gracias al control del ciclo de trabajo por PWM, controlamos la posición de un servomotor.
@@ -152,7 +150,7 @@ que si bien tiene un bajo consumo de corriente es uno de los dispositivos que se
 Este sensor se eligió ya que integra ambos sensores y se puede controlar mediante un solo pin de datos. Mide temperaturas de -40°C a 80°C con ± 0.5°C de precisión gracias a su termistor interno y humedad del 0% al 100% con una exactitud del 2% gracias un sensor capacitivo que envían señales analógicas a un pequeño chip integrado que se encarga de convertirlas en una señal digital.
 
 <p align="center">
- <img src="" alt="image2" width="40%">
+ <img src="https://github.com/aachinelli/TDSE_INT_PF/blob/5c0944f3a0e169877e78a95acd58ae4edaa9749e/dht22.jpg" alt="image2" width="25%">
 </p>
 
 ## 2.4. Sensor LCD 16X2
@@ -166,14 +164,33 @@ Este display alfanumérico se consideró a modo de interfaz con el usuario para 
 # Diseño e implementación
 
 ## 3.1. Hardware
-
+En la figura que sigue se muestra el diagrama en bloques del proyecto general par tener una visión más abstracta de cada módulo y su conexión con la placa.
+<p align="center">
+ <img src="https://github.com/aachinelli/TDSE_INT_PF/blob/5c0944f3a0e169877e78a95acd58ae4edaa9749e/diag_bloques.jpeg" alt="image2" width="50%">
+</p>
 
 ### 3.1.1. Placa con microcontrolador
+El trabajo se desarrolló en torno a la placa NUCLEO-F103RB de STMicroelectronics, la cual cuenta con un procesador ARM 32-bit Cortex-M3. Se utilizó dicha placa por haber sido la plataforma adoptada por la cátedra en el presente cuatrimestre, la cual cuenta con todas las características necesarias para desarrollar el trabajo.
+En lo que respecta a la alimentación, durante los momentos de pruebas en el desarrollo desde el puerto USB, si bien es suficiente al no tener los dispositivos que más consumen, sería de amplia ventaja el diseño de un bus general de alimentación y desde ahí centrarse en alimentar la placa.
+
+<p align="center">
+ <img src="https://github.com/aachinelli/TDSE_INT_PF/blob/5c0944f3a0e169877e78a95acd58ae4edaa9749e/nucleo_f103rb.jpg" alt="image2" width="40%">
+</p>
 
 
-### 3.1.3. LEDs y display de 7 segmentos
+### 3.1.2. Teclado de membrana
+Configurados como pines de entrada, se utilizarán por el usuario para manejarse por el menú de la incubadora siendo: arriba, abajo, entrar y volver.
 
+<p align="center">
+ <img src="https://github.com/aachinelli/TDSE_INT_PF/blob/5c0944f3a0e169877e78a95acd58ae4edaa9749e/tecla_mem.jpg" alt="image2" width="40%">
+</p>
 
+### 3.1.3. LEDs
+Se tendrán en consideración 3 leds testigos que indiquen estratégicamente falta de tensión o falla de algún tipo dentro del proceso de incubación.
+
+<p align="center">
+ <img src="https://github.com/aachinelli/TDSE_INT_PF/blob/5c0944f3a0e169877e78a95acd58ae4edaa9749e/leds.png" alt="image2" width="40%">
+</p>
 
 ## 3.2. Firmware del microcontrolador
 
@@ -236,16 +253,6 @@ En la tabla 4.8 se presentan los elementos que resumen la información más impo
 
 ## 5.1. Resultados obtenidos
 
-Los principales aportes del trabajo realizado son los siguientes:
-
-- Haber aprendido a desarrollar un sistema embebido de forma ordenada y estandarizada.
-- Haber aprendido a optimizar código para realizar las tareas de forma más eficiente.
-- Haber aprendido a utilizar la mayor cantidad de funcionalidades que presenta el microcontrolador para lograr mayores y más estables velocidades de ejecución.
-- Haber aprendido a documentar de forma detallada los pasos realizados.
-- Haber aprendido a aplicar los distintos protocolos presentes en el trabajo.
-- Haber comenzado a trabajar con componentes SMD.
-- Haber tenido que familiarizarse con la revisión eficiente de hojas de datos.
-- Haber aprendido a utilizar gestores de versiones de forma habitual.
 
 ## 5.2. Próximos pasos
 
@@ -257,20 +264,7 @@ El trabajo se realizó exclusivamente con las presentaciones y ejemplos provisto
 
 \[1\] Notre-Dame organ, Yves Castagnet plays Dupré Prelude & fugue in B major (June 2017). [Online]. Available: https://www.youtube.com/watch?v=9HskcJlixGs
 
-\[2\] Módulo Bluetooth ESP32 C3 RISC-V. [Online]. Available: https://www.espressif.com/en/products/socs/esp32-c3
+\[2\] Placa NUCLEO-F103RB. [Online]. Available: https://os.mbed.com/platforms/ST-Nucleo-F103RB
 
-\[3\] Librería ESP32 BLE Arduino. [Online]. Available: https://docs.arduino.cc/libraries/esp32-ble-arduino
+\[3\] MB1136 - Electrical Schematic - STM32 Nucleo-64 boards. [Online]. Available: https://www.st.com/resource/en/schematic_pack/mb1136-default-c04_schematic.pdf
 
-\[4\] The Bluetooth Low Energy Primer. [Online]. Available: https://www.bluetooth.com/bluetooth-le-primer
-
-\[5\] RISC-V Ratified Specification. [Online]. Available: https://riscv.org/specifications/ratified
-
-\[6\] MIDI Specifications. [Online]. Available: https://midi.org/specs
-
-\[7\] Placa NUCLEO-F103RB. [Online]. Available: https://os.mbed.com/platforms/ST-Nucleo-F103RB
-
-\[8\] Presentación del trabajo final. [Online]. Available: https://youtu.be/HGJKOISGU5c
-
-\[9\] MB1136 - Electrical Schematic - STM32 Nucleo-64 boards. [Online]. Available: https://www.st.com/resource/en/schematic_pack/mb1136-default-c04_schematic.pdf
-
-\[10\] Multímetro digital DT830D. [Online]. Available: https://noganet.ar/productos/dt-830d-tester-digital
