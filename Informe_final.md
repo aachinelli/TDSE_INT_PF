@@ -194,13 +194,9 @@ Se tendrán en consideración 3 leds testigos que indiquen estratégicamente fal
 
 ## 3.2. Firmware del microcontrolador
 
-El firmware ha sido desarrolado implementando en lenguaje C un gestor cíclico de tareas con cuatro tareas bajo su control. A excepción de Actuator, cada tarea tiene una interfaz asociada para recibir eventos provenientes de las otras tareas.
-
-Se toma como base, uno de los códigos utilizados en la práctica de la cátedra donde el código comienza en el main.c, el cual únicamente inicializa los periféricos y pasa el control a cyclic_executive.c. Seguidamente, cyclic_executive se encarga de inicializar el DWT (Data Watchpoint and Trace) para poder medir el tiempo con alta precisión, posteriormente inicializa todas las tareas, para comenzar a ejecutar todas, cada vez que se produce un SysTick, una vez por milisegundo.
+El firmware ha sido desarrolado implementando en lenguaje C un gestor cíclico de tareas con cuatro tareas bajo su control. Cada tarea tiene una interfaz asociada para recibir eventos provenientes de las otras tareas y se toma como base, uno de los códigos utilizados en la práctica de la cátedra donde el código comienza en el main.c, el cual únicamente inicializa los periféricos y pasa el control a app.c. Seguidamente, cyclic_executive se encarga de inicializar el DWT (Data Watchpoint and Trace) para poder medir el tiempo con alta precisión, posteriormente inicializa todas las tareas, para comenzar a ejecutar todas, cada vez que se produce un SysTick, una vez por milisegundo.
 
 Cyclic_executive se encarga también de medir el peor tiempo de ejecución (WCET) de cada tarea, contando el tiempo que le lleva a cada una actualizarse, cada vez que da dicha orden. Esto permite mantener los márgenes de ejecución de cada tarea dentro de un marco lo más estable y predecible posible.
-
-Una vez actualizadas todas las tareas, entra en modo sleep sin suspender el tick del sistema, dejando los relojes de los periféricos y de la SRAM activos para continuar de forma correcta las transferencias vía DMA presentes en cada tarea. De esa manera, espera la siguiente interrupción para volver a actualizar las tareas y así ahorrar energía en el intervalo libre. Si la interrupción ocurre debido a la finalización de una transferencia DMA, continúa el ciclio sin actualizar las tareas ya que g_cyclic_executive_tick_cnt es 0 y vuelve a entrar en modo sleep.
 
 El flujo general del código está orientado en el archivo 'task_system.c' donde 
 
