@@ -198,7 +198,7 @@ El firmware ha sido desarrolado implementando en lenguaje C un gestor cíclico d
 
 Cyclic_executive se encarga también de medir el peor tiempo de ejecución (WCET) de cada tarea, contando el tiempo que le lleva a cada una actualizarse, cada vez que da dicha orden. Esto permite mantener los márgenes de ejecución de cada tarea dentro de un marco lo más estable y predecible posible.
 
-El flujo general del código está orientado en el archivo 'task_system.c' donde 
+El flujo general del código está orientado en el archivo 'task_system.c' donde se tiene una estructura del tipo 'task_system_dta_t' con 3 campos: 'state' indicando el lugar donde esta en el menú, 'event' para saber qué botón se presionó y 'flag' que registra si hay un evento pendiente. En cada pasada del ejecutor está pendiente si se lee algo desde 'task_sensor' y comanda a la interfaz de los actuadores o del display para mostrar algo en pantalla.
 
 # CAPÍTULO 4
 # Ensayos y resultados
@@ -233,7 +233,6 @@ En lo que respecta al sensor principal de temperatura y humedad, tambíen se pud
 ## 4.3. Pruebas de integración
 
 
-
 ## 4.4. Circuito esquemático
 
 
@@ -255,7 +254,6 @@ En lo que respecta al sensor principal de temperatura y humedad, tambíen se pud
 
 ## 4.9. Documentación del desarrollo realizado
 
-En la tabla 4.8 se presentan los elementos que resumen la información más importante a tener en cuenta a la hora de revisar el trabajo y entender qué, por qué y cómo se realizó. 
 
 
 # CAPÍTULO 5
@@ -270,11 +268,13 @@ En la tabla 4.8 se presentan los elementos que resumen la información más impo
 
 # Bibliografía
 
-El trabajo se realizó exclusivamente con las presentaciones y ejemplos provistos por la cátedra, y consultas varias a las distintas IA.
+El trabajo se realizó exclusivamente con los ejemplos provistos por la cátedra, algunos recursos de internet y consultas varias a las distintas IA.
 
-\[1\] Notre-Dame organ, Yves Castagnet plays Dupré Prelude & fugue in B major (June 2017). [Online]. Available: https://www.youtube.com/watch?v=9HskcJlixGs
+\[1\] Sensor DHT22. Ejemplo de aplicación - https://www.youtube.com/watch?v=09C1dyXvSbg - https://controllerstech.com/temperature-measurement-using-dht22-in-stm32/
 
 \[2\] Placa NUCLEO-F103RB. [Online]. Available: https://os.mbed.com/platforms/ST-Nucleo-F103RB
 
 \[3\] MB1136 - Electrical Schematic - STM32 Nucleo-64 boards. [Online]. Available: https://www.st.com/resource/en/schematic_pack/mb1136-default-c04_schematic.pdf
+
+\[4\] LCD 16X2. Ejemplo de aplicación - https://www.youtube.com/watch?v=czcEovgO4Gk
 
