@@ -279,7 +279,7 @@ static void task_system_statechart(void)
 
         /* ================================================================
          * CONFIGURACIÓN — TEMPERATURA
-         * UP/DOWN ajustan valor; ENTER avanza; BACK vuelve al menú.
+         * UP/DOWN ajustan valor; ENTER avanza; BACK vuelve al menu
          * ================================================================ */
         case ST_SYS_SET_TEMP:
 

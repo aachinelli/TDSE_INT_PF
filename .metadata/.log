@@ -538,3 +538,48 @@ java.lang.Exception: Resource '/proof_lcd' does not exist.
 
 !ENTRY com.st.stm32cube.ide.mcu.debug 4 0 2026-06-23 18:16:52.573
 !MESSAGE Existing sessions are:
+!SESSION 2026-06-23 20:10:09.958 -----------------------------------------------
+eclipse.buildId=Version 1.19.0
+java.version=21.0.3
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=es_AR
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2026-06-23 20:10:25.379
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2026-06-23 20:10:25.381
+!MESSAGE Log4j2 initialized with config file C:\Users\ericsson\Desktop\Taller embebidos\Proyecto final\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2026-06-23 20:10:35.704
+!MESSAGE Started RMI Server, listening on port 41337
+!SESSION 2026-07-09 10:26:08.954 -----------------------------------------------
+eclipse.buildId=Version 1.19.0
+java.version=21.0.3
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=es_AR
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2026-07-09 10:26:27.458
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2026-07-09 10:26:27.458
+!MESSAGE Log4j2 initialized with config file C:\Users\ericsson\Desktop\Taller embebidos\Proyecto final\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2026-07-09 10:26:38.668
+!MESSAGE Started RMI Server, listening on port 41337
+!SESSION 2026-07-12 19:31:58.852 -----------------------------------------------
+eclipse.buildId=Version 1.19.0
+java.version=21.0.3
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=es_AR
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2026-07-12 19:32:09.802
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2026-07-12 19:32:09.805
+!MESSAGE Log4j2 initialized with config file C:\Users\ericsson\Desktop\Taller embebidos\Proyecto final\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2026-07-12 19:32:22.533
+!MESSAGE Started RMI Server, listening on port 41337

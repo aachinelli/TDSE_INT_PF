@@ -1,4 +1,4 @@
-15:51:39 **** Incremental Build of configuration Debug for project proof_menu ****
+19:59:32 **** Incremental Build of configuration Debug for project proof_menu ****
 make -j4 all 
 arm-none-eabi-size  proof_menu.elf 
    text	   data	    bss	    dec	    hex	filename
@@ -6,5 +6,5 @@ arm-none-eabi-size  proof_menu.elf
 Finished building: default.size.stdout
  
 
-15:51:39 Build Finished. 0 errors, 0 warnings. (took 375ms)
+19:59:32 Build Finished. 0 errors, 0 warnings. (took 473ms)
 

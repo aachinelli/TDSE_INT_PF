@@ -254,7 +254,7 @@ static void MX_I2C1_Init(void)
  8000208:	4b12      	ldr	r3, [pc, #72]	@ (8000254 <MX_I2C1_Init+0x50>)
  800020a:	4a13      	ldr	r2, [pc, #76]	@ (8000258 <MX_I2C1_Init+0x54>)
  800020c:	601a      	str	r2, [r3, #0]
-  hi2c1.Init.ClockSpeed = 100000;
+  hi2c1.Init.ClockSpeed = 400000;
  800020e:	4b11      	ldr	r3, [pc, #68]	@ (8000254 <MX_I2C1_Init+0x50>)
  8000210:	4a12      	ldr	r2, [pc, #72]	@ (800025c <MX_I2C1_Init+0x58>)
  8000212:	605a      	str	r2, [r3, #4]
@@ -305,7 +305,7 @@ static void MX_I2C1_Init(void)
  8000252:	bd80      	pop	{r7, pc}
  8000254:	200000dc 	.word	0x200000dc
  8000258:	40005400 	.word	0x40005400
- 800025c:	000186a0 	.word	0x000186a0
+ 800025c:	00061a80 	.word	0x00061a80
 
 08000260 <MX_USART2_UART_Init>:
   * @brief USART2 Initialization Function
@@ -1714,8 +1714,8 @@ static void PulseEnable(uint8_t _data)
  80009b4:	b2db      	uxtb	r3, r3
  80009b6:	4618      	mov	r0, r3
  80009b8:	f7ff ffd8 	bl	800096c <ExpanderWrite>
-  DelayUS(20);
- 80009bc:	2014      	movs	r0, #20
+  DelayUS(1);
+ 80009bc:	2001      	movs	r0, #1
  80009be:	f000 f837 	bl	8000a30 <DelayUS>
 
   ExpanderWrite(_data & ~ENABLE);
@@ -1724,8 +1724,8 @@ static void PulseEnable(uint8_t _data)
  80009c8:	b2db      	uxtb	r3, r3
  80009ca:	4618      	mov	r0, r3
  80009cc:	f7ff ffce 	bl	800096c <ExpanderWrite>
-  DelayUS(20);
- 80009d0:	2014      	movs	r0, #20
+  DelayUS(5);
+ 80009d0:	2005      	movs	r0, #5
  80009d2:	f000 f82d 	bl	8000a30 <DelayUS>
 }
  80009d6:	bf00      	nop
@@ -9111,7 +9111,7 @@ static void task_system_statechart(void)
             break;
  8003718:	e166      	b.n	80039e8 <task_system_statechart+0x3fc>
          * CONFIGURACIÓN — TEMPERATURA
-         * UP/DOWN ajustan valor; ENTER avanza; BACK vuelve al menú.
+         * UP/DOWN ajustan valor; ENTER avanza; BACK vuelve al menu
          * ================================================================ */
         case ST_SYS_SET_TEMP:
 
