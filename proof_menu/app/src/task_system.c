@@ -73,9 +73,23 @@
 #define HOURS_MAX       23
 #define HOURS_DEFAULT   0
 
+/* Actualización de pantalla durante incubación: cada 60000 ticks = 60 segundos */
+#define INCUBATION_UPDATE_TICKS     1000ul
+
+/* Rotación del servo: 4 veces por día = cada 6 horas = 21600000 ticks */
+#define SERVO_ROTATION_TICKS        4000ul
+
+/* Días con rotación activa (primeros 18 días) */
+#define SERVO_ACTIVE_DAYS           5ul
+
+/* Días mínimos configurados para que el servo se active */
+#define SERVO_MIN_CFG_DAYS          8ul
+
 #define SYSTEM_DTA_QTY  1ul
 
 /********************** internal data declaration ****************************/
+extern RTC_HandleTypeDef hrtc;
+
 task_system_dta_t task_system_dta_list[SYSTEM_DTA_QTY];
 
 /* Variables de configuración de la incubadora */
@@ -83,6 +97,21 @@ static uint8_t cfg_temp  = TEMP_DEFAULT;
 static uint8_t cfg_hum   = HUM_DEFAULT;
 static uint8_t cfg_days  = DAYS_DEFAULT;
 static uint8_t cfg_hours = HOURS_DEFAULT;
+
+/* Objetivo de incubación en segundos desde epoch (día 1, hora 0, min 0) */
+static uint32_t incubation_target_seconds = 0;
+
+/* Contador de ticks para actualización periódica de pantalla */
+static uint32_t incubation_tick_cnt = 0;
+
+/* Contador de ticks para rotación del servo */
+static uint32_t servo_tick_cnt = 0;
+
+/* Posición actual del servo: false=POS_A(45°), true=POS_B(135°) */
+static bool servo_pos_b = false;
+
+/* Flag: el servo solo se mueve cuando la incubación está activa */
+static bool servo_active = false;
 
 /********************** internal functions declaration ***********************/
 static void task_system_statechart(void);
@@ -92,6 +121,9 @@ static void display_set_temp(void);
 static void display_set_hum(void);
 static void display_set_days(void);
 static void display_set_hours(void);
+static void display_incubating(void);
+static uint32_t rtc_get_seconds(void);
+static void incubation_start(void);
 
 /********************** internal data definition *****************************/
 const char *p_task_system      = "Task System (Incubadora Statechart)";
@@ -190,6 +222,52 @@ static void display_set_hours(void)
     char buf[20];
     put_event_task_display(0, 0, "EST. HORAS      ");
     snprintf(buf, sizeof(buf), "H: %2u           ", (unsigned)cfg_hours);
+    put_event_task_display(0, 1, buf);
+}
+
+/* Convierte hora actual del RTC a segundos totales (días*86400 + horas*3600 + min*60 + seg) */
+static uint32_t rtc_get_seconds(void)
+{
+    RTC_TimeTypeDef sTime = {0};
+    RTC_DateTypeDef sDate = {0};
+    HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+    HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+    return ((uint32_t)sDate.Date  * 86400ul)
+         + ((uint32_t)sTime.Hours * 3600ul)
+         + ((uint32_t)sTime.Minutes * 60ul)
+         + ((uint32_t)sTime.Seconds);
+}
+
+/* Guarda el objetivo al arrancar la incubación */
+static void incubation_start(void)
+{
+    uint32_t now = rtc_get_seconds();
+    incubation_target_seconds = now
+                              + ((uint32_t)cfg_days  * 24ul)
+                              + ((uint32_t)cfg_hours * 1ul);
+    incubation_tick_cnt = INCUBATION_UPDATE_TICKS; /* fuerza update inmediato */
+
+    /* Inicializar servo en posición A y arrancar contador */
+    servo_tick_cnt = SERVO_ROTATION_TICKS;
+    servo_pos_b    = false;
+    servo_active   = true;
+}
+
+/* Muestra el tiempo restante en pantalla */
+static void display_incubating(void)
+{
+    char buf[20];
+    uint32_t now = rtc_get_seconds();
+    uint32_t remaining = 0;
+
+    if (incubation_target_seconds > now)
+        remaining = incubation_target_seconds - now;
+
+    uint32_t days_left  = remaining / 24ul;
+    uint32_t hours_left = (remaining % 24ul) / 1ul;
+
+    put_event_task_display(0, 0, "   EN PROCESO   ");
+    snprintf(buf, sizeof(buf), "D:%2u  H:%2u      ", (unsigned)days_left, (unsigned)hours_left);
     put_event_task_display(0, 1, buf);
 }
 
@@ -397,9 +475,9 @@ static void task_system_statechart(void)
                 }
                 else if (EV_SYS_ENTER == p_task_system_dta->event)
                 {
+                    incubation_start();
                     p_task_system_dta->state = ST_SYS_INCUBATING;
-                    put_event_task_display(0, 0, "   EN PROCESO   ");
-                    put_event_task_display(0, 1, "   INCUBANDO    ");
+                    display_incubating();
                 }
                 else if (EV_SYS_BACK == p_task_system_dta->event)
                 {
@@ -411,17 +489,103 @@ static void task_system_statechart(void)
 
         /* ================================================================
          * EN PROCESO / INCUBANDO (desde NUEVO INICIO)
+         * - Cuenta regresiva actualizada cada 60 segundos.
+         * - Servo activo los primeros 18 días, 4 veces/día (cada 6hs),
+         *   solo si cfg_days >= SERVO_MIN_CFG_DAYS.
          * ================================================================ */
         case ST_SYS_INCUBATING:
-            /* Placeholder: lógica de incubación */
+
             p_task_system_dta->flag = false;
+
+            /* --- Control del servo --- */
+            if (servo_active && cfg_days >= SERVO_MIN_CFG_DAYS)
+            {
+                /* Calcular días transcurridos desde inicio */
+                uint32_t now_sec     = rtc_get_seconds();
+                uint32_t start_sec   = incubation_target_seconds
+                                     - ((uint32_t)cfg_days  * 24ul)
+                                     - ((uint32_t)cfg_hours * 1ul);
+                uint32_t elapsed_days = (now_sec - start_sec) / 24ul;
+
+                if (elapsed_days < SERVO_ACTIVE_DAYS)
+                {
+                    if (servo_tick_cnt > 0)
+                    {
+                        servo_tick_cnt--;
+                    }
+                    else
+                    {
+                        servo_tick_cnt = SERVO_ROTATION_TICKS;
+
+                        /* Alternar posición */
+                        if (servo_pos_b)
+                        {
+                            put_event_task_actuator(EV_SERVO_POS_A, ID_SERVO);
+                            servo_pos_b = false;
+                        }
+                        else
+                        {
+                            put_event_task_actuator(EV_SERVO_POS_B, ID_SERVO);
+                            servo_pos_b = true;
+                        }
+                    }
+                }
+                else
+                {
+                    /* Fin del período de rotación: centrar y desactivar servo */
+                    put_event_task_actuator(EV_SERVO_CENTER, ID_SERVO);
+                    servo_active = false;
+                }
+            }
+
+            /* --- Actualización periódica de pantalla --- */
+            if (incubation_tick_cnt > 0)
+            {
+                incubation_tick_cnt--;
+            }
+            else
+            {
+                incubation_tick_cnt = INCUBATION_UPDATE_TICKS;
+
+                if (rtc_get_seconds() >= incubation_target_seconds)
+                {
+                    /* Tiempo cumplido: detener servo y avisar */
+                    servo_active = false;
+                    put_event_task_actuator(EV_SERVO_CENTER, ID_SERVO);
+                    p_task_system_dta->state = ST_SYS_FINISHED;
+                    put_event_task_display(0, 0, "  INCUBACION    ");
+                    put_event_task_display(0, 1, "  FINALIZADA!   ");
+                }
+                else
+                {
+                    display_incubating();
+                }
+            }
+            break;
+
+        /* ================================================================
+         * INCUBACIÓN FINALIZADA
+         * Espera ENTER para volver al menú principal.
+         * ================================================================ */
+        case ST_SYS_FINISHED:
+
+            if (p_task_system_dta->flag)
+            {
+                p_task_system_dta->flag = false;
+
+                if (EV_SYS_ENTER == p_task_system_dta->event)
+                {
+                    p_task_system_dta->state = ST_SYS_MAIN_NEW;
+                    display_main_new();
+                }
+            }
             break;
 
         /* ================================================================
          * LEYENDO DATOS (desde CONTINUAR)
          * ================================================================ */
         case ST_SYS_READING:
-            /* TODO: leer memoria y transicionar a NO_DATA o LAST_DATA */
+            /* leer memoria y transicionar a NO_DATA o LAST_DATA */
             p_task_system_dta->flag = false;
             break;
 

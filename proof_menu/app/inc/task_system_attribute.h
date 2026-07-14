@@ -69,6 +69,7 @@ typedef enum task_system_st{
 	ST_SYS_SET_DAYS,        /* EST. DIAS   D: XX        */
 	ST_SYS_SET_HOURS,       /* EST. HORAS  H: XX        */
 	ST_SYS_INCUBATING,      /* EN PROCESO / INCUBANDO   */
+	ST_SYS_FINISHED,        /* INCUBACION FINALIZADA    */
 
 	ST_SYS_READING,         /* LEYENDO / DATOS          */
 	ST_SYS_NO_DATA,         /* NO SE ENCUENTRAN DATOS   */

@@ -47,14 +47,23 @@ extern "C" {
 /********************** typedef **********************************************/
 /* Events to excite Task Actuator */
 typedef enum task_actuator_ev {EV_LED_IDLE,
-							   EV_LED_ACTIVE} task_actuator_ev_t;
+							   EV_LED_ACTIVE,
+							   EV_SERVO_POS_A,    /* Mover servo a 45°  */
+							   EV_SERVO_POS_B,    /* Mover servo a 135° */
+							   EV_SERVO_CENTER     /* Mover servo a 90°  */
+							   } task_actuator_ev_t;
 
 /* States of Task Actuator */
 typedef enum task_actuator_st {ST_LED_IDLE,
-							   ST_LED_ACTIVE} task_actuator_st_t;
+							   ST_LED_ACTIVE,
+							   ST_SERVO_POS_A,    /* Servo en 45°, PWM apagado  */
+							   ST_SERVO_POS_B,    /* Servo en 135°, PWM apagado */
+							   ST_SERVO_MOVING    /* Servo en movimiento, espera llegar */
+							   } task_actuator_st_t;
 
 /* Identifier of Task Actuator */
-typedef enum task_actuator_id {ID_LED_A} task_actuator_id_t;
+typedef enum task_actuator_id {ID_LED_A,
+							   ID_SERVO} task_actuator_id_t;
 
 typedef struct
 {
