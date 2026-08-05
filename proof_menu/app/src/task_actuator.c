@@ -66,8 +66,9 @@
 extern TIM_HandleTypeDef htim2;
 
 const task_actuator_cfg_t task_actuator_cfg_list[] = {
-	{ID_LED_A,  LED_A_PORT,  LED_A_PIN, LED_A_ON,  LED_A_OFF, DEL_LED_MAX},
-	{ID_SERVO,  NULL,        0,         0,          0,         0          }
+	{ID_LED_A,  LED_A_PORT,  LED_A_PIN, LED_A_ON,     LED_A_OFF,    DEL_LED_MAX, NULL,      0        },
+	{ID_SERVO,  NULL,        0,         0,            0,            0,           NULL,      0        },
+	{ID_HEATER, GPIOC,       RELE_Pin,  GPIO_PIN_SET, GPIO_PIN_RESET, 0,         GPIOC,     LED_T_Pin}
 };
 
 task_actuator_dta_t task_actuator_dta_list[ACTUATOR_DTA_QTY];
@@ -131,6 +132,12 @@ void task_actuator_init(void *parameters)
 			HAL_Delay(500);
 			HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_3);
 			p_task_actuator_dta->state = ST_SERVO_POS_A;
+		}
+		else if (ID_HEATER == p_task_actuator_cfg->identifier)
+		{
+			HAL_GPIO_WritePin(p_task_actuator_cfg->gpio_port,  p_task_actuator_cfg->pin,  p_task_actuator_cfg->led_off);
+			HAL_GPIO_WritePin(p_task_actuator_cfg->gpio_port2, p_task_actuator_cfg->pin2, p_task_actuator_cfg->led_off);
+			p_task_actuator_dta->state = ST_HEATER_OFF;
 		}
 		else
 		{
@@ -255,6 +262,36 @@ void task_actuator_statechart(uint32_t index)
 					p_task_actuator_dta->state = ST_SERVO_POS_B;
 				else
 					p_task_actuator_dta->state = ST_SERVO_POS_A;
+			}
+
+			break;
+
+		/* ================================================================
+		 * HEATER — apagado (RELE + LED_T indicador apagados)
+		 * ================================================================ */
+		case ST_HEATER_OFF:
+
+			if ((true == p_task_actuator_dta->flag) && (EV_HEATER_ON == p_task_actuator_dta->event))
+			{
+				p_task_actuator_dta->flag = false;
+				HAL_GPIO_WritePin(p_task_actuator_cfg->gpio_port,  p_task_actuator_cfg->pin,  p_task_actuator_cfg->led_on);
+				HAL_GPIO_WritePin(p_task_actuator_cfg->gpio_port2, p_task_actuator_cfg->pin2, p_task_actuator_cfg->led_on);
+				p_task_actuator_dta->state = ST_HEATER_ON;
+			}
+
+			break;
+
+		/* ================================================================
+		 * HEATER — encendido (RELE + LED_T indicador encendidos)
+		 * ================================================================ */
+		case ST_HEATER_ON:
+
+			if ((true == p_task_actuator_dta->flag) && (EV_HEATER_OFF == p_task_actuator_dta->event))
+			{
+				p_task_actuator_dta->flag = false;
+				HAL_GPIO_WritePin(p_task_actuator_cfg->gpio_port,  p_task_actuator_cfg->pin,  p_task_actuator_cfg->led_off);
+				HAL_GPIO_WritePin(p_task_actuator_cfg->gpio_port2, p_task_actuator_cfg->pin2, p_task_actuator_cfg->led_off);
+				p_task_actuator_dta->state = ST_HEATER_OFF;
 			}
 
 			break;

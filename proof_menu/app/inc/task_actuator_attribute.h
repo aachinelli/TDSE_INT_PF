@@ -50,7 +50,9 @@ typedef enum task_actuator_ev {EV_LED_IDLE,
 							   EV_LED_ACTIVE,
 							   EV_SERVO_POS_A,    /* Mover servo a 45°  */
 							   EV_SERVO_POS_B,    /* Mover servo a 135° */
-							   EV_SERVO_CENTER     /* Mover servo a 90°  */
+							   EV_SERVO_CENTER,    /* Mover servo a 90°  */
+							   EV_HEATER_OFF,      /* Apagar calefactor (LED_T + RELE) */
+							   EV_HEATER_ON        /* Encender calefactor (LED_T + RELE) */
 							   } task_actuator_ev_t;
 
 /* States of Task Actuator */
@@ -58,12 +60,15 @@ typedef enum task_actuator_st {ST_LED_IDLE,
 							   ST_LED_ACTIVE,
 							   ST_SERVO_POS_A,    /* Servo en 45°, PWM apagado  */
 							   ST_SERVO_POS_B,    /* Servo en 135°, PWM apagado */
-							   ST_SERVO_MOVING    /* Servo en movimiento, espera llegar */
+							   ST_SERVO_MOVING,   /* Servo en movimiento, espera llegar */
+							   ST_HEATER_OFF,     /* Calefactor apagado */
+							   ST_HEATER_ON       /* Calefactor encendido */
 							   } task_actuator_st_t;
 
 /* Identifier of Task Actuator */
 typedef enum task_actuator_id {ID_LED_A,
-							   ID_SERVO} task_actuator_id_t;
+							   ID_SERVO,
+							   ID_HEATER} task_actuator_id_t;
 
 typedef struct
 {
@@ -73,6 +78,8 @@ typedef struct
 	GPIO_PinState		led_on;
 	GPIO_PinState		led_off;
 	uint32_t			tick_max;
+	GPIO_TypeDef *		gpio_port2;  /* Segundo pin opcional (p.ej. indicador LED_T del heater) */
+	uint16_t			pin2;        /* NULL/0 si no se usa */
 } task_actuator_cfg_t;
 
 typedef struct

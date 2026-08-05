@@ -1,0 +1,570 @@
+/*
+ * Copyright (c) 2026 Juan Manuel Cruz <jcruz@fi.uba.ar> <jcruz@frba.utn.edu.ar>.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+ * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author : Juan Manuel Cruz <jcruz@fi.uba.ar> <jcruz@frba.utn.edu.ar>
+ */
+
+/********************** inclusions *******************************************/
+/* Project includes */
+#include "main.h"
+#include <string.h>
+
+/* Demo includes */
+#include "logger.h"
+#include "dwt.h"
+
+/* Application & Tasks includes */
+#include "board.h"
+#include "app.h"
+#include "task_system_attribute.h"
+#include "task_system_interface.h"
+#include "task_sensor_attribute.h"
+
+/********************** macros and definitions *******************************/
+#define DEL_BTN_MIN		0ul
+#define DEL_BTN_MED		25ul
+#define DEL_BTN_MAX		50ul
+
+#define SENSOR_CFG_QTY		(sizeof(task_sensor_cfg_list)/sizeof(task_sensor_cfg_t))
+#define SENSOR_DTA_QTY		SENSOR_CFG_QTY
+
+/* ---------------------------------------------------------------------------
+ * DHT22 (Temperatura / Humedad)
+ * ------------------------------------------------------------------------ */
+extern TIM_HandleTypeDef htim3;
+
+#define DHT22_PORT				Dht22_GPIO_Port
+#define DHT22_PIN				Dht22_Pin
+
+/* Periodo entre muestreos: 2000 ticks de 1ms = 2s (minimo recomendado por el sensor) */
+#define DHT22_SAMPLE_PERIOD_TICKS		2000ul
+
+/* Fase de trigger: linea en LOW durante 20ms (20 ticks) */
+#define DHT22_TRIGGER_LOW_TICKS			20ul
+
+/* Espera fija tras soltar la linea, en OUTPUT, antes de pasar a INPUT (~5us, protocolo fijo) */
+#define DHT22_TRIGGER_HIGH_US			5u
+
+/* Espera fija ya en INPUT, antes de empezar a escuchar la respuesta */
+#define DHT22_LISTEN_DELAY_US			5u
+
+/* Timeouts */
+#define DHT22_RESPONSE_TIMEOUT_TICKS	50ul
+#define DHT22_BIT_TIMEOUT_TICKS		50ul
+
+/* Umbral para distinguir bit 0 (~26-28us en HIGH) de bit 1 (~70us en HIGH) */
+#define DHT22_BIT_THRESHOLD_US			40u
+
+/* Ventana de polling por flanco: 1000us cubre el retraso acumulado entre ticks */
+#define DHT22_ACTIVE_POLL_WINDOW_US		1000u
+
+/********************** internal data declaration ****************************/
+/*const task_sensor_cfg_t task_sensor_cfg_list[] = {
+	{ID_BTN_A,    BTN_A_PORT,    BTN_A_PIN,   BTN_A_PRESSED,   DEL_BTN_MAX, EV_SYS_IDLE, EV_SYS_BTN_A},
+	{ID_BTN_ENT,  BTN_ENT_PORT,  BTN_ENT_PIN, BTN_ENT_PRESSED, DEL_BTN_MAX, EV_SYS_IDLE, EV_SYS_ENTER},
+	{ID_BTN_NEX,  BTN_NEX_PORT,  BTN_NEX_PIN, BTN_NEX_PRESSED, DEL_BTN_MAX, EV_SYS_IDLE, EV_SYS_NEXT},
+	{ID_BTN_ESC,  BTN_ESC_PORT,  BTN_ESC_PIN, BTN_ESC_PRESSED, DEL_BTN_MAX, EV_SYS_IDLE, EV_SYS_ESCAPE}
+};*/
+
+const task_sensor_cfg_t task_sensor_cfg_list[] = {
+	{ID_BTN_UP,    BTN_UP_PORT,    BTN_UP_PIN,    BTN_UP_PRESSED,    DEL_BTN_MAX, EV_SYS_IDLE, EV_SYS_UP},
+	{ID_BTN_DOWN,  BTN_DOWN_PORT,  BTN_DOWN_PIN,  BTN_DOWN_PRESSED,  DEL_BTN_MAX, EV_SYS_IDLE, EV_SYS_DOWN},
+	{ID_BTN_ENTER, BTN_ENTER_PORT, BTN_ENTER_PIN, BTN_ENTER_PRESSED, DEL_BTN_MAX, EV_SYS_IDLE, EV_SYS_ENTER},
+	{ID_BTN_BACK,  BTN_BACK_PORT,  BTN_BACK_PIN,  BTN_BACK_PRESSED,  DEL_BTN_MAX, EV_SYS_IDLE, EV_SYS_BACK}
+};
+
+task_sensor_dta_t task_sensor_dta_list[SENSOR_DTA_QTY];
+
+/* Instancia unica de datos del DHT22 */
+task_dht22_dta_t task_dht22_dta;
+
+/********************** internal functions declaration ***********************/
+void task_sensor_statechart(uint32_t index);
+
+static void dht22_set_pin_output(void);
+static void dht22_set_pin_input(void);
+static uint32_t dht22_now_us(void);
+static uint32_t dht22_elapsed_us(uint32_t since);
+static void task_dht22_statechart(void);
+
+/********************** internal data definition *****************************/
+const char *p_task_sensor 		= "Task Sensor (Sensor Statechart)";
+const char *p_task_sensor_ 		= "Non-Blocking Code";
+const char *p_task_sensor__ 	= "(Update by Time Code, period = 1mS)";
+
+/********************** external data declaration ****************************/
+
+/********************** external functions definition ************************/
+void task_sensor_init(void *parameters)
+{
+	uint32_t index;
+	task_sensor_dta_t *p_task_sensor_dta;
+	task_sensor_st_t state;
+	task_sensor_ev_t event;
+
+	/* Print out: Task Initialized */
+	LOGGER_INFO(" ");
+	LOGGER_INFO("  %s is running - Tick [mS] = %lu", GET_NAME(task_sensor_init), HAL_GetTick());
+	LOGGER_INFO("   %s is a %s", GET_NAME(task_sensor), p_task_sensor);
+	LOGGER_INFO("   %s is a %s", GET_NAME(task_sensor), p_task_sensor_);
+	LOGGER_INFO("   %s is a %s", GET_NAME(task_sensor), p_task_sensor__);
+
+	for (index = 0; SENSOR_DTA_QTY > index; index++)
+	{
+		/* Update Task Sensor Data Pointer */
+		p_task_sensor_dta = &task_sensor_dta_list[index];
+
+		/* Init & Print out: Index & Task execution FSM */
+		state = ST_BTN_UP;
+		p_task_sensor_dta->state = state;
+
+		event = EV_BTN_UP;
+		p_task_sensor_dta->event = event;
+
+		LOGGER_INFO(" ");
+		LOGGER_INFO("   %s = %lu   %s = %lu   %s = %lu",
+				    GET_NAME(index), index,
+					GET_NAME(state), (uint32_t)state,
+					GET_NAME(event), (uint32_t)event);
+	}
+
+	/* --- Inicializacion del DHT22 --- */
+	/* Pin en reposo: INPUT con pull-up (linea en HIGH, igual que el reposo del bus 1-wire) */
+	dht22_set_pin_input();
+
+	memset(&task_dht22_dta, 0, sizeof(task_dht22_dta));
+	task_dht22_dta.state = ST_DHT_IDLE;
+	task_dht22_dta.tick  = DHT22_SAMPLE_PERIOD_TICKS;
+
+	LOGGER_INFO(" ");
+	LOGGER_INFO("   DHT22 (PA9) inicializado - primer muestreo en %lu ms",
+			    (uint32_t)DHT22_SAMPLE_PERIOD_TICKS);
+}
+
+void task_sensor_update(void *parameters)
+{
+	uint32_t index;
+
+	for (index = 0; SENSOR_DTA_QTY > index; index++)
+	{
+		/* Run Task Statechart */
+		task_sensor_statechart(index);
+	}
+
+	/* Run DHT22 Statechart (una transicion como maximo por tick) */
+	task_dht22_statechart();
+}
+
+void task_sensor_statechart(uint32_t index)
+{
+	const task_sensor_cfg_t *p_task_sensor_cfg;
+	task_sensor_dta_t *p_task_sensor_dta;
+
+	for (index = 0; SENSOR_DTA_QTY > index; index++)
+	{
+		/* Update Task Sensor Configuration & Data Pointer */
+		p_task_sensor_cfg = &task_sensor_cfg_list[index];
+		p_task_sensor_dta = &task_sensor_dta_list[index];
+
+		if (p_task_sensor_cfg->pressed == HAL_GPIO_ReadPin(p_task_sensor_cfg->gpio_port, p_task_sensor_cfg->pin))
+		{
+			p_task_sensor_dta->event =	EV_BTN_DOWN;
+		}
+		else
+		{
+			p_task_sensor_dta->event =	EV_BTN_UP;
+		}
+
+		switch (p_task_sensor_dta->state)
+		{
+			case ST_BTN_UP:
+
+				if (EV_BTN_DOWN == p_task_sensor_dta->event)
+				{
+					p_task_sensor_dta->tick = p_task_sensor_cfg->tick_max;
+					p_task_sensor_dta->state = ST_BTN_FALLING;
+				}
+
+				break;
+
+			case ST_BTN_FALLING:
+
+				p_task_sensor_dta->tick--;
+				if (DEL_BTN_MIN == p_task_sensor_dta->tick)
+				{
+					if (EV_BTN_DOWN == p_task_sensor_dta->event)
+					{
+						put_event_task_system(p_task_sensor_cfg->signal_down);
+						p_task_sensor_dta->state = ST_BTN_DOWN;
+					}
+					else
+					{
+						p_task_sensor_dta->state = ST_BTN_UP;
+					}
+				}
+
+				break;
+
+			case ST_BTN_DOWN:
+
+				if (EV_BTN_UP == p_task_sensor_dta->event)
+				{
+					p_task_sensor_dta->state = ST_BTN_RISING;
+					p_task_sensor_dta->tick = p_task_sensor_cfg->tick_max;
+				}
+
+				break;
+
+			case ST_BTN_RISING:
+
+				p_task_sensor_dta->tick--;
+				if (DEL_BTN_MIN == p_task_sensor_dta->tick)
+				{
+					if (EV_BTN_UP == p_task_sensor_dta->event)
+					{
+						put_event_task_system(p_task_sensor_cfg->signal_up);
+						p_task_sensor_dta->state = ST_BTN_UP;
+					}
+					else
+					{
+						p_task_sensor_dta->state = ST_BTN_DOWN;
+					}
+				}
+
+				break;
+
+			default:
+
+				p_task_sensor_dta->tick  = DEL_BTN_MIN;
+				p_task_sensor_dta->state = ST_BTN_UP;
+				p_task_sensor_dta->event = EV_BTN_UP;
+
+			break;
+		}
+	}
+}
+
+/* ---------------------------------------------------------------------------
+ * DHT22 - Funciones de soporte
+ * ------------------------------------------------------------------------ */
+
+/* Reconfigura el pin como salida open-drain (para el trigger) */
+static void dht22_set_pin_output(void)
+{
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+	GPIO_InitStruct.Pin   = DHT22_PIN;
+	GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_OD;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	GPIO_InitStruct.Pull  = GPIO_NOPULL;
+	HAL_GPIO_Init(DHT22_PORT, &GPIO_InitStruct);
+}
+
+/* Reconfigura el pin como entrada con pull-up (reposo / lectura de respuesta y bits) */
+static void dht22_set_pin_input(void)
+{
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+	GPIO_InitStruct.Pin  = DHT22_PIN;
+	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+	GPIO_InitStruct.Pull = GPIO_PULLUP;
+	HAL_GPIO_Init(DHT22_PORT, &GPIO_InitStruct);
+}
+
+/* Valor actual del contador libre-corriente de TIM3 (1 cuenta = 1us) */
+static uint32_t dht22_now_us(void)
+{
+	return __HAL_TIM_GET_COUNTER(&htim3);
+}
+
+/* Tiempo transcurrido en us desde un snapshot previo, contemplando overflow del timer (16 bits) */
+static uint32_t dht22_elapsed_us(uint32_t since)
+{
+	uint32_t now = dht22_now_us();
+	return (uint32_t)((uint16_t)(now - since));
+}
+
+/* ---------------------------------------------------------------------------
+ * DHT22 - Maquina de estados (no bloqueante, 1 transicion como maximo por tick)
+ * ------------------------------------------------------------------------ */
+static void task_dht22_statechart(void)
+{
+	switch (task_dht22_dta.state)
+	{
+		/* ============================================================
+		 * REPOSO: cuenta ticks de 1ms hasta el proximo muestreo
+		 * ============================================================ */
+		case ST_DHT_IDLE:
+
+			if (task_dht22_dta.tick > 0)
+			{
+				task_dht22_dta.tick--;
+			}
+			else
+			{
+				/* Arranca un nuevo ciclo de lectura */
+				task_dht22_dta.bit_index = 0;
+				memset(task_dht22_dta.dht_bits, 0, sizeof(task_dht22_dta.dht_bits));
+
+				dht22_set_pin_output();
+				HAL_GPIO_WritePin(DHT22_PORT, DHT22_PIN, GPIO_PIN_RESET);
+
+				task_dht22_dta.tick  = DHT22_TRIGGER_LOW_TICKS;
+				task_dht22_dta.state = ST_DHT_TRIGGER_LOW;
+			}
+			break;
+
+		/* ============================================================
+		 * TRIGGER LOW: mantiene la linea baja 20ms (20 ticks de 1ms)
+		 * ============================================================ */
+		case ST_DHT_TRIGGER_LOW:
+
+			if (task_dht22_dta.tick > 0)
+			{
+				task_dht22_dta.tick--;
+			}
+			else
+			{
+				/* Suelta la linea (sigue en OUTPUT open-drain) */
+				HAL_GPIO_WritePin(DHT22_PORT, DHT22_PIN, GPIO_PIN_SET);
+				task_dht22_dta.state = ST_DHT_TRIGGER_HIGH;
+			}
+			break;
+
+		/* ============================================================
+		 * TRIGGER HIGH + RESPONSE: suelta la linea, espera la
+		 * respuesta completa del sensor (LOW 80us + HIGH 80us) tod
+		 * en una sola llamada con polling activo para no perder el
+		 * handshake que ocurre en ~160us.
+		 * ============================================================ */
+		case ST_DHT_TRIGGER_HIGH:
+		{
+			uint32_t t0;
+			uint32_t poll_start;
+			bool ok = false;
+
+			/* 5us restantes en OUTPUT open-drain */
+			t0 = dht22_now_us();
+			while ((uint32_t)((uint16_t)(dht22_now_us() - t0)) < DHT22_TRIGGER_HIGH_US);
+
+			/* Cambia a INPUT */
+			dht22_set_pin_input();
+
+			/* 25us de listen delay */
+			t0 = dht22_now_us();
+			while ((uint32_t)((uint16_t)(dht22_now_us() - t0)) < DHT22_LISTEN_DELAY_US);
+
+			/* Esperar que el sensor baje la linea (~80us LOW) */
+			poll_start = dht22_now_us();
+			ok = false;
+			while ((uint32_t)((uint16_t)(dht22_now_us() - poll_start)) < DHT22_ACTIVE_POLL_WINDOW_US)
+			{
+				if (GPIO_PIN_RESET == HAL_GPIO_ReadPin(DHT22_PORT, DHT22_PIN))
+				{
+					ok = true;
+					break;
+				}
+			}
+
+			if (!ok) { task_dht22_dta.state = ST_DHT_ERROR; break; }
+
+			/* Esperar que el sensor suelte la linea (~80us HIGH) */
+			poll_start = dht22_now_us();
+			ok = false;
+			while ((uint32_t)((uint16_t)(dht22_now_us() - poll_start)) < DHT22_ACTIVE_POLL_WINDOW_US)
+			{
+				if (GPIO_PIN_SET == HAL_GPIO_ReadPin(DHT22_PORT, DHT22_PIN))
+				{
+					ok = true;
+					break;
+				}
+			}
+
+			if (!ok) { task_dht22_dta.state = ST_DHT_ERROR; break; }
+
+			/* Respuesta OK: arrancar lectura de bits */
+			task_dht22_dta.tick  = 0;
+			task_dht22_dta.state = ST_DHT_WAIT_BIT_START;
+			break;
+		}
+
+		/* ============================================================
+		 * Espera inicio de bit (LOW->HIGH) y mide su ancho en HIGH,
+		 * tod en una sola llamada para no perder el pulso de 26-70us.
+		 * ============================================================ */
+		case ST_DHT_WAIT_BIT_START:
+		{
+			uint32_t poll_start = dht22_now_us();
+			bool detected = false;
+
+			/* Primero asegurarse de que el pin esté en LOW
+			 * (puede que llegue aquí con el pin todavía en HIGH
+			 * desde la respuesta del sensor o el bit anterior) */
+			while ((uint32_t)((uint16_t)(dht22_now_us() - poll_start)) < DHT22_ACTIVE_POLL_WINDOW_US)
+			{
+				if (GPIO_PIN_RESET == HAL_GPIO_ReadPin(DHT22_PORT, DHT22_PIN))
+				{
+					detected = true;
+					break;
+				}
+			}
+
+			if (!detected) {
+				task_dht22_dta.tick++;
+				if (task_dht22_dta.tick >= DHT22_BIT_TIMEOUT_TICKS)
+					task_dht22_dta.state = ST_DHT_ERROR;
+				break;
+			}
+
+			/* Ahora esperar el flanco LOW->HIGH (inicio real del bit) */
+			poll_start = dht22_now_us();
+			detected = false;
+			while ((uint32_t)((uint16_t)(dht22_now_us() - poll_start)) < DHT22_ACTIVE_POLL_WINDOW_US)
+			{
+				if (GPIO_PIN_SET == HAL_GPIO_ReadPin(DHT22_PORT, DHT22_PIN))
+				{
+					detected = true;
+					break;
+				}
+			}
+
+			if (!detected) {
+				task_dht22_dta.tick++;
+				if (task_dht22_dta.tick >= DHT22_BIT_TIMEOUT_TICKS)
+					task_dht22_dta.state = ST_DHT_ERROR;
+				break;
+			}
+
+			/* Capturar timestamp del flanco y esperar el flanco HIGH->LOW */
+			uint32_t edge = dht22_now_us();
+			poll_start = dht22_now_us();
+			detected = false;
+
+			while ((uint32_t)((uint16_t)(dht22_now_us() - poll_start)) < DHT22_ACTIVE_POLL_WINDOW_US)
+			{
+				if (GPIO_PIN_RESET == HAL_GPIO_ReadPin(DHT22_PORT, DHT22_PIN))
+				{
+					detected = true;
+					break;
+				}
+			}
+
+			if (!detected) {
+				task_dht22_dta.tick++;
+				if (task_dht22_dta.tick >= DHT22_BIT_TIMEOUT_TICKS)
+					task_dht22_dta.state = ST_DHT_ERROR;
+				break;
+			}
+
+			/* Medir ancho y registrar bit */
+			uint32_t width_us = dht22_elapsed_us(edge);
+			task_dht22_dta.dht_bits[task_dht22_dta.bit_index] =
+					(width_us >= DHT22_BIT_THRESHOLD_US) ? 1u : 0u;
+
+			task_dht22_dta.bit_index++;
+			task_dht22_dta.tick = 0;
+
+			if (DHT22_BIT_QTY <= task_dht22_dta.bit_index)
+				task_dht22_dta.state = ST_DHT_DONE;
+
+			break;
+		}
+
+		/* ============================================================
+		 * Trama completa: arma los 5 bytes, valida checksum y publica
+		 * ============================================================ */
+		case ST_DHT_DONE:
+		{
+			uint8_t i;
+			uint8_t byte_val;
+
+			task_dht22_dta.Rh_byte1   = 0;
+			task_dht22_dta.Rh_byte2   = 0;
+			task_dht22_dta.Temp_byte1 = 0;
+			task_dht22_dta.Temp_byte2 = 0;
+			task_dht22_dta.SUM        = 0;
+
+			for (i = 0; DHT22_BIT_QTY > i; i++)
+			{
+				byte_val = (uint8_t)(i / 8u);
+				uint8_t bit_pos = (uint8_t)(7u - (i % 8u));
+				uint8_t bit_val = task_dht22_dta.dht_bits[i];
+
+				switch (byte_val)
+				{
+					case 0: task_dht22_dta.Rh_byte1   |= (uint8_t)(bit_val << bit_pos); break;
+					case 1: task_dht22_dta.Rh_byte2   |= (uint8_t)(bit_val << bit_pos); break;
+					case 2: task_dht22_dta.Temp_byte1 |= (uint8_t)(bit_val << bit_pos); break;
+					case 3: task_dht22_dta.Temp_byte2 |= (uint8_t)(bit_val << bit_pos); break;
+					case 4: task_dht22_dta.SUM        |= (uint8_t)(bit_val << bit_pos); break;
+					default: break;
+				}
+			}
+
+			uint8_t checksum = (uint8_t)(task_dht22_dta.Rh_byte1 + task_dht22_dta.Rh_byte2
+					+ task_dht22_dta.Temp_byte1 + task_dht22_dta.Temp_byte2);
+
+			if (checksum == task_dht22_dta.SUM)
+			{
+				uint16_t raw_temp = (uint16_t)((task_dht22_dta.Temp_byte1 << 8) | task_dht22_dta.Temp_byte2);
+				uint16_t raw_hum  = (uint16_t)((task_dht22_dta.Rh_byte1   << 8) | task_dht22_dta.Rh_byte2);
+
+				task_dht22_dta.Temperature = (float)(raw_temp / 10.0f);
+				task_dht22_dta.Humidity    = (float)(raw_hum  / 10.0f);
+				task_dht22_dta.data_valid  = true;
+			}
+			else
+			{
+				task_dht22_dta.data_valid = false;
+			}
+
+			task_dht22_dta.tick  = DHT22_SAMPLE_PERIOD_TICKS;
+			task_dht22_dta.state = ST_DHT_IDLE;
+			break;
+		}
+
+		/* ============================================================
+		 * ERROR: timeout de respuesta o de algun bit. Vuelve a IDLE.
+		 * ============================================================ */
+		case ST_DHT_ERROR:
+
+			task_dht22_dta.data_valid = false;
+			task_dht22_dta.tick  = DHT22_SAMPLE_PERIOD_TICKS;
+			task_dht22_dta.state = ST_DHT_IDLE;
+			break;
+
+		default:
+
+			task_dht22_dta.state = ST_DHT_IDLE;
+			task_dht22_dta.tick  = DHT22_SAMPLE_PERIOD_TICKS;
+			break;
+	}
+}
+
+/********************** end of file ******************************************/

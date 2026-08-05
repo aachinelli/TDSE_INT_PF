@@ -50,6 +50,7 @@
 #include "task_display_interface.h"
 #include "task_system_attribute.h"
 #include "task_system_interface.h"
+#include "task_sensor_attribute.h"
 
 /********************** macros and definitions *******************************/
 #define DEL_SYS_MIN     0ul
@@ -80,10 +81,10 @@
 #define SERVO_ROTATION_TICKS        4000ul
 
 /* Días con rotación activa (primeros 18 días) */
-#define SERVO_ACTIVE_DAYS           5ul
+#define SERVO_ACTIVE_DAYS           18ul
 
 /* Días mínimos configurados para que el servo se active */
-#define SERVO_MIN_CFG_DAYS          8ul
+#define SERVO_MIN_CFG_DAYS          22ul
 
 #define SYSTEM_DTA_QTY  1ul
 
@@ -104,6 +105,9 @@ static uint32_t incubation_target_seconds = 0;
 /* Contador de ticks para actualización periódica de pantalla */
 static uint32_t incubation_tick_cnt = 0;
 
+/* Contador de refrescos de pantalla, para alternar linea 1 cada 3 (3s) */
+static uint8_t display_alt_cnt = 0;
+
 /* Contador de ticks para rotación del servo */
 static uint32_t servo_tick_cnt = 0;
 
@@ -112,6 +116,13 @@ static bool servo_pos_b = false;
 
 /* Flag: el servo solo se mueve cuando la incubación está activa */
 static bool servo_active = false;
+
+/* Histéresis del control de temperatura: enciende por debajo de
+ * (cfg_temp - HEATER_HYSTERESIS) y apaga al alcanzar cfg_temp */
+#define HEATER_HYSTERESIS      1
+
+/* Estado actual conocido del calefactor (evita reenviar el mismo evento) */
+static bool heater_on = false;
 
 /********************** internal functions declaration ***********************/
 static void task_system_statechart(void);
@@ -246,29 +257,60 @@ static void incubation_start(void)
                               + ((uint32_t)cfg_days  * 24ul)
                               + ((uint32_t)cfg_hours * 1ul);
     incubation_tick_cnt = INCUBATION_UPDATE_TICKS; /* fuerza update inmediato */
+    display_alt_cnt = 0; /* arranca mostrando el temporizador */
 
     /* Inicializar servo en posición A y arrancar contador */
     servo_tick_cnt = SERVO_ROTATION_TICKS;
     servo_pos_b    = false;
     servo_active   = true;
+
+    /* Calefactor arranca apagado (coincide con estado inicial del actuador) */
+    heater_on = false;
 }
 
-/* Muestra el tiempo restante en pantalla */
+/* Muestra "EN PROCESO" fijo, y alterna en la linea 1 entre tiempo restante
+ * y temperatura/humedad cada 3 refrescos (3 segundos, ya que esta funcion
+ * se llama cada INCUBATION_UPDATE_TICKS = 1s) */
 static void display_incubating(void)
 {
     char buf[20];
-    uint32_t now = rtc_get_seconds();
-    uint32_t remaining = 0;
-
-    if (incubation_target_seconds > now)
-        remaining = incubation_target_seconds - now;
-
-    uint32_t days_left  = remaining / 24ul;
-    uint32_t hours_left = (remaining % 24ul) / 1ul;
 
     put_event_task_display(0, 0, "   EN PROCESO   ");
-    snprintf(buf, sizeof(buf), "D:%2u  H:%2u      ", (unsigned)days_left, (unsigned)hours_left);
+
+    /* Alterna cada 3 llamadas: 0,1 -> tiempo | 2 -> clima */
+    if (display_alt_cnt < 2)
+    {
+        uint32_t now = rtc_get_seconds();
+        uint32_t remaining = 0;
+
+        if (incubation_target_seconds > now)
+            remaining = incubation_target_seconds - now;
+
+        uint32_t days_left  = remaining / 24ul;
+        uint32_t hours_left = (remaining % 24ul) / 1ul;
+
+        snprintf(buf, sizeof(buf), "D:%2u  H:%2u      ", (unsigned)days_left, (unsigned)hours_left);
+    }
+    else
+    {
+        if (task_dht22_dta.data_valid)
+        {
+            snprintf(buf, sizeof(buf), "T:%2u%cC  H:%2u%%   ",
+                     (unsigned)task_dht22_dta.Temperature, 0xDF,
+                     (unsigned)task_dht22_dta.Humidity);
+        }
+        else
+        {
+            snprintf(buf, sizeof(buf), "   LEYENDO...   ");
+        }
+    }
     put_event_task_display(0, 1, buf);
+
+    display_alt_cnt++;
+    if (display_alt_cnt >= 3)
+    {
+        display_alt_cnt = 0;
+    }
 }
 
 /* Statechart principal --------------------------------------------------- */
@@ -497,6 +539,21 @@ static void task_system_statechart(void)
 
             p_task_system_dta->flag = false;
 
+            /* --- Control del calefactor (LED_T + RELE) con histéresis --- */
+            if (task_dht22_dta.data_valid)
+            {
+                if ((!heater_on) && (task_dht22_dta.Temperature < (cfg_temp - HEATER_HYSTERESIS)))
+                {
+                    put_event_task_actuator(EV_HEATER_ON, ID_HEATER);
+                    heater_on = true;
+                }
+                else if (heater_on && (task_dht22_dta.Temperature >= cfg_temp))
+                {
+                    put_event_task_actuator(EV_HEATER_OFF, ID_HEATER);
+                    heater_on = false;
+                }
+            }
+
             /* --- Control del servo --- */
             if (servo_active && cfg_days >= SERVO_MIN_CFG_DAYS)
             {
@@ -549,9 +606,14 @@ static void task_system_statechart(void)
 
                 if (rtc_get_seconds() >= incubation_target_seconds)
                 {
-                    /* Tiempo cumplido: detener servo y avisar */
+                    /* Tiempo cumplido: detener servo, apagar calefactor y avisar */
                     servo_active = false;
                     put_event_task_actuator(EV_SERVO_CENTER, ID_SERVO);
+                    if (heater_on)
+                    {
+                        put_event_task_actuator(EV_HEATER_OFF, ID_HEATER);
+                        heater_on = false;
+                    }
                     p_task_system_dta->state = ST_SYS_FINISHED;
                     put_event_task_display(0, 0, "  INCUBACION    ");
                     put_event_task_display(0, 1, "  FINALIZADA!   ");
