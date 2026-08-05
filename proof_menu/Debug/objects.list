@@ -30,6 +30,7 @@
 "./app/src/task_actuator_interface.o"
 "./app/src/task_display.o"
 "./app/src/task_display_interface.o"
+"./app/src/task_memory.o"
 "./app/src/task_sensor.o"
 "./app/src/task_system.o"
 "./app/src/task_system_interface.o"

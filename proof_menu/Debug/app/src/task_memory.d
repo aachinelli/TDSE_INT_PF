@@ -1,4 +1,4 @@
-app/src/task_system.o: ../app/src/task_system.c ../Core/Inc/main.h \
+app/src/task_memory.o: ../app/src/task_memory.c ../Core/Inc/main.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h \
  ../Core/Inc/stm32f1xx_hal_conf.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc.h \
@@ -28,11 +28,9 @@ app/src/task_system.o: ../app/src/task_system.c ../Core/Inc/main.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h \
  ../app/inc/logger.h ../app/inc/dwt.h ../app/inc/board.h ../app/inc/app.h \
- ../app/inc/task_actuator_attribute.h \
- ../app/inc/task_actuator_interface.h ../app/inc/task_display_attribute.h \
- ../app/inc/task_display_interface.h ../app/inc/task_system_attribute.h \
- ../app/inc/task_system_interface.h ../app/inc/task_sensor_attribute.h \
- ../app/inc/task_memory_attribute.h ../app/inc/task_memory_interface.h
+ ../app/inc/task_memory_attribute.h ../app/inc/task_memory_interface.h \
+ ../app/inc/task_memory.h ../app/inc/task_memory_attribute.h \
+ ../app/inc/task_memory_interface.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
 ../Core/Inc/stm32f1xx_hal_conf.h:
@@ -66,12 +64,8 @@ app/src/task_system.o: ../app/src/task_system.c ../Core/Inc/main.h \
 ../app/inc/dwt.h:
 ../app/inc/board.h:
 ../app/inc/app.h:
-../app/inc/task_actuator_attribute.h:
-../app/inc/task_actuator_interface.h:
-../app/inc/task_display_attribute.h:
-../app/inc/task_display_interface.h:
-../app/inc/task_system_attribute.h:
-../app/inc/task_system_interface.h:
-../app/inc/task_sensor_attribute.h:
+../app/inc/task_memory_attribute.h:
+../app/inc/task_memory_interface.h:
+../app/inc/task_memory.h:
 ../app/inc/task_memory_attribute.h:
 ../app/inc/task_memory_interface.h:

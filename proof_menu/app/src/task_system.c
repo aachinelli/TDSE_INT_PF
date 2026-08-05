@@ -51,6 +51,8 @@
 #include "task_system_attribute.h"
 #include "task_system_interface.h"
 #include "task_sensor_attribute.h"
+#include "task_memory_attribute.h"
+#include "task_memory_interface.h"
 
 /********************** macros and definitions *******************************/
 #define DEL_SYS_MIN     0ul
@@ -124,10 +126,16 @@ static bool servo_active = false;
 /* Estado actual conocido del calefactor (evita reenviar el mismo evento) */
 static bool heater_on = false;
 
+/* Cursor del submenú de NUEVO INICIO: 0=AJUSTAR, 1..3=PRESET 1..3 */
+#define NEW_MENU_OPT_ADJUST     0u
+#define NEW_MENU_OPT_QTY        (1u + MEMORY_PRESET_QTY)
+static uint8_t new_menu_cursor = NEW_MENU_OPT_ADJUST;
+
 /********************** internal functions declaration ***********************/
 static void task_system_statechart(void);
 static void display_main_new(void);
 static void display_main_cont(void);
+static void display_new_menu(void);
 static void display_set_temp(void);
 static void display_set_hum(void);
 static void display_set_days(void);
@@ -202,6 +210,39 @@ static void display_main_cont(void)
 {
     put_event_task_display(0, 0, " NUEVO INICIO   ");
     put_event_task_display(0, 1, ">CONTINUAR      ");
+}
+
+/* Muestra 2 opciones a la vez (línea 0 = actual, línea 1 = siguiente),
+ * con el cursor '>' siempre en la línea 0. Al llegar a la última opción,
+ * la línea 1 queda en blanco. */
+static void display_new_menu(void)
+{
+    char line0[20];
+    char line1[20];
+
+    switch (new_menu_cursor)
+    {
+        case NEW_MENU_OPT_ADJUST:
+            snprintf(line0, sizeof(line0), ">AJUSTAR        ");
+            snprintf(line1, sizeof(line1), " PRESET 1       ");
+            break;
+        case 1u: /* PRESET 1 */
+            snprintf(line0, sizeof(line0), ">PRESET 1       ");
+            snprintf(line1, sizeof(line1), " PRESET 2       ");
+            break;
+        case 2u: /* PRESET 2 */
+            snprintf(line0, sizeof(line0), ">PRESET 2       ");
+            snprintf(line1, sizeof(line1), " PRESET 3       ");
+            break;
+        case 3u: /* PRESET 3 */
+        default:
+            snprintf(line0, sizeof(line0), ">PRESET 3       ");
+            snprintf(line1, sizeof(line1), "                ");
+            break;
+    }
+
+    put_event_task_display(0, 0, line0);
+    put_event_task_display(0, 1, line1);
 }
 
 static void display_set_temp(void)
@@ -362,14 +403,79 @@ static void task_system_statechart(void)
                 }
                 else if (EV_SYS_ENTER == p_task_system_dta->event)
                 {
-                    cfg_temp  = TEMP_DEFAULT;
-                    cfg_hum   = HUM_DEFAULT;
-                    cfg_days  = DAYS_DEFAULT;
-                    cfg_hours = HOURS_DEFAULT;
-                    p_task_system_dta->state = ST_SYS_SET_TEMP;
-                    display_set_temp();
+                    new_menu_cursor = NEW_MENU_OPT_ADJUST;
+                    p_task_system_dta->state = ST_SYS_NEW_MENU;
+                    display_new_menu();
                 }
                 /* UP y BACK no hacen nada en este estado */
+            }
+            break;
+
+        /* ================================================================
+         * SUBMENÚ DE NUEVO INICIO — AJUSTAR / PRESET 1 / 2 / 3
+         * UP/DOWN mueven el cursor; ENTER confirma; BACK vuelve al menú raíz.
+         * ================================================================ */
+        case ST_SYS_NEW_MENU:
+
+            if (p_task_system_dta->flag)
+            {
+                p_task_system_dta->flag = false;
+
+                if (EV_SYS_DOWN == p_task_system_dta->event)
+                {
+                    if (new_menu_cursor < (NEW_MENU_OPT_QTY - 1u)) new_menu_cursor++;
+                    display_new_menu();
+                }
+                else if (EV_SYS_UP == p_task_system_dta->event)
+                {
+                    if (new_menu_cursor > NEW_MENU_OPT_ADJUST) new_menu_cursor--;
+                    display_new_menu();
+                }
+                else if (EV_SYS_BACK == p_task_system_dta->event)
+                {
+                    p_task_system_dta->state = ST_SYS_MAIN_NEW;
+                    display_main_new();
+                }
+                else if (EV_SYS_ENTER == p_task_system_dta->event)
+                {
+                    if (NEW_MENU_OPT_ADJUST == new_menu_cursor)
+                    {
+                        /* AJUSTAR: mismo camino manual de siempre */
+                        cfg_temp  = TEMP_DEFAULT;
+                        cfg_hum   = HUM_DEFAULT;
+                        cfg_days  = DAYS_DEFAULT;
+                        cfg_hours = HOURS_DEFAULT;
+                        p_task_system_dta->state = ST_SYS_SET_TEMP;
+                        display_set_temp();
+                    }
+                    else
+                    {
+                        /* PRESET 1/2/3: cargar de EEPROM y arrancar directo */
+                        memory_preset_t preset;
+                        uint8_t preset_index = new_menu_cursor - 1u;
+
+                        if (task_memory_load_preset(preset_index, &preset))
+                        {
+                            cfg_temp  = preset.temp;
+                            cfg_hum   = preset.hum;
+                            cfg_days  = preset.days;
+                            cfg_hours = preset.hours;
+                        }
+                        else
+                        {
+                            /* Fallback si falla la lectura I2C: valores
+                             * por defecto, para no arrancar con basura */
+                            cfg_temp  = TEMP_DEFAULT;
+                            cfg_hum   = HUM_DEFAULT;
+                            cfg_days  = DAYS_DEFAULT;
+                            cfg_hours = HOURS_DEFAULT;
+                        }
+
+                        incubation_start();
+                        p_task_system_dta->state = ST_SYS_INCUBATING;
+                        display_incubating();
+                    }
+                }
             }
             break;
 
