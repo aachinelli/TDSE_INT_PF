@@ -62,11 +62,15 @@ extern "C" {
  * aunque el struct use solo unos pocos. Deja margen para crecer. */
 #define MEMORY_ADDR_MAGIC       0x0000u   /* 2 bytes: magic number       */
 #define MEMORY_ADDR_PRESET(i)   (EEPROM_PAGE_SIZE * (1u + (i)))  /* slots 1..3 */
-#define MEMORY_ADDR_LAST_CFG    (EEPROM_PAGE_SIZE * (1u + MEMORY_PRESET_QTY)) /* slot 4 */
+#define MEMORY_ADDR_RUNNING     (EEPROM_PAGE_SIZE * (1u + MEMORY_PRESET_QTY)) /* slot 4 */
 
 /* Valor mágico que indica "la EEPROM ya fue inicializada por este firmware".
  * Si al bootear no coincide, se asume EEPROM virgen y se graban los presets. */
 #define MEMORY_MAGIC_VALUE      0xCAFEu
+
+/* Valor mágico propio del slot de "incubación en curso": distingue una
+ * EEPROM recién provisionada (running.magic == 0) de un CONTINUAR válido. */
+#define MEMORY_RUNNING_MAGIC    0xBEEFu
 
 /********************** typedef **********************************************/
 /* Configuración de incubación guardable/cargable desde memoria */
@@ -77,6 +81,18 @@ typedef struct
 	uint8_t		days;
 	uint8_t		hours;
 } memory_preset_t;
+
+/* Snapshot de una incubación en curso, para recuperar tras un corte de
+ * energía. Como la placa no tiene respaldo (ni siquiera el RTC persiste),
+ * se guarda el tiempo RESTANTE (no un objetivo absoluto): al continuar,
+ * el cronómetro se reinicia desde ese remanente ("pausar y resumir"). */
+typedef struct
+{
+	uint16_t	magic;              /* MEMORY_RUNNING_MAGIC si hay datos válidos */
+	uint8_t		temp;
+	uint8_t		hum;
+	uint32_t	remaining_seconds;  /* tiempo restante al momento de guardar */
+} memory_running_t;
 
 /********************** external data declaration ****************************/
 

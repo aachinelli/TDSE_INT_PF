@@ -53,13 +53,19 @@ extern "C" {
  * EEPROM, en la estructura provista. Devuelve true si la lectura I2C fue ok. */
 extern bool task_memory_load_preset(uint8_t index, memory_preset_t *dst);
 
-/* Graba la configuración actual como "última config activa", para poder
- * retomarla luego con CONTINUAR. Devuelve true si la escritura I2C fue ok. */
-extern bool task_memory_save_last_cfg(const memory_preset_t *src);
+/* Guarda un snapshot de la incubación en curso (para poder recuperarla
+ * con CONTINUAR tras un corte de energía). Sobrescribe siempre el mismo
+ * slot. Devuelve true si la escritura I2C fue ok. */
+extern bool task_memory_save_running(uint8_t temp, uint8_t hum, uint32_t remaining_seconds);
 
-/* Lee la "última config activa" guardada por CONTINUAR.
- * Devuelve false si no hay ninguna (EEPROM recién inicializada) o falla I2C. */
-extern bool task_memory_load_last_cfg(memory_preset_t *dst);
+/* Lee el snapshot de incubación en curso. Devuelve true solo si la
+ * lectura I2C fue ok Y el magic del slot es válido (hay datos reales
+ * guardados, no una EEPROM recién provisionada). */
+extern bool task_memory_load_running(memory_running_t *dst);
+
+/* Invalida el snapshot de incubación en curso (se llama al finalizar
+ * una incubación, para que CONTINUAR no vuelva a ofrecerla). */
+extern bool task_memory_clear_running(void);
 
 /********************** End of CPP guard *************************************/
 #ifdef __cplusplus

@@ -131,6 +131,18 @@ static bool heater_on = false;
 #define NEW_MENU_OPT_QTY        (1u + MEMORY_PRESET_QTY)
 static uint8_t new_menu_cursor = NEW_MENU_OPT_ADJUST;
 
+/* Guardado periódico de la incubación en curso, para sobrevivir a un corte
+ * de energía (la placa no tiene respaldo). Intervalo en tiempo REAL de
+ * pared (ticks de 1ms), independiente de la escala comprimida de debug
+ * de cfg_days/cfg_hours. 45s reales = margen seguro para la vida útil
+ * de la EEPROM en una incubación de varias semanas. */
+#define RUNNING_SAVE_TICKS      45000ul
+static uint32_t running_save_tick_cnt = RUNNING_SAVE_TICKS;
+
+/* Datos recuperados de EEPROM al elegir CONTINUAR, mostrados en
+ * ST_SYS_LAST_DATA y usados para arrancar ST_SYS_INCUBATING_CONT */
+static memory_running_t recovered_running;
+
 /********************** internal functions declaration ***********************/
 static void task_system_statechart(void);
 static void display_main_new(void);
@@ -141,8 +153,10 @@ static void display_set_hum(void);
 static void display_set_days(void);
 static void display_set_hours(void);
 static void display_incubating(void);
+static void display_last_data(void);
 static uint32_t rtc_get_seconds(void);
 static void incubation_start(void);
+static void incubation_run_common(task_system_dta_t *p_task_system_dta);
 
 /********************** internal data definition *****************************/
 const char *p_task_system      = "Task System (Incubadora Statechart)";
@@ -224,19 +238,19 @@ static void display_new_menu(void)
     {
         case NEW_MENU_OPT_ADJUST:
             snprintf(line0, sizeof(line0), ">AJUSTAR        ");
-            snprintf(line1, sizeof(line1), " PRESET 1       ");
+            snprintf(line1, sizeof(line1), " POLLO          ");
             break;
         case 1u: /* PRESET 1 */
-            snprintf(line0, sizeof(line0), ">PRESET 1       ");
-            snprintf(line1, sizeof(line1), " PRESET 2       ");
+            snprintf(line0, sizeof(line0), ">POLLO          ");
+            snprintf(line1, sizeof(line1), " CODORNIZ       ");
             break;
         case 2u: /* PRESET 2 */
-            snprintf(line0, sizeof(line0), ">PRESET 2       ");
-            snprintf(line1, sizeof(line1), " PRESET 3       ");
+            snprintf(line0, sizeof(line0), ">CODORNIZ       ");
+            snprintf(line1, sizeof(line1), " PATO           ");
             break;
         case 3u: /* PRESET 3 */
         default:
-            snprintf(line0, sizeof(line0), ">PRESET 3       ");
+            snprintf(line0, sizeof(line0), ">PATO           ");
             snprintf(line1, sizeof(line1), "                ");
             break;
     }
@@ -307,6 +321,9 @@ static void incubation_start(void)
 
     /* Calefactor arranca apagado (coincide con estado inicial del actuador) */
     heater_on = false;
+
+    /* Reiniciar cadencia de guardado a EEPROM para esta nueva incubación */
+    running_save_tick_cnt = RUNNING_SAVE_TICKS;
 }
 
 /* Muestra "EN PROCESO" fijo, y alterna en la linea 1 entre tiempo restante
@@ -351,6 +368,134 @@ static void display_incubating(void)
     if (display_alt_cnt >= 3)
     {
         display_alt_cnt = 0;
+    }
+}
+
+/* Muestra temp/hum objetivo y tiempo restante recuperados de la EEPROM,
+ * antes de confirmar si se retoma la incubación */
+static void display_last_data(void)
+{
+    char buf[20];
+
+    snprintf(buf, sizeof(buf), "T:%2u%cC  H:%2u%%   ",
+             (unsigned)recovered_running.temp, 0xDF,
+             (unsigned)recovered_running.hum);
+    put_event_task_display(0, 0, buf);
+
+    {
+        uint32_t remaining     = recovered_running.remaining_seconds;
+        uint32_t days_left     = remaining / 24ul;
+        uint32_t hours_left    = (remaining % 24ul) / 1ul;
+        snprintf(buf, sizeof(buf), "D:%2u H:%2u ENTER ", (unsigned)days_left, (unsigned)hours_left);
+    }
+    put_event_task_display(0, 1, buf);
+}
+
+/* Lógica común de "incubación activa": control de calefactor, rotación de
+ * servo, guardado periódico a EEPROM (backup ante corte de luz) y chequeo
+ * de finalización. La usan tanto ST_SYS_INCUBATING (desde NUEVO INICIO)
+ * como ST_SYS_INCUBATING_CONT (desde CONTINUAR). */
+static void incubation_run_common(task_system_dta_t *p_task_system_dta)
+{
+    /* --- Control del calefactor (LED_T + RELE) con histéresis --- */
+    if (task_dht22_dta.data_valid)
+    {
+        if ((!heater_on) && (task_dht22_dta.Temperature < (cfg_temp - HEATER_HYSTERESIS)))
+        {
+            put_event_task_actuator(EV_HEATER_ON, ID_HEATER);
+            heater_on = true;
+        }
+        else if (heater_on && (task_dht22_dta.Temperature >= cfg_temp))
+        {
+            put_event_task_actuator(EV_HEATER_OFF, ID_HEATER);
+            heater_on = false;
+        }
+    }
+
+    /* --- Control del servo --- */
+    if (servo_active && cfg_days >= SERVO_MIN_CFG_DAYS)
+    {
+        /* Calcular días transcurridos desde inicio */
+        uint32_t now_sec      = rtc_get_seconds();
+        uint32_t start_sec    = incubation_target_seconds
+                              - ((uint32_t)cfg_days  * 24ul)
+                              - ((uint32_t)cfg_hours * 1ul);
+        uint32_t elapsed_days = (now_sec - start_sec) / 24ul;
+
+        if (elapsed_days < SERVO_ACTIVE_DAYS)
+        {
+            if (servo_tick_cnt > 0)
+            {
+                servo_tick_cnt--;
+            }
+            else
+            {
+                servo_tick_cnt = SERVO_ROTATION_TICKS;
+
+                /* Alternar posición */
+                if (servo_pos_b)
+                {
+                    put_event_task_actuator(EV_SERVO_POS_A, ID_SERVO);
+                    servo_pos_b = false;
+                }
+                else
+                {
+                    put_event_task_actuator(EV_SERVO_POS_B, ID_SERVO);
+                    servo_pos_b = true;
+                }
+            }
+        }
+        else
+        {
+            /* Fin del período de rotación: centrar y desactivar servo */
+            put_event_task_actuator(EV_SERVO_CENTER, ID_SERVO);
+            servo_active = false;
+        }
+    }
+
+    /* --- Guardado periódico a EEPROM (backup ante corte de energía) --- */
+    if (running_save_tick_cnt > 0)
+    {
+        running_save_tick_cnt--;
+    }
+    else
+    {
+        uint32_t now_sec = rtc_get_seconds();
+        uint32_t remaining = (incubation_target_seconds > now_sec) ? (incubation_target_seconds - now_sec) : 0ul;
+
+        running_save_tick_cnt = RUNNING_SAVE_TICKS;
+        (void)task_memory_save_running(cfg_temp, cfg_hum, remaining);
+    }
+
+    /* --- Actualización periódica de pantalla + chequeo de finalización --- */
+    if (incubation_tick_cnt > 0)
+    {
+        incubation_tick_cnt--;
+    }
+    else
+    {
+        incubation_tick_cnt = INCUBATION_UPDATE_TICKS;
+
+        if (rtc_get_seconds() >= incubation_target_seconds)
+        {
+            /* Tiempo cumplido: detener servo, apagar calefactor, borrar
+             * el respaldo de EEPROM (ya no hay nada que continuar) y avisar */
+            servo_active = false;
+            put_event_task_actuator(EV_SERVO_CENTER, ID_SERVO);
+            if (heater_on)
+            {
+                put_event_task_actuator(EV_HEATER_OFF, ID_HEATER);
+                heater_on = false;
+            }
+            (void)task_memory_clear_running();
+            p_task_system_dta->state = ST_SYS_FINISHED;
+            put_event_task_display(0, 0, "  INCUBACION    ");
+            put_event_task_display(0, 1, "  FINALIZADA!   ");
+        }
+        else
+        {
+            display_incubating();
+        }
     }
 }
 
@@ -644,91 +789,7 @@ static void task_system_statechart(void)
         case ST_SYS_INCUBATING:
 
             p_task_system_dta->flag = false;
-
-            /* --- Control del calefactor (LED_T + RELE) con histéresis --- */
-            if (task_dht22_dta.data_valid)
-            {
-                if ((!heater_on) && (task_dht22_dta.Temperature < (cfg_temp - HEATER_HYSTERESIS)))
-                {
-                    put_event_task_actuator(EV_HEATER_ON, ID_HEATER);
-                    heater_on = true;
-                }
-                else if (heater_on && (task_dht22_dta.Temperature >= cfg_temp))
-                {
-                    put_event_task_actuator(EV_HEATER_OFF, ID_HEATER);
-                    heater_on = false;
-                }
-            }
-
-            /* --- Control del servo --- */
-            if (servo_active && cfg_days >= SERVO_MIN_CFG_DAYS)
-            {
-                /* Calcular días transcurridos desde inicio */
-                uint32_t now_sec     = rtc_get_seconds();
-                uint32_t start_sec   = incubation_target_seconds
-                                     - ((uint32_t)cfg_days  * 24ul)
-                                     - ((uint32_t)cfg_hours * 1ul);
-                uint32_t elapsed_days = (now_sec - start_sec) / 24ul;
-
-                if (elapsed_days < SERVO_ACTIVE_DAYS)
-                {
-                    if (servo_tick_cnt > 0)
-                    {
-                        servo_tick_cnt--;
-                    }
-                    else
-                    {
-                        servo_tick_cnt = SERVO_ROTATION_TICKS;
-
-                        /* Alternar posición */
-                        if (servo_pos_b)
-                        {
-                            put_event_task_actuator(EV_SERVO_POS_A, ID_SERVO);
-                            servo_pos_b = false;
-                        }
-                        else
-                        {
-                            put_event_task_actuator(EV_SERVO_POS_B, ID_SERVO);
-                            servo_pos_b = true;
-                        }
-                    }
-                }
-                else
-                {
-                    /* Fin del período de rotación: centrar y desactivar servo */
-                    put_event_task_actuator(EV_SERVO_CENTER, ID_SERVO);
-                    servo_active = false;
-                }
-            }
-
-            /* --- Actualización periódica de pantalla --- */
-            if (incubation_tick_cnt > 0)
-            {
-                incubation_tick_cnt--;
-            }
-            else
-            {
-                incubation_tick_cnt = INCUBATION_UPDATE_TICKS;
-
-                if (rtc_get_seconds() >= incubation_target_seconds)
-                {
-                    /* Tiempo cumplido: detener servo, apagar calefactor y avisar */
-                    servo_active = false;
-                    put_event_task_actuator(EV_SERVO_CENTER, ID_SERVO);
-                    if (heater_on)
-                    {
-                        put_event_task_actuator(EV_HEATER_OFF, ID_HEATER);
-                        heater_on = false;
-                    }
-                    p_task_system_dta->state = ST_SYS_FINISHED;
-                    put_event_task_display(0, 0, "  INCUBACION    ");
-                    put_event_task_display(0, 1, "  FINALIZADA!   ");
-                }
-                else
-                {
-                    display_incubating();
-                }
-            }
+            incubation_run_common(p_task_system_dta);
             break;
 
         /* ================================================================
@@ -753,8 +814,20 @@ static void task_system_statechart(void)
          * LEYENDO DATOS (desde CONTINUAR)
          * ================================================================ */
         case ST_SYS_READING:
-            /* leer memoria y transicionar a NO_DATA o LAST_DATA */
+
             p_task_system_dta->flag = false;
+
+            if (task_memory_load_running(&recovered_running) && (recovered_running.remaining_seconds > 0ul))
+            {
+                p_task_system_dta->state = ST_SYS_LAST_DATA;
+                display_last_data();
+            }
+            else
+            {
+                p_task_system_dta->state = ST_SYS_NO_DATA;
+                put_event_task_display(0, 0, "NO SE ENCUENTRAN");
+                put_event_task_display(0, 1, "     DATOS      ");
+            }
             break;
 
         /* ================================================================
@@ -782,6 +855,20 @@ static void task_system_statechart(void)
 
                 if (EV_SYS_ENTER == p_task_system_dta->event)
                 {
+                    /* "Pausar y resumir": no hay forma de saber cuánto tiempo
+                     * real estuvo la placa sin energía (no hay RTC con
+                     * respaldo), así que el cronómetro arranca de nuevo
+                     * desde el remanente guardado. */
+                    cfg_temp  = recovered_running.temp;
+                    cfg_hum   = recovered_running.hum;
+                    incubation_target_seconds = rtc_get_seconds() + recovered_running.remaining_seconds;
+
+                    incubation_tick_cnt     = INCUBATION_UPDATE_TICKS;
+                    display_alt_cnt         = 0;
+                    running_save_tick_cnt   = RUNNING_SAVE_TICKS;
+                    heater_on                = false; /* se re-evalúa solo en el próximo tick */
+                    servo_active             = false;  /* rotación no se retoma tras un corte */
+
                     p_task_system_dta->state = ST_SYS_INCUBATING_CONT;
                     put_event_task_display(0, 0, "   EN PROCESO   ");
                     put_event_task_display(0, 1, "   INCUBANDO    ");
@@ -798,8 +885,9 @@ static void task_system_statechart(void)
          * EN PROCESO / INCUBANDO (desde CONTINUAR)
          * ================================================================ */
         case ST_SYS_INCUBATING_CONT:
-            /* Placeholder: lógica de incubación con parámetros recuperados */
+
             p_task_system_dta->flag = false;
+            incubation_run_common(p_task_system_dta);
             break;
 
         default:

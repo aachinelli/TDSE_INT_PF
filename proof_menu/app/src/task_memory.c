@@ -127,24 +127,41 @@ bool task_memory_load_preset(uint8_t index, memory_preset_t *dst)
 	return eeprom_read(MEMORY_ADDR_PRESET(index), (uint8_t *)dst, sizeof(memory_preset_t));
 }
 
-bool task_memory_save_last_cfg(const memory_preset_t *src)
+bool task_memory_save_running(uint8_t temp, uint8_t hum, uint32_t remaining_seconds)
 {
-	if (NULL == src)
-	{
-		return false;
-	}
+	memory_running_t running;
 
-	return eeprom_write(MEMORY_ADDR_LAST_CFG, (const uint8_t *)src, sizeof(memory_preset_t));
+	running.magic             = MEMORY_RUNNING_MAGIC;
+	running.temp              = temp;
+	running.hum               = hum;
+	running.remaining_seconds = remaining_seconds;
+
+	return eeprom_write(MEMORY_ADDR_RUNNING, (const uint8_t *)&running, sizeof(running));
 }
 
-bool task_memory_load_last_cfg(memory_preset_t *dst)
+bool task_memory_load_running(memory_running_t *dst)
 {
 	if (NULL == dst)
 	{
 		return false;
 	}
 
-	return eeprom_read(MEMORY_ADDR_LAST_CFG, (uint8_t *)dst, sizeof(memory_preset_t));
+	if (!eeprom_read(MEMORY_ADDR_RUNNING, (uint8_t *)dst, sizeof(memory_running_t)))
+	{
+		return false;
+	}
+
+	return (MEMORY_RUNNING_MAGIC == dst->magic);
+}
+
+bool task_memory_clear_running(void)
+{
+	memory_running_t running;
+
+	memset(&running, 0, sizeof(running));
+	running.magic = 0; /* != MEMORY_RUNNING_MAGIC -> load_running() lo verá inválido */
+
+	return eeprom_write(MEMORY_ADDR_RUNNING, (const uint8_t *)&running, sizeof(running));
 }
 
 /********************** internal functions definition ************************/
@@ -167,9 +184,14 @@ static bool eeprom_write(uint16_t mem_addr, const uint8_t *data, uint16_t size)
 		return false;
 	}
 
-	/* Esperar el ciclo de escritura interno del chip antes de la
-	 * próxima transacción I2C (datasheet 24C256: max 5ms) */
-	HAL_Delay(EEPROM_WRITE_DELAY_MS);
+	/* NOTA: no se espera aquí el ciclo de escritura interno del chip
+	 * (~5ms, ver datasheet 24C256) con HAL_Delay, para no bloquear la
+	 * task que llama a esta función (p.ej. task_system_update corriendo
+	 * cada 1ms). El próximo acceso a esta misma página de EEPROM ocurre
+	 * muchísimo después (el guardado periódico es cada 45s reales), así
+	 * que el chip tiene tiempo de sobra para terminar de escribir.
+	 * Ver memory_provision_defaults() para el caso donde sí se necesita
+	 * esperar entre escrituras consecutivas. */
 
 	return true;
 }
@@ -219,6 +241,13 @@ static void memory_provision_defaults(void)
 			ok = false;
 			LOGGER_INFO("   ERROR: fallo al grabar preset %u", (unsigned)i);
 		}
+
+		/* Escrituras consecutivas: sí hay que esperar el ciclo de
+		 * escritura interno del chip (~5ms) entre una y otra. Corre
+		 * una única vez en task_memory_init(), antes de que arranque
+		 * el loop principal de tareas periódicas, así que este delay
+		 * bloqueante no afecta el WCET de ninguna task en runtime. */
+		HAL_Delay(EEPROM_WRITE_DELAY_MS);
 	}
 
 	if (ok)
