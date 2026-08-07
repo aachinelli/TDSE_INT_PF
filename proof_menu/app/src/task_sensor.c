@@ -273,8 +273,7 @@ static void task_sht30_statechart(void)
             }
             else
             {
-                LOGGER_INFO("SHT30: fallo TX comando (addr=0x%02X) ErrorCode=0x%lX",
-                            SHT30_I2C_ADDR, HAL_I2C_GetError(&hi2c2));
+                LOGGER_INFO("SHT30: fallo TX comando (addr=0x%02X) ErrorCode=0x%lX",SHT30_I2C_ADDR, HAL_I2C_GetError(&hi2c2));
                 task_sht30_dta.state = ST_SHT30_ERROR;
             }
             break;

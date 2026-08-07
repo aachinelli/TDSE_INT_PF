@@ -76,6 +76,7 @@ typedef enum task_system_st{
 	ST_SYS_FINISHED,        /* INCUBACION FINALIZADA    */
 
 	ST_SYS_READING,         /* LEYENDO / DATOS          */
+	ST_SYS_LAST_DATA_SHOW,
 	ST_SYS_NO_DATA,         /* NO SE ENCUENTRAN DATOS   */
 	ST_SYS_LAST_DATA,       /* ULTIMO T:XX / H:XX R:XX  */
 	ST_SYS_INCUBATING_CONT  /* EN PROCESO / INCUBANDO (desde continuar) */

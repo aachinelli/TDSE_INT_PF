@@ -1,0 +1,20 @@
+PC7 -> D9 - VOLVER
+PB6 -> D10 - ENTER
+PA7 -> D11 - ABAJO
+PA6 -> D12 - ARRIBA
+PC7 -> D9 - VOLVER
+
+PC8 -> LED_T
+PC9 -> RELE
+
+PB10 - SCL (I2C2)
+PB11 - SDA (I2C2)
+
+PB8 - D15_SCL (I2C1)
+PB9 - D14_SDA (I2C1)
+
+PA15 - PWM (TIM2 CH1)
+
+
+sizeof(memory_preset_defaults) = 12 bytes
+sizeof(memory_running_t)       = 8  bytes

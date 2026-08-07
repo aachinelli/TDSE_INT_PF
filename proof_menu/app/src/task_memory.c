@@ -91,6 +91,11 @@ void task_memory_init(void *parameters)
 	LOGGER_INFO("   %s is a %s", GET_NAME(task_memory), p_task_memory);
 	LOGGER_INFO("   %s is a %s", GET_NAME(task_memory), p_task_memory_);
 
+	LOGGER_INFO("   EEPROM Info: Presets ocupan %u bytes, Estado Running ocupa %u bytes",
+		            sizeof(memory_preset_defaults),
+		            sizeof(memory_running_t));
+
+
 	/* Leer magic number para detectar si la EEPROM ya fue provisionada */
 	if (eeprom_read(MEMORY_ADDR_MAGIC, (uint8_t *)&magic, sizeof(magic)))
 	{

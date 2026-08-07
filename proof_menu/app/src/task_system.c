@@ -384,7 +384,7 @@ static void display_last_data(void)
         uint32_t remaining     = recovered_running.remaining_seconds;
         uint32_t days_left     = remaining / 24ul;
         uint32_t hours_left    = (remaining % 24ul) / 1ul;
-        snprintf(buf, sizeof(buf), "D:%2u H:%2u ENTER ", (unsigned)days_left, (unsigned)hours_left);
+        snprintf(buf, sizeof(buf), "D:%2u   H:%2u     ", (unsigned)days_left, (unsigned)hours_left);
     }
     put_event_task_display(0, 1, buf);
 }
@@ -808,25 +808,32 @@ static void task_system_statechart(void)
             }
             break;
 
-        /* ================================================================
-         * LEYENDO DATOS (desde CONTINUAR)
-         * ================================================================ */
-        case ST_SYS_READING:
+            /* ================================================================
+             * LEYENDO DATOS (desde CONTINUAR)
+             * ================================================================ */
+            case ST_SYS_READING:
 
-            p_task_system_dta->flag = false;
+                p_task_system_dta->flag = false;
 
-            if (task_memory_load_running(&recovered_running) && (recovered_running.remaining_seconds > 0ul))
-            {
+                /* En este tick SOLO leemos la EEPROM */
+                if (task_memory_load_running(&recovered_running) && (recovered_running.remaining_seconds > 0ul))
+                {
+                    p_task_system_dta->state = ST_SYS_LAST_DATA_SHOW; /* Nuevo estado intermedio */
+                }
+                else
+                {
+                    p_task_system_dta->state = ST_SYS_NO_DATA;
+                    put_event_task_display(0, 0, "NO SE ENCUENTRAN");
+                    put_event_task_display(0, 1, "     DATOS      ");
+                }
+                break;
+
+            case ST_SYS_LAST_DATA_SHOW:
+
+                /* En este tick formateamos y mostramos los datos */
                 p_task_system_dta->state = ST_SYS_LAST_DATA;
                 display_last_data();
-            }
-            else
-            {
-                p_task_system_dta->state = ST_SYS_NO_DATA;
-                put_event_task_display(0, 0, "NO SE ENCUENTRAN");
-                put_event_task_display(0, 1, "     DATOS      ");
-            }
-            break;
+                break;
 
         /* ================================================================
          * NO SE ENCUENTRAN DATOS EN MEMORIA
