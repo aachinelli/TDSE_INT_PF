@@ -30,116 +30,16 @@ REVISAR HISTORIAL DE REVISIONES
 
 
 
-- [Capítulo 1: Introducción general](#capítulo-1-introducción-general)
-
-		FALTA ANÁLISIS DE NECESIDAD
-		
-- [Capítulo 2: Introducción específica](#capítulo-2-introducción-específica)
-- [Capítulo 3: Diseño e implementación](#capítulo-3-diseño-e-implementación)
-- [Capítulo 4: Ensayos y resultados](#capítulo-4-ensayos-y-resultados)
-- [Capítulo 5: Conclusiones](#capítulo-5-conclusiones)
-- [Capítulo 6: Uso de herramientas de IA](#capítulo-6-uso-de-herramientas-de-ia)
-- [Capítulo 7: Bibliografía y referencias](#capítulo-7-bibliografía-y-referencias)
-
-
-- [Capítulo 1: Introducción general](#capítulo-1-introducción-general)
-  - [1.1 Análisis de necesidad y objetivo](#11-análisis-de-necesidad-y-objetivo) 		AGREGAR ESTO
-
-  - [1.2 Productos comparables](#12-productos-comparables)
-		
-		AGREGAR FOTOS DE LOS PRODUCTOS (vínculos)
-
-  - [1.3 Alcance y limitaciones](#13-alcance-y-limitaciones)
-
-		ESTÁ BIEN, REVISAR POR SI ACASO
-
-
-- [Capítulo 2: Introducción específica](#capítulo-2-introducción-específica)
-  - [2.1 Requisitos](#21-requisitos)
-
-		TABLAS HECHAS EN LA PROPUESTA E INFORME DE AVANCE (COMPLETO)
-
-  - [2.2 Casos de uso](#22-casos-de-uso)
-
-		CASOS DE USO HECHOS EN PROPUESTA (COMPLETO)
-
-    - [2.2.1 ](#221)		AGREGAR NOMBRES
-    - [2.2.2 ](#222)
-    - [2.2.3 ](#223)
-  - [2.3 Descripción de módulos y Hardware](#23)
-
-		FALTAN FOTOS (LINKS)
-
-    - [2.3.1  (NUCLEO-F103RB)](#231)
-    - [2.3.2 ](#232)
-    - [2.3.3 ](#233)
-    - [2.3.4 ](#234)
-    - [2.3.5 ](#235)
-- [Capítulo 3: Diseño e implementación](#capítulo-3-diseño-e-implementación)
-  - [3.1 Arquitectura general](#31-arquitectura-general)
-
-		AGREGAR DIAGRAMA EN BLOQUES
-
-  - [3.2 Diseño de hardware](#32-diseño-de-hardware)
-    - [3.2.1 Criterio de interconexión y montaje](#321-criterio-de-interconexión-y-montaje)
-    - [3.2.2 Etapa de conversión de niveles](#322-etapa-de-conversión-de-niveles)
-    - [3.2.3 Etapa de TRIACs](#323-etapa-de-triacs)
-    - [3.2.4 Etapa ZCD (detección de cruce por cero)](#324-etapa-zcd-detección-de-cruce-por-cero)
-    - [3.2.5 Etapa de potencia y protecciones](#325-etapa-de-potencia-y-protecciones)
-    - [3.2.6 Fabricación de placas](#326-fabricación-de-placas)
-    - [3.2.7 Pinout del sistema (STM32F103RB)](#327-pinout-del-sistema-stm32f103rb)
-    - [3.2.8 Cableado e imágenes del montaje](#328-cableado-e-imágenes-del-montaje)
-  - [3.3 Diseño de firmware](#33-diseño-de-firmware)
-    - [3.3.1 Arquitectura de ejecución](#331-arquitectura-de-ejecución)
-    - [3.3.2 Máquina de estados del sistema](#332-máquina-de-estados-del-sistema)
-    - [3.3.3 Entradas y acondicionamiento lógico](#333-entradas-y-acondicionamiento-lógico)
-    - [3.3.4 Control de TRIAC y sincronización AC](#334-control-de-triac-y-sincronización-ac)
-    - [3.3.5 Persistencia en flash](#335-persistencia-en-flash)
-    - [3.3.6 Bluetooth HC-06](#336-bluetooth-hc-06)
-    - [3.3.7 Aplicación móvil](#337-aplicación-móvil)
-- [Capítulo 4: Ensayos y resultados](#capítulo-4-ensayos-y-resultados)
-  - [4.1 Pruebas funcionales de hardware](#41-pruebas-funcionales-de-hardware)
-  - [4.2 Pruebas funcionales de firmware](#42-pruebas-funcionales-de-firmware)
-  - [4.3 Pruebas de integración](#43-pruebas-de-integración)
-  - [4.4 Medición y análisis de consumo](#44-medición-y-análisis-de-consumo)
-  - [4.5 Console and Build Analyzer](#45-console-and-build-analyzer)
-  - [4.6 Medición y análisis de WCET por tarea](#46-medición-y-análisis-de-wcet-por-tarea)
-  - [4.7 Cálculo del factor de uso de CPU (U)](#47-cálculo-del-factor-de-uso-de-cpu-u)
-  - [4.8 Gestión de bajo consumo y justificación](#48-gestión-de-bajo-consumo-y-justificación)
-  - [4.9 Cumplimiento de requisitos](#49-cumplimiento-de-requisitos)
-  - [4.10 Comparación con sistemas similares](#410-comparación-con-sistemas-similares)
-  - [4.11 Documentación del desarrollo realizado](#411-documentación-del-desarrollo-realizado)
-- [Capítulo 5: Conclusiones](#capítulo-5-conclusiones)
-  - [5.1 Resultados obtenidos](#51-resultados-obtenidos)
-  - [5.2 Lecciones aprendidas](#52-lecciones-aprendidas)
-  - [5.3 Próximos pasos](#53-próximos-pasos)
-- [Capítulo 6: Uso de herramientas de IA](#capítulo-6-uso-de-herramientas-de-ia)
-  - [6.1 Uso individual y conjunto](#61-uso-individual-y-conjunto)
-- [Capítulo 7: Bibliografía y referencias](#capítulo-7-bibliografía-y-referencias)
-
-
-
 
 
 ## Resumen
 
+Se desarrolló el prototipo de una incubadora de huevos automática, un sistema embebido en un microcontrolador.
+El mismo cuenta con:
+-
+-
 
-AGREGAR UN RESUMEN
-
-
-"""
-Se desarrolló un sistema embebido para control de luz y ventilador de red (220 VAC), con:
-- Control local por pulsadores y potenciómetro.
-- Telemetría por Bluetooth con módulo HC-06.
-- Sincronización por cruce por cero.
-- Almacenamiento persistente en flash interna del STM32.
-
-El hardware se implementó en dos placas (shield de control y placa de potencia/dimmer), evitando protoboard y cableado Dupont para la integración final. La única excepción es el uso de leds en paralelo con los bulbos de luz requeridos en las pruebas de potencia; la tensión no es suficiente como para encenderlos, por lo que se usaron leds en paralelo como indicadores. 
-El firmware se implementó en una NUCLEO-F103RB con arquitectura modular de tareas y máquina de estados para modos de inicialización, operación normal y falla segura.
-
-Esta memoria documenta los requisitos, el diseño de hardware y firmware, los ensayos realizados y el estado final de cumplimiento. 
-"""
-
+Esta memoria justifica su necesidad, detalla los requisitos y proporciona información y esquemas sobre su diseño en hardware y firmware. Además, se documentan los ensayos y pruebas realizados y el estado final del proyecto.
 
 
 ---
@@ -153,9 +53,7 @@ La Tabla 0.1 resume el historial de revisiones y entregas de esta memoria.
 | Revisión | Cambios realizados | Fecha |
 | :---: | --- | :---: |
 | 1.0 | Escritura inicial de la memoria | 02/08/2026 |
-| 1.1 | Inclusión de los tiempos de funcionamiento requeridos | /2026 |
-| 1.2 |  | /2026 |
-| 1.3 |  | /2026 |
+| 1.1 | Primer entrega, sin vídeo | /2026 |
 
 
 <em>Tabla 0.1 — Registro de versiones del documento.</em><br><br>
@@ -169,6 +67,45 @@ La Tabla 0.1 resume el historial de revisiones y entregas de esta memoria.
 
 
 
+- [Capítulo 1: Introducción general](#capítulo-1-introducción-general)
+  - [1.1 Análisis de necesidad y objetivo](#11-análisis-de-necesidad-y-objetivo) 		AGREGAR ESTO
+  - [1.2 Productos comparables](#12-productos-comparables)
+  - [1.3 Alcance y limitaciones](#13-alcance-y-limitaciones)
+- [Capítulo 2: Introducción específica](#capítulo-2-introducción-específica)
+  - [2.1 Requisitos](#21-requisitos)
+  - [2.2 Casos de uso](#22-casos-de-uso)
+    - [2.2.1 ](#221)		AGREGAR NOMBRES
+    - [2.2.2 ](#222)
+    - [2.2.3 ](#223)
+  - [2.3 Descripción de módulos y Hardware](#23)
+    - [2.3.1 Módulo de control (NUCLEO-F103RB)](#231)
+    - [2.3.2 Módulo sensor de temperatura y humedad ](#232)
+    - [2.3.3 Módulo de actuadores](#233)
+    - [2.3.4 Módulo de interfaz](#234)
+    - [2.3.5 Memoria EEPROM](#235)
+- [Capítulo 3: Diseño e implementación](#capítulo-3-diseño-e-implementación)
+  - [3.1 Arquitectura general](#31-arquitectura-general)
+  - [3.2 Diseño de hardware](#32-diseño-de-hardware)
+  - [3.3 Diseño de firmware](#33-diseño-de-firmware)
+    - [3.3.1 Arquitectura de ejecución](#231)
+    - [3.3.2 Máquina de estados del sistema](#232)
+- [Capítulo 4: Ensayos y resultados](#capítulo-4-ensayos-y-resultados)
+  - [4.1 Integración](#41)
+  - [4.2 Pruebas funcionales de hardware Y software](#42)
+  - [4.3 Ocupación de memoria: Console & Build Analyzer](#43)
+  - [4.4 Medición y análisis de tiempos de ejecución (WCET)](#44)
+    - [4.4.1 Metodología]()
+    - [4.4.2 Resultados ]()
+  - [4.5 Cálculo del Factor de Uso (U) de la CPU]()
+  - [4.6 Medición y análisis de consumo]
+  - [4.7 Cumplimiento de requisitos]
+- [Capítulo 5: Conclusiones](#capítulo-5-conclusiones)
+  - [5.1 Resultados obtenidos]()
+  - [5.2 Posibles mejoras]()
+- [Capítulo 6: Uso de herramientas de IA](#capítulo-6-uso-de-herramientas-de-ia)
+- [Capítulo 7: Bibliografía y referencias](#capítulo-7-bibliografía-y-referencias)
+
+
 
 
 
@@ -176,23 +113,19 @@ La Tabla 0.1 resume el historial de revisiones y entregas de esta memoria.
 
 ## 1.1 Análisis de necesidad y objetivo
 
-Las incubadoras de huevos de ave cubren una necesidad industrial y doméstica 
-
-
-
-En el mercado argentino e internacional existen a la venta varios productos similares que proporcionan solución a la incubación automática de huevos. 
-Sin embargo, la mayoría de los productos comerciales disponibles localmente no combinan en un único dispositivo el control preciso de temperatura y humedad, 
-la rotación automatizada con calendario configurable, el soporte para múltiples especies y el registro histórico de variables.
-
+Las incubadoras de huevos de ave cubren una necesidad industrial y doméstica que puede ser abordada por un sistema embebido. Su funcionamiento requiere mantener una 
+temperatura y humedad ideal de incubación según el tipo de ave durante un período de tiempo (algunas semanas). También requieren una rotación periódica de los huevos durante las primeras semanas. El objetivo de este trabajo es diseñar e implementar un prototipo 
+funcional de incubadora utilizando la arquitecura STM32.
 
 
 ## 1.2 Productos comparables
 
-Se realizó un relevamiento del mercado local y se encontraron 2 alternativas similares, una de estilo industrial y otra de un estilo casero o de baja gama.
+Se realizó un relevamiento del mercado local y se encontraron 2 alternativas similares, una de estilo industrial, de la marca Tinzer, y otra de un estilo casero o de baja gama, de la marca Brinsea.
+
 
 1. **Incubadora estilo industrial Tinzer**  
 
-<img src="INCUBADORA TINZER" width="600" />
+<img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/incubadoraTinzer.jpg" width="600" />
 <em>Figura 1.X — XX(referencia comercial).</em><br><br>
 
 Incubadora Tinzer. Características: 
@@ -200,7 +133,7 @@ Costo aproximado: $ ARS ($ USD)
 
 2. **Incubadora estilo doméstico BRINSEA**  
 
-<img src="INCUBADORA BRINSEA" width="600" />
+<img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/incubadora-brinsea.jpg" width="600" />
 <em>Figura 1.X — XX(referencia comercial).</em><br><br>
 
 Incubadora Brinsea. Características: 
@@ -219,17 +152,17 @@ La Tabla 1.1 contrasta las prestaciones de los dos productos comerciales de refe
 | **Selección de modos** | No disponible | No disponible | 3 modos precargados en una EEPROM externa. Modos personalizables. |
 | **Registro de eventos** | No disponible | No disponible | Guardado del estado previo a un corte de suministro |
 | **Base de tiempo** | No posee | No posee | RTC interno del STM32 |   ***REVISAR***
-| **Gestión de consumo** | Consumo de 70 W a 220V | N/A (Sistema puramente mecánico) | Modo reposo (*Sleep*) con apagado de display | ***Se podría llegar a agregar un modo sleep?***
+| **Consumo** | Consumo de 70 W a 220V | N/A (Sistema puramente mecánico) | Modo reposo (*Sleep*) con apagado de display | ***Se podría llegar a agregar un modo sleep?***
 | **Rotación de huevos** | Motor eléctrico de bajo consumo |  | Servomotor SG90 sobre maqueta |
 | **Construcción de la capsula** | Acero, melamina y policarbonato | Plástico transparente | No implementada (fuera de alcance) |
-XX| **Cerradura** |  |  | No implementado |XX (REVISAR)
-| **Costo** | ~$350.000 ARS | ~$300 USD a ~$700  | Prototipo de laboratorio - Precio estimado en piezas: ~$ |
+| **Costo** | ~$350.000 ARS | ~$300 USD a ~$700  | Prototipo de laboratorio - Precio estimado en componentes: ~$50000 ARS |
 
 
 
 En resumen, el mercado ofrece soluciones parciales que cubren algunos de los objetivos del proyecto, pero ninguna combina la personalización por modo de incubación, el registro de estado en EEPROM y la interfaz configurable mediante display LCD y teclado. 
 Esto justifica el desarrollo de un sistema propio que cubra todas estas funcionalidades con hardware disponible localmente.
 Quedan fuera del alcance del proyecto implementaciones utilizadas por los productos comerciales, como el diseño de la caja incubadora.
+
 
 ## 1.3 Alcance y limitaciones
 
@@ -243,15 +176,14 @@ Fuera de alcance actual:
 - Construcción de la caja contenedora de huevos.
 - Implementación de elementos térmicos y de aporte de humedad (se modelan con luces)
 
-****Este tema se vuelve a detallar en la sección "4.9 Cumplimiento de requisitos", en la que se explica cada ítem y la razón de no haberse implementado, si corresponde. ****
+El detalle de los requisitos cumplidos se aborda en la sección 4.7.
 
 
 ---
 
 # Capítulo 2: Introducción específica
 
-
-Se procede a listar los requisitos a cumplir en el presente trabajo, en su primer versión (link) y en el informe de avance. Además, se listan los casos de uso.
+Se procede a listar los requisitos a cumplir en el presente trabajo, en su primer versión (link) y en el informe de avance (link). Además, se listan los casos de uso.
 En la sección 4.X se detalla el cumplimiento final de los requisitos.
 
 ## 2.1 Requisitos
@@ -341,7 +273,7 @@ En las tablas 2.2 a 2.4 se presentan 3 casos de uso para el sistema. En estos ca
 ## 2.3 Descripción de módulos y Hardware
 
 ***AGREGAR FOTOS DE HARDWARE POR MÓDULOS***
-En esta sección se muestran los principales módulos de hardware utilizados. Los mismos fueron seleccionados para cumplir con los requisitos mínimos de Hardware y su posibilidad de implentación junto a la placa NUCLEO STM32.
+En esta sección se muestran los principales módulos de hardware utilizados. Los mismos fueron seleccionados para cumplir con los requisitos mínimos de Hardware y su posibilidad de implementación junto a la placa NUCLEO STM32.
 Además, se busco que los componentes sean compatibles con los requisitos de Software y permitan un procesamiento menor a 1 ms.
 
 ### 2.3.1 Módulo de control (NUCLEO-F103RB)
@@ -355,24 +287,24 @@ La placa NUCLEO-F103RB fue la provista para ser de procesador central. Todos los
 ### 2.3.2 Módulo sensor de temperatura y humedad
 
 Para la tarea de sensado atmósferico de temperatura y humedad se optó por un shield compatible con STM32 que contiene un sensor SHT30.
-El mismo es analógico, tiene comunicación por I2C, es de bajo consumo y de rápido funcionamiento (100 kHz).
+El mismo es analógico, tiene comunicación por I2C, es de bajo consumo y de rápido funcionamiento (400 kHz).
 
 <div align="center">
-<img width="800" alt="SHT30" src="SHT30" />
+<img width="800" alt="SHT30" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/SHT30.jfif" />
 <p><em>Figura X: SHT30.</em></p>
 </div>
 
 
 ### 2.3.3 Módulo de actuadores
 
-Para simular el funcionamiento de un motor que rote los huevos con cierta periodicidad se utilizó un servomotor XXX. El mismo se comunica por PWM, lo que permite programar rotaciones parciales según la necesidad.
+Para simular el funcionamiento de un motor que rote los huevos con cierta periodicidad se utilizó un servomotor SG90. El mismo se comunica por PWM, lo que permite programar rotaciones parciales según la necesidad.
 
 <div align="center">
-<img width="800" alt="SERVO" src="SERVO" />
+<img width="800" alt="SERVO" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/servo.jpg" />
 <p><em>Figura X: SERVO.</em></p>
 </div>
 
-El actuador que simula el funcionamiento de un componente que aporte calor (resistencia térmica o lámparas de calor) es un led en serie con un relé XXX. 
+El actuador que simula el funcionamiento de un componente que aporte calor (resistencia térmica o lámparas de calor) es un led en serie con un relé genérico de 5 V. 
 Este mismo se usa para demostrar que se conecta el led en un bus con suministro eléctrico, logrando calentar el recinto cuando sea necesario solamente alimentando el relé
 
 <div align="center">
@@ -384,18 +316,18 @@ Este mismo se usa para demostrar que se conecta el led en un bus con suministro 
 ### 2.3.4 Módulo de interfaz
 
 Por la necesidad de mostrar el estado actual de la incubación, la elección de modos, de mostrar estados previos a cortes de suministro y la elección de parámetros personalizados se buscó un componente único que pueda mostrar estos mensajes con facilidad.
-El componente elegido fue un display LCD 16x2 (??). Nos permite mostrar simbolos alfanuméricos y presentar los mensajes necesarios con un bajo consumo y con la posibilidad de cambiar su brillo.
+El componente elegido fue un display LCD 16x2. Nos permite mostrar simbolos alfanuméricos y presentar los mensajes necesarios con un bajo consumo y con la posibilidad de cambiar su brillo.
 
 <div align="center">
-<img width="800" alt="LCD" src="LCD" />
+<img width="800" alt="LCD" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/display_LCD.jpg" />
 <p><em>Figura X: LCD.</em></p>
 </div>
 
-Se dieñaron opciones de entrada de datos al sistema acotadas y sencillas para disminuir el código y la lógica. Por esto se optó por un teclado de membrana de 4x1, al que se le mapearon 4
+Se diseñaron opciones de entrada de datos al sistema acotadas y sencillas para disminuir el código y la lógica. Por esto se optó por un teclado de membrana de 4x1, al que se le mapearon 4
 funciones: "OK/CONTINUAR", "VOLVER", "ARRIBA" y "ABAJO". Se conectó mediante las entradas GPIO a la placa NUCLEO.
 
 <div align="center">
-<img width="800" alt="TECLADO" src="TECLADO" />
+<img width="800" alt="TECLADO" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Teclado-Matricial-de-Membrana-4-Teclas-1-1.jpg" />
 <p><em>Figura X: teclado.</em></p>
 </div>
 
@@ -403,11 +335,11 @@ funciones: "OK/CONTINUAR", "VOLVER", "ARRIBA" y "ABAJO". Se conectó mediante la
 
 ### 2.3.5 Memoria EEPROM
 
-Para proporcionar una memoria externa con lectura y escritura se utilizó una memoria EEPROM SCXXX. La misma nos da versatilidad y aproximadamente 32 kB. El uso de esta memoria será monitoreado
+Para proporcionar una memoria externa con lectura y escritura se utilizó una memoria EEPROM 24C256. La misma nos da versatilidad y aproximadamente 32 kB de memoria. El uso de esta memoria será monitoreado
 en la sección 5.X. 
 
 <div align="center">
-<img width="800" alt="EEPROM" src="EEPROM" />
+<img width="800" alt="EEPROM" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/memoria_eeprom.jpg" />
 <p><em>Figura X: EEPROM.</em></p>
 </div>
 ---
@@ -420,7 +352,7 @@ Conociendo los requisitos propuestos y el hardware elegido se diseñó un diagra
 
 En la Figura 3.1 se presenta el diagrama en bloques general. En el se presentan los distintos módulos y se muestran los sensores, actuadores y displays.
 
-<img src="IMAGEN DIAGRAMA EN BLOQUES" width="600" />
+<img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Incubadora-diagrama.jpeg" width="600" />
 <em>Figura 3.1 — Diagrama en bloques general.</em><br><br>
 
 
@@ -442,19 +374,19 @@ Como se mencionó previamente, se utilizó el diagrama 3.X de guía para el cone
 Se procedieron a asignar los siguientes pines 
 
 
-| Función | Pin(es) | Puerto | Protocolo |
+| Función | Puerto | Protocolo |
 | :--- | :--- | :--- |
-|Teclado-Volver|PC7|D9|GPIO|
-|Teclado-Enter|PB6|D10|GPIO|
-|Teclado-Abajo|PA7|D11|GPIO|
-|Teclado-Arriba|PA6|D12|GPIO|
-|SCL - 1|PB10||I2C| 
-|SDA - 1|PB11||I2C|
-|SCL - 2|-|D15|I2C|
-|SDA - 2|-|D14|I2C|
-|Led|PC8||GPIO|   ***Ver donde entra el I2c paralelo. Me faltan un par de datos/pines
-|Relé|PC9||GPIO|
-|Servo|PA15||PWM (TIM2 CH1)|
+|Teclado-Volver|PC7|GPIO|
+|Teclado-Enter|PB6|GPIO|
+|Teclado-Abajo|PA7|GPIO|
+|Teclado-Arriba|PA6|GPIO|
+|SCL - 1 (LCD y EEPROM)|PB10|I2C| 
+|SDA - 1 (LCD Y EEPROM)|PB11|I2C|
+|SCL - 2 (SENSOR)|PB8|I2C|
+|SDA - 2 (SENSOR)|PB9|I2C|
+|Led|PC8|GPIO|   
+|Relé|PC9|GPIO|
+|Servo|PA15|PWM (TIM2 CH1)|
 
 <p align="center"><em>Tabla X.X: Asignación de pines de la placa núcleo.</em></p>
 
@@ -487,17 +419,19 @@ Se buscó cuidar el consumo energético, la memoria y obtener un código legible
 ### 3.3.1 Arquitectura de ejecución
 
 Todas las tareas a realizar se rigen por un ejecutor cíclico con velocidad de 1kHz, obteniendo tareas que se realizan en su totalidad en menos de 1 ms. El ejecutor cíclico se 
-guía por el `SysTick`, que al ejecutar un loop se ejecuta la lista de tareas vistas en la figura 3.X. Además, se utilizan tareas no bloqueantes, es decir no se utiliza el 
-`HAL_Delay()` para generar una temporización. 
+guía por el `SysTick`, que al ejecutar un loop se ejecuta la lista de tareas vistas en la figura 3.X. ****REVISAR****
+
+ Además, se utilizan tareas no bloqueantes, es decir no se utiliza el `HAL_Delay()` para generar una temporización. 
 
 
 Se recorren las tareas en el siguiente orden
 
+1. `task_sensor_update`
+2. `task_memory_update`
+3. `task_system_update`
+4. `task_actuator_update`
+5. `task_display_update`
 
-
-1. `task_adc_update`
-2. `task_system_update`
-3. `task_pwm_update`
 
 Cada tarea se ejecuta en cada tick y su tiempo se mide con contador de ciclos (`DWT->CYCCNT`) para cálculo de WCET.
 
@@ -516,8 +450,15 @@ El orden que muestra la Figura 3.9 no es arbitrario: garantiza que un evento gen
  
 Ninguna tarea bloquea. No se utiliza `HAL_Delay()` en el lazo principal: todas las temporizaciones (mensajes, refresco de UI, inactividad, pulsos de alarma, ciclo de escritura de la EEPROM) se resuelven con contadores de ticks.
  
-***Uso de interfaces y no variables globales***
+Además, las tareas se comunican por interfaces. No hay comunicación por variables globales. Cada tarea tiene asignada una interfaz: 
 
+
+|Tarea|Interfaz|
+| `task_sensor_update` | `task_sensor_interface` |
+| `task_memory_update` | `task_memory_interface` |
+| `task_system_update` | `task_system_interface` |
+| `task_actuator_update` |`task_actuator_interface` |
+| `task_display_update`| `task_display_interface` |
 
 
 ### 3.3.2 Máquina de estados del sistema
@@ -530,13 +471,29 @@ Ninguna tarea bloquea. No se utiliza `HAL_Delay()` en el lazo principal: todas l
 
 Esta sección está dedicada a mostrar los resultados de la integración de Software y Hardware en el armado del prototipo de la incubadora automática.
 
-## 4.X Integración (al final del capítulo)
+## 4.1 Integración 
 
-En el siguiente video se muestra el correcto funcionamiento del prototipo, simulando distintas situaciones atmósfericas y mostrando las respuestas del sistema a estas. 
+En el siguiente video se muestra el correcto funcionamiento del prototipo integrado, simulando distintas situaciones atmósfericas y mostrando las respuestas del sistema a estas.
+
+VÍDEO 
 
 
 
-## 4.X Pruebas funcionales de hardware
+## 4.2 Pruebas funcionales de hardware Y software
+
+| Subsistema | Ensayo realizado | Resultado / Criterio de validación | Estado |
+| :--- | :--- | :--- | :---: |
+| **Hardware** | Verificación de continuidad  | Ausencia de cortocircuitos o falsos contactos en la placa experimental | ✅ |
+| **Hardware** | Respuesta correcta del teclado | Correcta atenuación y respuesta lineal en el ADC (potenciómetro y LDR) | ✅ |
+| **Hardware** | Correcta visualización del LCD | Correcta atenuación y respuesta lineal en el ADC (potenciómetro y LDR) | ✅ |
+| **Hardware** | Correcto funcionamiento del sensor | Correcta atenuación y respuesta lineal en el ADC (potenciómetro y LDR) | ✅ |
+| **Firmware** | FSM de antirrebote de pulsadores | Filtrado exitoso de rebotes mecánicos en el botón de confirmación y sensor magnético | ✅ |
+| **Firmware** | Correcta inerpretación del sensor | Mapeo estable del sensor por código | ✅ |
+| **Firmware** | Persistencia en EEPROM y RTC | Lectura y escritura correcta de marcas de tiempo e historial por bus I²C | ✅ |
+| **Firmware** | Máquina de estados global | Transiciones robustas y sin bloqueos entre `NORMAL`, `SET_UP` y `REPOSO` | ✅ |
+
+<p align="center"><em>Tabla 4.1: Resumen de ensayos funcionales de hardware y firmware.</em></p>
+
 
 
 ## 4.3 Ocupación de memoria: Console & Build Analyzer
@@ -562,15 +519,36 @@ En el siguiente video se muestra el correcto funcionamiento del prototipo, simul
 ## 4.7 Cumplimiento de requisitos
 
 
+| Estado | Descripción      |
+|-----|---------------------|
+| 🟢 | Implementado |
+| 🟡 | Implementado parcialmente |
+| 🔴 | Sin implementar/requerimiento descartado |
 
----
-## 4.9 Cumplimiento de requisitos
+| ESTADO | GRUPO | ID | TAREA |
+|:--:|----|----|----|
+| 🟢 | Temperatura | 1.1 | El sistema medirá continuamente la temperatura interior mediante un sensor dedicado. |
+| 🟢 |   | 1.2 | El sistema activará el elemento calefactor cuando la temperatura esté por debajo del umbral configurado. |
+| 🟢 |   | 1.3 | El sistema desactivará el elemento calefactor cuando la temperatura supere el umbral configurado. |
+| 🟢 | Humedad | 2.1 | El sistema medirá continuamente la humedad relativa interior. |
+| 🔴 |   | 2.2 | El sistema activará el humidificador cuando la humedad esté por debajo del umbral configurado. |
+| 🔴 |   | 2.3 | El sistema desactivará el humidificador cuando la humedad supere el umbral configurado. |
+| 🟢 | Rotación | 3.1 | El sistema rotará los huevos automáticamente a intervalos de tiempo configurables por tipo de huevo. |
+| 🟢 |   | 3.2 | El sistema indicará mediante un LED cada vez que se realice una rotación. |
+| 🟢 |   | 3.3 | El sistema inhibirá la rotación durante los últimos días del ciclo de incubación (lockdown), según el modo seleccionado. |
+| 🟢 | Interfaz | 4.1 | El sistema contará con una pantalla LCD para mostrar temperatura, humedad, día del ciclo y modo activo. |
+| 🟢 |   | 4.2 | El sistema contará con un teclado matricial para navegar entre menús y configurar parámetros. |
+| 🟡 |   | 4.3 | El sistema contará con LEDs indicadores de estado: calentador activo, humidificador activo y rotación. |
+| 🔴 |   | 4.4 | El sistema contará con un buzzer para alertas sonoras (alarmas y confirmaciones). |
+| 🟢 | Modos de incubación | 5.1 | El sistema soportará al menos tres modos predefinidos: huevo de gallina, pato y codorniz, con sus respectivos parámetros de temperatura, humedad y ciclo. |
+| 🟢 |   | 5.2 | El usuario podrá seleccionar el modo desde el menú de la interfaz gráfica. |
+| 🟢 |   | 5.3 | El sistema indicará en el display el día actual del ciclo de incubación. |
+| 🔴 | Alarmas | 6.1 | El sistema emitirá una alarma sonora y visual si la temperatura supera un umbral crítico configurable. |
+| 🔴 |   | 6.2 | El sistema emitirá una alarma sonora y visual si la humedad supera o cae por debajo de umbrales críticos. |
+| 🔴 |   | 6.3 | El sistema emitirá una alarma si el motor de rotación no completa el giro en el tiempo esperado. |
+| 🟡 | Almacenamiento | 7.1 | El sistema almacenará en la EEPROM externa el historial de temperatura, humedad y eventos de rotación. |
+| 🟢 |   | 7.2 | El sistema preservará la configuración activa y el día del ciclo ante cortes de energía. |
 
-## 4.10 Comparación con sistemas similares
-
-
-
-## 4.11 Documentación del desarrollo realizado
 
 ---
 
