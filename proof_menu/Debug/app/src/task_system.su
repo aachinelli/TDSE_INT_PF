@@ -9,7 +9,7 @@
 ../app/src/task_system.c:286:13:display_set_hours	32	static
 ../app/src/task_system.c:295:17:rtc_get_seconds	16	static
 ../app/src/task_system.c:308:13:incubation_start	16	static
-../app/src/task_system.c:332:13:display_incubating	64	static
-../app/src/task_system.c:376:13:display_last_data	48	static
-../app/src/task_system.c:398:13:incubation_run_common	48	static
-../app/src/task_system.c:503:13:task_system_statechart	24	static
+../app/src/task_system.c:330:13:display_incubating	64	static
+../app/src/task_system.c:374:13:display_last_data	48	static
+../app/src/task_system.c:396:13:incubation_run_common	48	static
+../app/src/task_system.c:501:13:task_system_statechart	24	static

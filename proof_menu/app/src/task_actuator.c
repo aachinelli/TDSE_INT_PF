@@ -51,7 +51,7 @@
 #define DEL_LED_MED		250ul
 #define DEL_LED_MAX		500ul
 
-/* Valores CCR para posiciones del servo (TIM2 CH3, Period=999, f=50Hz) */
+/* Valores CCR para posiciones del servo (TIM2 CH1, Period=999, f=50Hz) */
 #define SERVO_CCR_POS_A     62ul    /* 45°  ~ 1.25ms */
 #define SERVO_CCR_CENTER    75ul    /* 90°  ~ 1.50ms */
 #define SERVO_CCR_POS_B     87ul    /* 135° ~ 1.75ms */
@@ -72,6 +72,16 @@ const task_actuator_cfg_t task_actuator_cfg_list[] = {
 };
 
 task_actuator_dta_t task_actuator_dta_list[ACTUATOR_DTA_QTY];
+
+/* Estado destino del servo mientras esta en ST_SERVO_MOVING, guardado en
+ * software en vez de leido del registro CCR del timer al finalizar el
+ * movimiento. Leer __HAL_TIM_GET_COMPARE() para decidir el estado destino
+ * es fragil: si mientras el servo se mueve llega un evento nuevo que
+ * cambia el CCR de nuevo (rotacion + fin de periodo casi simultaneos),
+ * la lectura del registro al final puede no coincidir con la intencion
+ * real, y ademas el evento nuevo se perdia silenciosamente porque
+ * ST_SERVO_MOVING no revisaba el flag de eventos entrantes. */
+static task_actuator_st_t servo_move_target = ST_SERVO_POS_A;
 
 /********************** internal functions declaration ***********************/
 void task_actuator_statechart(uint32_t index);
@@ -127,10 +137,10 @@ void task_actuator_init(void *parameters)
 		{
 			/* Posición inicial 90°: el init ocurre antes del ciclo,
 			 * por lo que el HAL_Delay aquí es aceptable. */
-			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, SERVO_CCR_CENTER);
-			HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
+			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, SERVO_CCR_CENTER);
+			HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
 			HAL_Delay(500);
-			HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_3);
+			HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1);
 			p_task_actuator_dta->state = ST_SERVO_POS_A;
 		}
 		else if (ID_HEATER == p_task_actuator_cfg->identifier)
@@ -201,16 +211,18 @@ void task_actuator_statechart(uint32_t index)
 
 				if (EV_SERVO_POS_B == p_task_actuator_dta->event)
 				{
-					__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, SERVO_CCR_POS_B);
-					HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
+					__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, SERVO_CCR_POS_B);
+					HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
 					p_task_actuator_dta->tick  = SERVO_MOVE_TICKS;
+					servo_move_target          = ST_SERVO_POS_B;
 					p_task_actuator_dta->state = ST_SERVO_MOVING;
 				}
 				else if (EV_SERVO_CENTER == p_task_actuator_dta->event)
 				{
-					__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, SERVO_CCR_CENTER);
-					HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
+					__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, SERVO_CCR_CENTER);
+					HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
 					p_task_actuator_dta->tick  = SERVO_MOVE_TICKS;
+					servo_move_target          = ST_SERVO_POS_A;
 					p_task_actuator_dta->state = ST_SERVO_MOVING;
 				}
 			}
@@ -228,16 +240,18 @@ void task_actuator_statechart(uint32_t index)
 
 				if (EV_SERVO_POS_A == p_task_actuator_dta->event)
 				{
-					__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, SERVO_CCR_POS_A);
-					HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
+					__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, SERVO_CCR_POS_A);
+					HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
 					p_task_actuator_dta->tick  = SERVO_MOVE_TICKS;
+					servo_move_target          = ST_SERVO_POS_A;
 					p_task_actuator_dta->state = ST_SERVO_MOVING;
 				}
 				else if (EV_SERVO_CENTER == p_task_actuator_dta->event)
 				{
-					__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, SERVO_CCR_CENTER);
-					HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
+					__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, SERVO_CCR_CENTER);
+					HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
 					p_task_actuator_dta->tick  = SERVO_MOVE_TICKS;
+					servo_move_target          = ST_SERVO_POS_A;
 					p_task_actuator_dta->state = ST_SERVO_MOVING;
 				}
 			}
@@ -249,19 +263,28 @@ void task_actuator_statechart(uint32_t index)
 		 * ================================================================ */
 		case ST_SERVO_MOVING:
 
+			/* Si llega un evento nuevo mientras el servo todavia se esta
+			 * moviendo, lo descartamos de forma explicita (en vez de
+			 * dejarlo en el struct sin consumir, donde antes se perdia
+			 * silenciosamente sin ni siquiera bajar el flag). El servo
+			 * termina el movimiento en curso antes de aceptar otro. */
+			if (true == p_task_actuator_dta->flag)
+			{
+				p_task_actuator_dta->flag = false;
+			}
+
 			if (p_task_actuator_dta->tick > 0)
 			{
 				p_task_actuator_dta->tick--;
 			}
 			else
 			{
-				HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_3);
+				HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1);
 
-				/* Ir al estado de posición correspondiente según el CCR actual */
-				if (__HAL_TIM_GET_COMPARE(&htim2, TIM_CHANNEL_3) == SERVO_CCR_POS_B)
-					p_task_actuator_dta->state = ST_SERVO_POS_B;
-				else
-					p_task_actuator_dta->state = ST_SERVO_POS_A;
+				/* Ir al estado destino guardado en software al iniciar
+				 * el movimiento, no al que indique el registro CCR del
+				 * timer en este instante. */
+				p_task_actuator_dta->state = servo_move_target;
 			}
 
 			break;

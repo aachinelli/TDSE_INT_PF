@@ -82,45 +82,31 @@ typedef struct
 } task_sensor_dta_t;
 
 /* ---------------------------------------------------------------------------
- * DHT22 (Temperatura / Humedad) - Maquina de estados no bloqueante
+ * SHT30 (Temperatura / Humedad via I2C) - Maquina de estados no bloqueante
  * ------------------------------------------------------------------------ */
 
-/* Estados de la FSM del DHT22 */
-typedef enum task_dht22_st {
-	ST_DHT_IDLE,			/* Reposo: cuenta ticks hasta el proximo muestreo        */
-	ST_DHT_TRIGGER_LOW,		/* Master baja la linea (OUTPUT), cuenta 20ms             */
-	ST_DHT_TRIGGER_HIGH,	/* Handshake + lectura completa de 40 bits en una llamada */
-	ST_DHT_DONE,			/* Trama completa: valida checksum y publica              */
-	ST_DHT_ERROR			/* Timeout o checksum invalido: vuelve a IDLE             */
-} task_dht22_st_t;
-
-/* Cantidad total de bits de la trama DHT22 (5 bytes) */
-#define DHT22_BIT_QTY		40u
+/* Estados de la FSM del SHT30 */
+typedef enum task_sht30_st {
+	ST_SHT30_IDLE,			/* Reposo: cuenta ticks hasta el proximo muestreo (2s) */
+	ST_SHT30_TRIGGER,		/* Envia comando de medicion por I2C                   */
+	ST_SHT30_WAIT,	        /* Espera ~15ms a que el sensor termine de medir       */
+	ST_SHT30_READ,			/* Lee los 6 bytes, calcula valores y publica          */
+	ST_SHT30_ERROR			/* Error de comunicacion I2C: vuelve a IDLE            */
+} task_sht30_st_t;
 
 typedef struct
 {
-	task_dht22_st_t		state;
-	uint32_t			tick;			/* contador generico: ticks de 1ms (idle 2s, trigger 20ms, timeouts) */
-	uint32_t			edge_time;		/* snapshot de TIM3 al iniciar la espera/medicion de un flanco */
-
-	uint8_t				bit_index;		/* bit actual dentro de la trama, 0..39 */
-	uint8_t				dht_bits[DHT22_BIT_QTY]; /* bits crudos leidos (0/1), antes de empaquetar en bytes */
-
-	/* Bytes crudos de la trama, misma variante que el prototipo de prueba */
-	uint8_t				Rh_byte1;
-	uint8_t				Rh_byte2;
-	uint8_t				Temp_byte1;
-	uint8_t				Temp_byte2;
-	uint8_t				SUM;
+	task_sht30_st_t		state;
+	uint32_t			tick;			/* Contador generico en ms */
 
 	float				Temperature;
 	float				Humidity;
 	bool				data_valid;		/* true cuando Temperature/Humidity son validos */
-} task_dht22_dta_t;
+} task_sht30_dta_t;
 
 /********************** external data declaration ****************************/
 extern task_sensor_dta_t task_sensor_dta_list[];
-extern task_dht22_dta_t   task_dht22_dta;
+extern task_sht30_dta_t  task_sht30_dta;
 
 /********************** external functions declaration ***********************/
 
@@ -130,5 +116,3 @@ extern task_dht22_dta_t   task_dht22_dta;
 #endif
 
 #endif /* TASK_SENSOR_ATTRIBUTE_H_ */
-
-/********************** end of file ******************************************/

@@ -57,34 +57,19 @@
 #define SENSOR_DTA_QTY		SENSOR_CFG_QTY
 
 /* ---------------------------------------------------------------------------
- * DHT22 (Temperatura / Humedad)
+ * SHT30 (Temperatura / Humedad)
  * ------------------------------------------------------------------------ */
-extern TIM_HandleTypeDef htim3;
+/* Asumiendo que usas el I2C1, de lo contrario cambialo por hi2c2, etc. */
+extern I2C_HandleTypeDef hi2c2;
 
-#define DHT22_PORT				Dht22_GPIO_Port
-#define DHT22_PIN				Dht22_Pin
+/* Direccion 0x44 desplazada 1 bit a la izquierda para las HAL de STM32 */
+#define SHT30_I2C_ADDR                  0x8A
 
-/* Periodo entre muestreos: 2000 ticks de 1ms = 2s (minimo recomendado por el sensor) */
-#define DHT22_SAMPLE_PERIOD_TICKS		2000ul
+/* Periodo entre muestreos: 2000 ticks de 1ms = 2s */
+#define SHT30_SAMPLE_PERIOD_TICKS		2000ul
 
-/* Fase de trigger: linea en LOW durante 20ms (20 ticks) */
-#define DHT22_TRIGGER_LOW_TICKS			20ul
-
-/* Espera fija tras soltar la linea, en OUTPUT, antes de pasar a INPUT (~5us, protocolo fijo) */
-#define DHT22_TRIGGER_HIGH_US			5u
-
-/* Espera fija ya en INPUT, antes de empezar a escuchar la respuesta */
-#define DHT22_LISTEN_DELAY_US			5u
-
-/* Timeouts */
-#define DHT22_RESPONSE_TIMEOUT_TICKS	50ul
-#define DHT22_BIT_TIMEOUT_TICKS		50ul
-
-/* Umbral para distinguir bit 0 (~26-28us en HIGH) de bit 1 (~70us en HIGH) */
-#define DHT22_BIT_THRESHOLD_US			40u
-
-/* Ventana de polling por flanco: 100us cubre el retraso acumulado entre ticks */
-#define DHT22_ACTIVE_POLL_WINDOW_US		100u
+/* Tiempo de medicion para High Repeatability (~15ms) */
+#define SHT30_MEASUREMENT_WAIT_TICKS    15ul
 
 /********************** internal data declaration ****************************/
 
@@ -97,17 +82,14 @@ const task_sensor_cfg_t task_sensor_cfg_list[] = {
 
 task_sensor_dta_t task_sensor_dta_list[SENSOR_DTA_QTY];
 
-/* Instancia unica de datos del DHT22 */
-task_dht22_dta_t task_dht22_dta;
+/* Instancia unica de datos del SHT30 */
+task_sht30_dta_t task_sht30_dta;
 
 /********************** internal functions declaration ***********************/
 void task_sensor_statechart(uint32_t index);
 
-static void dht22_set_pin_output(void);
-static void dht22_set_pin_input(void);
-static uint32_t dht22_now_us(void);
-static uint32_t dht22_elapsed_us(uint32_t since);
-static void task_dht22_statechart(void);
+/* Declaracion de la nueva FSM del SHT30 */
+static void task_sht30_statechart(void);
 
 /********************** internal data definition *****************************/
 const char *p_task_sensor 		= "Task Sensor (Sensor Statechart)";
@@ -144,23 +126,17 @@ void task_sensor_init(void *parameters)
 		p_task_sensor_dta->event = event;
 
 		LOGGER_INFO(" ");
-		LOGGER_INFO("   %s = %lu   %s = %lu   %s = %lu",
-				    GET_NAME(index), index,
-					GET_NAME(state), (uint32_t)state,
-					GET_NAME(event), (uint32_t)event);
+		LOGGER_INFO("   %s = %lu   %s = %lu   %s = %lu",GET_NAME(index), index,GET_NAME(state), (uint32_t)state,GET_NAME(event), (uint32_t)event);
 	}
 
-	/* --- Inicializacion del DHT22 --- */
-	/* Pin en reposo: INPUT con pull-up (linea en HIGH, igual que el reposo del bus 1-wire) */
-	dht22_set_pin_input();
+	/* --- Inicializacion del SHT30 --- */
+		memset(&task_sht30_dta, 0, sizeof(task_sht30_dta));
+		task_sht30_dta.state = ST_SHT30_IDLE;
+		task_sht30_dta.tick  = SHT30_SAMPLE_PERIOD_TICKS;
 
-	memset(&task_dht22_dta, 0, sizeof(task_dht22_dta));
-	task_dht22_dta.state = ST_DHT_IDLE;
-	task_dht22_dta.tick  = DHT22_SAMPLE_PERIOD_TICKS;
+		LOGGER_INFO(" ");
+		LOGGER_INFO("   SHT30 I2C inicializado - primer muestreo en %lu ms",(uint32_t)SHT30_SAMPLE_PERIOD_TICKS);
 
-	LOGGER_INFO(" ");
-	LOGGER_INFO("   DHT22 (PA9) inicializado - primer muestreo en %lu ms",
-			    (uint32_t)DHT22_SAMPLE_PERIOD_TICKS);
 }
 
 void task_sensor_update(void *parameters)
@@ -173,8 +149,8 @@ void task_sensor_update(void *parameters)
 		task_sensor_statechart(index);
 	}
 
-	/* Run DHT22 Statechart (una transicion como maximo por tick) */
-	task_dht22_statechart();
+	/* Run SHT30 Statechart (una transicion como maximo por tick) */
+	task_sht30_statechart();
 }
 
 void task_sensor_statechart(uint32_t index)
@@ -267,227 +243,88 @@ void task_sensor_statechart(uint32_t index)
 }
 
 /* ---------------------------------------------------------------------------
- * DHT22 - Funciones de soporte
+ * SHT30 - Maquina de estados (no bloqueante para el planificador)
  * ------------------------------------------------------------------------ */
-
-/* Reconfigura el pin como salida open-drain (para el trigger) */
-static void dht22_set_pin_output(void)
+static void task_sht30_statechart(void)
 {
-	GPIO_InitTypeDef GPIO_InitStruct = {0};
-	GPIO_InitStruct.Pin   = DHT22_PIN;
-	GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_OD;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	GPIO_InitStruct.Pull  = GPIO_NOPULL;
-	HAL_GPIO_Init(DHT22_PORT, &GPIO_InitStruct);
-}
-
-/* Reconfigura el pin como entrada con pull-up (reposo / lectura de respuesta y bits) */
-static void dht22_set_pin_input(void)
-{
-	GPIO_InitTypeDef GPIO_InitStruct = {0};
-	GPIO_InitStruct.Pin  = DHT22_PIN;
-	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-	GPIO_InitStruct.Pull = GPIO_PULLUP;
-	HAL_GPIO_Init(DHT22_PORT, &GPIO_InitStruct);
-}
-
-/* Valor actual del contador libre-corriente de TIM3 (1 cuenta = 1us) */
-static uint32_t dht22_now_us(void)
-{
-	return __HAL_TIM_GET_COUNTER(&htim3);
-}
-
-/* Tiempo transcurrido en us desde un snapshot previo, contemplando overflow del timer (16 bits) */
-static uint32_t dht22_elapsed_us(uint32_t since)
-{
-	uint32_t now = dht22_now_us();
-	return (uint32_t)((uint16_t)(now - since));
-}
-
-/* ---------------------------------------------------------------------------
- * DHT22 - Maquina de estados (no bloqueante, 1 transicion como maximo por tick)
- * ------------------------------------------------------------------------ */
-static void task_dht22_statechart(void)
-{
-	switch (task_dht22_dta.state)
+	switch (task_sht30_dta.state)
 	{
-		/* ============================================================
-		 * REPOSO: cuenta ticks de 1ms hasta el proximo muestreo
-		 * ============================================================ */
-		case ST_DHT_IDLE:
-
-			if (task_dht22_dta.tick > 0)
+		case ST_SHT30_IDLE:
+			if (task_sht30_dta.tick > 0)
 			{
-				task_dht22_dta.tick--;
+				task_sht30_dta.tick--;
 			}
 			else
 			{
-				/* Arranca un nuevo ciclo de lectura */
-				task_dht22_dta.bit_index = 0;
-				memset(task_dht22_dta.dht_bits, 0, sizeof(task_dht22_dta.dht_bits));
-
-				dht22_set_pin_output();
-				HAL_GPIO_WritePin(DHT22_PORT, DHT22_PIN, 0);
-
-				task_dht22_dta.tick  = DHT22_TRIGGER_LOW_TICKS;
-				task_dht22_dta.state = ST_DHT_TRIGGER_LOW;
+				task_sht30_dta.state = ST_SHT30_TRIGGER;
 			}
 			break;
 
-			/* ============================================================
-			* TRIGGER LOW: mantiene la linea baja 20ms (20 ticks de 1ms)
-			* ============================================================ */
-			case ST_DHT_TRIGGER_LOW:
-
-				if (task_dht22_dta.tick > 0)
-				{
-							task_dht22_dta.tick--;
-				}
-				else
-				{
-					/* NO soltamos la linea aquí. Solo cambiamos de estado.
-					La línea seguirá baja 1 ms extra, lo cual es válido (21ms total). */
-					task_dht22_dta.state = ST_DHT_TRIGGER_HIGH;
-				}
-				break;
-
-			/* ============================================================
-			* TRIGGER HIGH + RESPONSE + LECTURA COMPLETA DE 40 BITS:
-			* ============================================================ */
-			case ST_DHT_TRIGGER_HIGH:
-			{
-				uint32_t t0;
-				uint32_t timeout_start;
-				uint8_t  i;
-
-				HAL_GPIO_WritePin(DHT22_PORT, DHT22_PIN, 1);
-
-				/* 5us en OUTPUT antes de cambiar a INPUT */
-				t0 = dht22_now_us();
-				while (dht22_elapsed_us(t0) < DHT22_TRIGGER_HIGH_US);
-
-				dht22_set_pin_input();
-
-				/* 25us en INPUT antes de empezar a escuchar */
-				t0 = dht22_now_us();
-				while (dht22_elapsed_us(t0) < 25u);
-
-				/* Esperar LOW de respuesta del sensor (timeout real en microsegundos) */
-				timeout_start = dht22_now_us();
-				while (GPIO_PIN_SET == HAL_GPIO_ReadPin(DHT22_PORT, DHT22_PIN))
-				{
-					if (dht22_elapsed_us(timeout_start) > 90u) { task_dht22_dta.state = ST_DHT_ERROR; return; }
-				}
-
-				/* Esperar HIGH de respuesta (~80us) */
-				timeout_start = dht22_now_us();
-				while (GPIO_PIN_RESET == HAL_GPIO_ReadPin(DHT22_PORT, DHT22_PIN))
-				{
-					if (dht22_elapsed_us(timeout_start) > 90u) { task_dht22_dta.state = ST_DHT_ERROR; return; }
-				}
-
-				/* Esperar fin del HIGH de respuesta (~80us) */
-				timeout_start = dht22_now_us();
-				while (GPIO_PIN_SET == HAL_GPIO_ReadPin(DHT22_PORT, DHT22_PIN))
-				{
-					if (dht22_elapsed_us(timeout_start) > 90u) { task_dht22_dta.state = ST_DHT_ERROR; return; }
-				}
-
-				/* Leer los 40 bits completos */
-				for (i = 0; i < DHT22_BIT_QTY; i++)
-				{
-					/* Esperar flanco LOW->HIGH (inicio del bit) */
-					timeout_start = dht22_now_us();
-					while (GPIO_PIN_RESET == HAL_GPIO_ReadPin(DHT22_PORT, DHT22_PIN))
-					{
-						if (dht22_elapsed_us(timeout_start) > 90u) { task_dht22_dta.state = ST_DHT_ERROR; return; }
-					}
-
-					/* Medir cuanto tiempo esta en HIGH */
-					uint32_t edge = dht22_now_us();
-
-					/* Esperar flanco HIGH->LOW (fin del bit) */
-					timeout_start = dht22_now_us();
-					while (GPIO_PIN_SET == HAL_GPIO_ReadPin(DHT22_PORT, DHT22_PIN))
-					{
-						if (dht22_elapsed_us(timeout_start) > 90u) { task_dht22_dta.state = ST_DHT_ERROR; return; }
-					}
-
-					task_dht22_dta.dht_bits[i] = (dht22_elapsed_us(edge) >= DHT22_BIT_THRESHOLD_US) ? 1u : 0u;
-				}
-
-				task_dht22_dta.bit_index = DHT22_BIT_QTY;
-				task_dht22_dta.state     = ST_DHT_DONE;
-				break;
-			}
-
-		/* ============================================================
-		 * Trama completa: arma los 5 bytes, valida checksum y publica
-		 * ============================================================ */
-		case ST_DHT_DONE:
+		case ST_SHT30_TRIGGER:
 		{
-			uint8_t i;
-			uint8_t byte_val;
+            /* Comando SHT30: Single Shot, High Repeatability, Clock Stretching Disabled */
+            uint8_t cmd[2] = {0x24, 0x00};
 
-			task_dht22_dta.Rh_byte1   = 0;
-			task_dht22_dta.Rh_byte2   = 0;
-			task_dht22_dta.Temp_byte1 = 0;
-			task_dht22_dta.Temp_byte2 = 0;
-			task_dht22_dta.SUM        = 0;
+            /* Enviamos el comando por I2C (timeout corto de 10ms porque es solo escritura) */
+            if (HAL_I2C_Master_Transmit(&hi2c2, SHT30_I2C_ADDR, cmd, 2, 100) == HAL_OK)
+            {
+                task_sht30_dta.tick  = SHT30_MEASUREMENT_WAIT_TICKS;
+                task_sht30_dta.state = ST_SHT30_WAIT;
+            }
+            else
+            {
+                LOGGER_INFO("SHT30: fallo TX comando (addr=0x%02X) ErrorCode=0x%lX",
+                            SHT30_I2C_ADDR, HAL_I2C_GetError(&hi2c2));
+                task_sht30_dta.state = ST_SHT30_ERROR;
+            }
+            break;
+		}
 
-			for (i = 0; DHT22_BIT_QTY > i; i++)
+		case ST_SHT30_WAIT:
+			if (task_sht30_dta.tick > 0)
 			{
-				byte_val = (uint8_t)(i / 8u);
-				uint8_t bit_pos = (uint8_t)(7u - (i % 8u));
-				uint8_t bit_val = task_dht22_dta.dht_bits[i];
-
-				switch (byte_val)
-				{
-					case 0: task_dht22_dta.Rh_byte1   |= (uint8_t)(bit_val << bit_pos); break;
-					case 1: task_dht22_dta.Rh_byte2   |= (uint8_t)(bit_val << bit_pos); break;
-					case 2: task_dht22_dta.Temp_byte1 |= (uint8_t)(bit_val << bit_pos); break;
-					case 3: task_dht22_dta.Temp_byte2 |= (uint8_t)(bit_val << bit_pos); break;
-					case 4: task_dht22_dta.SUM        |= (uint8_t)(bit_val << bit_pos); break;
-					default: break;
-				}
-			}
-
-			uint8_t checksum = (uint8_t)(task_dht22_dta.Rh_byte1 + task_dht22_dta.Rh_byte2
-					+ task_dht22_dta.Temp_byte1 + task_dht22_dta.Temp_byte2);
-
-			if (checksum == task_dht22_dta.SUM)
-			{
-				uint16_t raw_temp = (uint16_t)((task_dht22_dta.Temp_byte1 << 8) | task_dht22_dta.Temp_byte2);
-				uint16_t raw_hum  = (uint16_t)((task_dht22_dta.Rh_byte1   << 8) | task_dht22_dta.Rh_byte2);
-
-				task_dht22_dta.Temperature = (float)(raw_temp / 10.0f);
-				task_dht22_dta.Humidity    = (float)(raw_hum  / 10.0f);
-				task_dht22_dta.data_valid  = true;
+				task_sht30_dta.tick--;
 			}
 			else
 			{
-				task_dht22_dta.data_valid = false;
+				task_sht30_dta.state = ST_SHT30_READ;
 			}
+			break;
 
-			task_dht22_dta.tick  = DHT22_SAMPLE_PERIOD_TICKS;
-			task_dht22_dta.state = ST_DHT_IDLE;
+		case ST_SHT30_READ:
+		{
+            uint8_t rx_data[6];
+
+            /* Leemos los 6 bytes de respuesta: Temp MSB, Temp LSB, Temp CRC, Hum MSB, Hum LSB, Hum CRC */
+            if (HAL_I2C_Master_Receive(&hi2c2, SHT30_I2C_ADDR, rx_data, 6, 100) == HAL_OK)
+            {
+                uint16_t raw_temp = (uint16_t)((rx_data[0] << 8) | rx_data[1]);
+                uint16_t raw_hum  = (uint16_t)((rx_data[3] << 8) | rx_data[4]);
+
+                /* Formulas de conversion oficiales del Datasheet del SHT30 */
+                task_sht30_dta.Temperature = -45.0f + (175.0f * ((float)raw_temp / 65535.0f));
+                task_sht30_dta.Humidity    = 100.0f * ((float)raw_hum / 65535.0f);
+                task_sht30_dta.data_valid  = true;
+
+                task_sht30_dta.tick  = SHT30_SAMPLE_PERIOD_TICKS;
+                task_sht30_dta.state = ST_SHT30_IDLE;
+            }
+            else
+            {
+                task_sht30_dta.state = ST_SHT30_ERROR;
+            }
 			break;
 		}
 
-		/* ============================================================
-		 * ERROR: timeout de respuesta o de algun bit. Vuelve a IDLE.
-		 * ============================================================ */
-		case ST_DHT_ERROR:
-
-			task_dht22_dta.data_valid = false;
-			task_dht22_dta.tick  = DHT22_SAMPLE_PERIOD_TICKS;
-			task_dht22_dta.state = ST_DHT_IDLE;
+		case ST_SHT30_ERROR:
+			task_sht30_dta.data_valid = false;
+			task_sht30_dta.tick  = 50ul;
+			task_sht30_dta.state = ST_SHT30_IDLE;
 			break;
 
 		default:
-
-			task_dht22_dta.state = ST_DHT_IDLE;
-			task_dht22_dta.tick  = DHT22_SAMPLE_PERIOD_TICKS;
+			task_sht30_dta.state = ST_SHT30_IDLE;
+			task_sht30_dta.tick  = SHT30_SAMPLE_PERIOD_TICKS;
 			break;
 	}
 }

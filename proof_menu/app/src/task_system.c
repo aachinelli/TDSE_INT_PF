@@ -136,7 +136,7 @@ static uint8_t new_menu_cursor = NEW_MENU_OPT_ADJUST;
  * pared (ticks de 1ms), independiente de la escala comprimida de debug
  * de cfg_days/cfg_hours. 45s reales = margen seguro para la vida útil
  * de la EEPROM en una incubación de varias semanas. */
-#define RUNNING_SAVE_TICKS      45000ul
+#define RUNNING_SAVE_TICKS      40000ul
 static uint32_t running_save_tick_cnt = RUNNING_SAVE_TICKS;
 
 /* Datos recuperados de EEPROM al elegir CONTINUAR, mostrados en
@@ -308,16 +308,14 @@ static uint32_t rtc_get_seconds(void)
 static void incubation_start(void)
 {
     uint32_t now = rtc_get_seconds();
-    incubation_target_seconds = now
-                              + ((uint32_t)cfg_days  * 24ul)
-                              + ((uint32_t)cfg_hours * 1ul);
+    incubation_target_seconds = now + ((uint32_t)cfg_days  * 24ul) + ((uint32_t)cfg_hours * 1ul);
     incubation_tick_cnt = INCUBATION_UPDATE_TICKS; /* fuerza update inmediato */
     display_alt_cnt = 0; /* arranca mostrando el temporizador */
 
     /* Inicializar servo en posición A y arrancar contador */
     servo_tick_cnt = SERVO_ROTATION_TICKS;
     servo_pos_b    = false;
-    servo_active   = true;
+    servo_active   = false;
 
     /* Calefactor arranca apagado (coincide con estado inicial del actuador) */
     heater_on = false;
@@ -351,11 +349,11 @@ static void display_incubating(void)
     }
     else
     {
-        if (task_dht22_dta.data_valid)
+        if (task_sht30_dta.data_valid)
         {
             snprintf(buf, sizeof(buf), "T:%2u%cC  H:%2u%%   ",
-                     (unsigned)task_dht22_dta.Temperature, 0xDF,
-                     (unsigned)task_dht22_dta.Humidity);
+                     (unsigned)task_sht30_dta.Temperature, 0xDF,
+                     (unsigned)task_sht30_dta.Humidity);
         }
         else
         {
@@ -398,14 +396,14 @@ static void display_last_data(void)
 static void incubation_run_common(task_system_dta_t *p_task_system_dta)
 {
     /* --- Control del calefactor (LED_T + RELE) con histéresis --- */
-    if (task_dht22_dta.data_valid)
+    if (task_sht30_dta.data_valid)
     {
-        if ((!heater_on) && (task_dht22_dta.Temperature < (cfg_temp - HEATER_HYSTERESIS)))
+        if ((!heater_on) && (task_sht30_dta.Temperature < (cfg_temp - HEATER_HYSTERESIS)))
         {
             put_event_task_actuator(EV_HEATER_ON, ID_HEATER);
             heater_on = true;
         }
-        else if (heater_on && (task_dht22_dta.Temperature >= cfg_temp))
+        else if (heater_on && (task_sht30_dta.Temperature >= cfg_temp))
         {
             put_event_task_actuator(EV_HEATER_OFF, ID_HEATER);
             heater_on = false;
