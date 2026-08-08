@@ -615,6 +615,7 @@ static void task_system_statechart(void)
                         }
 
                         incubation_start();
+                        servo_active   = true;
                         p_task_system_dta->state = ST_SYS_INCUBATING;
                         display_incubating();
                     }
@@ -787,6 +788,7 @@ static void task_system_statechart(void)
         case ST_SYS_INCUBATING:
 
             p_task_system_dta->flag = false;
+            servo_active   = true;
             incubation_run_common(p_task_system_dta);
             break;
 

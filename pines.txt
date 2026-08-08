@@ -18,3 +18,12 @@ PA15 - PWM (TIM2 CH1)
 
 sizeof(memory_preset_defaults) = 12 bytes
 sizeof(memory_running_t)       = 8  bytes
+
+CONSUMOS:
+
+LED_T = 7.1mA
+PIN RELE = 2uA
+LCD = 25.5mA
+EEPROM = 25uA (reposo)
+SHT30 = en modo reposo consumo <1uA; cada 2 segundos (cuando hace la medición) 1mA aproximadamente
+microprocesador = 10.5mA
