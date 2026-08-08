@@ -5,7 +5,7 @@
 **UNIVERSIDAD DE BUENOS AIRES**  
 **Facultad de Ingeniería**  
 **TA134 – Sistemas Embebidos**  
-Curso X – Grupo X
+Curso 2 – Grupo 1
 
 # Incubadora automática de huevos de ave  
 Sistema de monitoreo atmósferico y control de humedad y temperatura.  (a revisar)
@@ -18,26 +18,15 @@ Agustín Ezequiel Achinelli — Legajo 110124
 **Fecha:** XX/08/2026  
 **Cuatrimestre de cursada:** 1er cuatrimestre 2026  
 
-*Trabajo realizado en la Ciudad Autónoma de Buenos Aires entre junio 2026 y agosto 2026.*
+*Trabajo realizado en Haedo, Tigre y la Ciudad Autonóma de Buenos Aires entre junio 2026 y agosto 2026.*
 </div>
 
 ---
 
-PROGRESO
-
-FALTA ÍNDICE E HIPERVÍNCULOS
-REVISAR HISTORIAL DE REVISIONES
-
-
-
-
-
 ## Resumen
-
+---
 Se desarrolló el prototipo de una incubadora de huevos automática, un sistema embebido en un microcontrolador.
-El mismo cuenta con:
--
--
+El mismo cuenta con sensores, displays y actuadores como periféricos sobre la arquitectura STM32. Se utilizó una placa NUCLEOF103RB.
 
 Esta memoria justifica su necesidad, detalla los requisitos y proporciona información y esquemas sobre su diseño en hardware y firmware. Además, se documentan los ensayos y pruebas realizados y el estado final del proyecto.
 
@@ -53,7 +42,7 @@ La Tabla 0.1 resume el historial de revisiones y entregas de esta memoria.
 | Revisión | Cambios realizados | Fecha |
 | :---: | --- | :---: |
 | 1.0 | Escritura inicial de la memoria | 02/08/2026 |
-| 1.1 | Primer entrega, sin vídeo | /2026 |
+| 1.1 | Primer entrega: sin vídeo | 08/08/2026 |
 
 
 <em>Tabla 0.1 — Registro de versiones del documento.</em><br><br>
@@ -146,7 +135,7 @@ La Tabla 1.1 contrasta las prestaciones de los dos productos comerciales de refe
 | :--- | :--- | :--- | :--- |
 | **Monitoreo de temperatura y humedad** | POSEE | POSEE | POSEE |
 | **Sensor de temperatura y humedad** |  |  | Sensor analógico SHT30  |
-| **Interfaz de usuario** | Display 7 segmentos | PDisplay 7 segmentos | Pantalla LCD 16×2 con menú interactivo de dos niveles |
+| **Interfaz de usuario** | Display 7 segmentos | Display 7 segmentos | Pantalla LCD 16×2 con menú interactivo de dos niveles |
 | **Selección de modos** | No disponible | No disponible | 3 modos precargados en una EEPROM externa. Modos personalizables. |
 | **Registro de eventos** | No disponible | No disponible | Guardado del estado previo a un corte de suministro |
 | **Base de tiempo** | No posee | No posee | RTC interno del STM32 |   ***REVISAR***
@@ -278,7 +267,7 @@ Además, se busco que los componentes sean compatibles con los requisitos de Sof
 La placa NUCLEO-F103RB fue la provista para ser de procesador central. Todos los componentes de Hardware son controlados por su microcontrolador STM32. 
 
 <div align="center">
-<img width="800" alt="NUCLEO" src="NUCLEO" />
+<img width="600" alt="NUCLEO" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/nucleo_f103rb.jpg" />
 <p><em>Figura X: NUCLEO.</em></p>
 </div>
 
