@@ -94,8 +94,6 @@ La Tabla 0.1 resume el historial de revisiones y entregas de esta memoria.
   - [4.2 Pruebas funcionales de hardware Y software](#42)
   - [4.3 Ocupación de memoria: Console & Build Analyzer](#43)
   - [4.4 Medición y análisis de tiempos de ejecución (WCET)](#44)
-    - [4.4.1 Metodología]()
-    - [4.4.2 Resultados ]()
   - [4.5 Cálculo del Factor de Uso (U) de la CPU]()
   - [4.6 Medición y análisis de consumo]
   - [4.7 Cumplimiento de requisitos]
@@ -394,26 +392,10 @@ Se procedieron a asignar los siguientes pines
 
 ## 3.3 Diseño de firmware
 En este apartado se detalla la construcción del Software desarrollado para el funcionamiento del prototipo de incubadora. El mismo fue desarrollado bajo una estructura 
-Bare Metal, con un sistema determinado por eventos. Se utilizó una estructura modular. Se utilizaron 3 módulos: modulos de sensado, procesado y actuación.
-Se buscó cuidar el consumo energético, la memoria y obtener un código legible y de fácil comprensión.
+Bare Metal, con un sistema determinado por eventos. Se utilizó una estructura modular. 
+Se utilizaron 3 módulos: modulos de sensado, procesado y actuación.
+Se buscó cuidar el consumo energético, la memoria y obtener un código legible y de fácil comprensión y una óptima interacción entre los periféricos.
 
-
-
-****
-○ Bare Metal (sin Sistema Operativo), del tipo Event-Triggered System
-○ Estructurada/Modular (Escrutar/Procesar/Actuar), nada de código Spaguetti
-○ Patrones de software:
-■ Ejecutor cíclico, Super-Loop (polling & interrupts) => 1 vuelta < 1mS
-■ Tick = 1mS (Systick => Callback)
-■ Tareas de código no bloqueante, ya sea temporizada o no temporizada
-■ Modelos - Diagramas de Estado - c/Interfaces (colas, estructuras, array de estructuras)
-■ Menú Interactivo
-■ Bajo Consumo
-■ Al menos dos modos de operación (NORMAL, SET_UP, FALLA, ...)
-■ Periféricos con comunicación SPI y/o I2C
-■ Periféricos gestionados por Polling (siempre que no sea código bloqueante), Interrupts o DMA
-(=> Callbacks), por ejemplo
-****
 
 
 ### 3.3.1 Arquitectura de ejecución
@@ -421,7 +403,7 @@ Se buscó cuidar el consumo energético, la memoria y obtener un código legible
 Todas las tareas a realizar se rigen por un ejecutor cíclico con velocidad de 1kHz, obteniendo tareas que se realizan en su totalidad en menos de 1 ms. El ejecutor cíclico se 
 guía por el `SysTick`, que al ejecutar un loop se ejecuta la lista de tareas vistas en la figura 3.X. ****REVISAR****
 
- Además, se utilizan tareas no bloqueantes, es decir no se utiliza el `HAL_Delay()` para generar una temporización. 
+Además, se utilizan tareas no bloqueantes, es decir no se utiliza el `HAL_Delay()` para generar una temporización. 
 
 
 Se recorren las tareas en el siguiente orden
@@ -432,24 +414,16 @@ Se recorren las tareas en el siguiente orden
 4. `task_actuator_update`
 5. `task_display_update`
 
-
 Cada tarea se ejecuta en cada tick y su tiempo se mide con contador de ciclos (`DWT->CYCCNT`) para cálculo de WCET.
 
- 
-El firmware se organiza como un ejecutivo cíclico gobernado por el `SysTick`, configurado a 1000 ticks por segundo. 
-El *callback* del SysTick incrementa un contador de ticks pendientes; el lazo principal detecta ese contador y, por cada tick pendiente, 
-ejecuta una vuelta completa de la lista de tareas en el orden fijo que ilustra la Figura 3.9:
-
-
 <div align="center">
-<img width="650" alt="ejecutivo ciclico" src="https://raw.githubusercontent.com/Matias-J-Sanchez-Q/tdse-tf_2026-1erC_2-02/main/escrutar.jpeg" />
+<img width="650" alt="ejecutor cíclico" src="ESCRUTAR, PROCESAR, ACTUAR" />
 <p><em>Figura 3.9: Orden de despacho de las tareas dentro de una vuelta del ejecutivo cíclico.</em></p>
 </div>
  
 El orden que muestra la Figura 3.9 no es arbitrario: garantiza que un evento generado por un sensor en el tick *N* sea procesado por la FSM y ejecutado por los actuadores en ese mismo tick, acotando la latencia de punta a punta a 1 ms.
  
-Ninguna tarea bloquea. No se utiliza `HAL_Delay()` en el lazo principal: todas las temporizaciones (mensajes, refresco de UI, inactividad, pulsos de alarma, ciclo de escritura de la EEPROM) se resuelven con contadores de ticks.
- 
+Ninguna tarea bloquea. No se utiliza `HAL_Delay()` en el lazo principal: todas las temporizaciones (mensajes, refresco de UI, inactividad, pulsos de alarma, ciclo de escritura de la EEPROM) se resuelven con contadores de ticks. 
 Además, las tareas se comunican por interfaces. No hay comunicación por variables globales. Cada tarea tiene asignada una interfaz: 
 
 
@@ -463,6 +437,12 @@ Además, las tareas se comunican por interfaces. No hay comunicación por variab
 
 ### 3.3.2 Máquina de estados del sistema
 
+El código se modeló utilizando la maquina de estados del sistema. Esta misma se utilizó para el armado del menú interactivo.
+
+<div align="center">
+<img width="650" alt="máquina de estados" src="STATECHART" />
+<p><em>Figura 3.9: Orden de despacho de las tareas dentro de una vuelta del ejecutivo cíclico.</em></p>
+</div>
 
 
 ---
@@ -497,23 +477,80 @@ VÍDEO
 
 
 ## 4.3 Ocupación de memoria: Console & Build Analyzer
- 
+
+Al depurar el código, el STM32CubeIDE reproduce una pantalla llamada *Build Analyzer. En ella se muestra el desglose del uso de la memoria FLASH Y RAM. 
+Esto se muestra en la figura 4.X.
+
+<div align="center">
+<img width="800" alt="MEMORIA" src="MEMORIA" />
+<p><em>Figura 4.X: Uso de memoria.</em></p>
+</div>
+
+
+
+Se realiza una tabla para facilitar la comprensión de lo obtenido en la depuración.
+
+<div align="center">
+
+| MEMORIA |  | Usado [Bytes] | Total Disponible [Bytes] | Porcentaje de ocupación |
+| :--- | :--- | :---: | :---: | :---: |
+| **RAM** |  |  |  | **** |
+| **FLASH** |  |  |  | **** |
+
+<em>Tabla 4.X: Desglose de secciones del binario y ocupación de memoria.</em>
+
+</div>
+
+En conclusión, el firmware utiliza aproximadamente el 15% de la memoria dinámica y al rededor del 33% de la memoria flash. Esto demuestra un uso seguro de la memoria, 
+con baja ocupación de la misma y un buen margen para agregar funcionalidades y mejoras. Al mismo tiempo, no se observaron fallos que generen perdida excesiva de memoria 
+a la hora de realizar depuraciones.
+
  
 ## 4.4 Medición y análisis de tiempos de ejecución (WCET)
 
+En esta sección se busca comprender el comportamiento temporal del programa en la búsqueda de cumplir con los requisitos máximos de tiempo del ejecutor cíclico.
+Para esto se observa la variable **WCET** (*Worst-Case Execution Time*), lo que nos mostrará el peor caso de ejecución de una tarea durante su depuración. La misma
+se obtiene invocando el contador de ciclos del DWT (*Data Watchpoint and Trace*) del Cortex-M3, que cuenta el tiempo de ejecución de cada tarea en el ciclo de ejecución. 
+Es común observar que las tareas más costosas generan mayor tiempo de ejecución por lo que se procedió a la depuración y se simuló una incubación completa, es decir
+que incluya todas las acciones disponibles por nuestro prototipo.
 
-### 4.4.1 Metodología
- 
- 
-### 4.4.2 Resultados
- 
+En la figura 4.X se observan los resultados observados en la pantalla *Live Expressions* de la depuración en el STM32CubeIDE.
+
+<div align="center">
+<img width="800" alt="WCET" src="WCET" />
+<p><em>Figura 4.X: WCET.</em></p>
+</div>
+
+Se toman en cuenta los resultados de los valores de `task_dta_list[].WCET`, siendo que cada uno de los elementos de `task_dta_list[]` es una de las tareas del ciclo de ejecución.
+El valor devuelto es el tiempo en microsegundos (µs) devuelto por el DWT. 
+En la tabla 4.X se observa la suma de los WCET de todas las tareas, simulando el peor caso posible del tiempo de vuelta del ciclo de ejecución. 
+
+<div align="center">
+|Tarea| WCET[µs]|
+|:---:|:---:|
+|`task_sensor`||
+|`task_memory`||
+|`task_system`||
+|`task_actuator`||
+|`task_display`||
+|TOTAL (ciclo completo)||
+
+<em>Tabla 4.X: Peores casos de tiempo de ejecución según tarea.</em>
+
+</div>
+
+
+Como se observa, en el peor de los casos, es decir cuando se acumulan todos los peores tiempos de ejecución, se obtiene un WCET total de µs. Es un resultado
+que cumple con los requisitos de tiempo y deja margen a la hora de agregar funcionalidades. Se toma en cuenta que la tarea de mayor tiempo de ejecución es `task_display`, 
+tarea que incluye los tiempos de debounce de los botones del teclado y proporciona el funcionamiento del display y el teclado, es decir una tarea con poca posibilidad de 
+mejora temporal mediante código.
 
 ## 4.5 Cálculo del Factor de Uso (U) de la CPU
- 
+
+
 
 ## 4.6 Medición y análisis de consumo
  
-
 
  
 ## 4.7 Cumplimiento de requisitos
@@ -531,22 +568,22 @@ VÍDEO
 | 🟢 |   | 1.2 | El sistema activará el elemento calefactor cuando la temperatura esté por debajo del umbral configurado. |
 | 🟢 |   | 1.3 | El sistema desactivará el elemento calefactor cuando la temperatura supere el umbral configurado. |
 | 🟢 | Humedad | 2.1 | El sistema medirá continuamente la humedad relativa interior. |
-| 🔴 |   | 2.2 | El sistema activará el humidificador cuando la humedad esté por debajo del umbral configurado. |
-| 🔴 |   | 2.3 | El sistema desactivará el humidificador cuando la humedad supere el umbral configurado. |
+| 🟡 |   | 2.2 | El sistema activará el humidificador cuando la humedad esté por debajo del umbral configurado. |
+| 🟡 |   | 2.3 | El sistema desactivará el humidificador cuando la humedad supere el umbral configurado. |
 | 🟢 | Rotación | 3.1 | El sistema rotará los huevos automáticamente a intervalos de tiempo configurables por tipo de huevo. |
 | 🟢 |   | 3.2 | El sistema indicará mediante un LED cada vez que se realice una rotación. |
 | 🟢 |   | 3.3 | El sistema inhibirá la rotación durante los últimos días del ciclo de incubación (lockdown), según el modo seleccionado. |
 | 🟢 | Interfaz | 4.1 | El sistema contará con una pantalla LCD para mostrar temperatura, humedad, día del ciclo y modo activo. |
 | 🟢 |   | 4.2 | El sistema contará con un teclado matricial para navegar entre menús y configurar parámetros. |
-| 🟡 |   | 4.3 | El sistema contará con LEDs indicadores de estado: calentador activo, humidificador activo y rotación. |
-| 🔴 |   | 4.4 | El sistema contará con un buzzer para alertas sonoras (alarmas y confirmaciones). |
+| 🟢 |   | 4.3 | El sistema contará con LEDs indicadores de estado: calentador activo, humidificador activo y rotación. |
+| 🟡 |   | 4.4 | El sistema contará con un buzzer para alertas sonoras (alarmas y confirmaciones). |
 | 🟢 | Modos de incubación | 5.1 | El sistema soportará al menos tres modos predefinidos: huevo de gallina, pato y codorniz, con sus respectivos parámetros de temperatura, humedad y ciclo. |
 | 🟢 |   | 5.2 | El usuario podrá seleccionar el modo desde el menú de la interfaz gráfica. |
 | 🟢 |   | 5.3 | El sistema indicará en el display el día actual del ciclo de incubación. |
-| 🔴 | Alarmas | 6.1 | El sistema emitirá una alarma sonora y visual si la temperatura supera un umbral crítico configurable. |
-| 🔴 |   | 6.2 | El sistema emitirá una alarma sonora y visual si la humedad supera o cae por debajo de umbrales críticos. |
-| 🔴 |   | 6.3 | El sistema emitirá una alarma si el motor de rotación no completa el giro en el tiempo esperado. |
-| 🟡 | Almacenamiento | 7.1 | El sistema almacenará en la EEPROM externa el historial de temperatura, humedad y eventos de rotación. |
+| 🟡 | Alarmas | 6.1 | El sistema emitirá una alarma sonora y visual si la temperatura supera un umbral crítico configurable. |
+| 🟡 |   | 6.2 | El sistema emitirá una alarma sonora y visual si la humedad supera o cae por debajo de umbrales críticos. |
+| 🟡 |   | 6.3 | El sistema emitirá una alarma si el motor de rotación no completa el giro en el tiempo esperado. |
+| 🟢 | Almacenamiento | 7.1 | El sistema almacenará en la EEPROM externa el historial de temperatura, humedad y eventos de rotación. |
 | 🟢 |   | 7.2 | El sistema preservará la configuración activa y el día del ciclo ante cortes de energía. |
 
 
@@ -561,8 +598,21 @@ El prototipo simula satisfactoriamente el funcionamiento de un ciclo de incubaci
 
 ## 5.2 Posibles mejoras
 
+A futuro se pueden implementar mejoras y agregados de Software y Hardware, ya sea aquellos requisitos que no fueron incluidos por los motivos previamente planteados, o 
+posibles agregados que podrían mejorar el atractivo y la viabilidad del producto. Algunos de las posibles mejoras son:
+
+- Implementación de un cooler para disminuir la temperatura y la humedad.
+- Implementación del servomotor para accionar un dispositivo humidificador.
+- Implementación de las alarmas mediante buzzers. 
+- Agregado de un modo de reposo para cuidado del consumo. Podría disminuir el uso de la resistencia térmica, bajar o apagar la pantalla LCD y disminuir al mínimo las funciones.
 
 
+## 5.3 Aprendizajes
+
+Este trabajo nos proporcionó aprendizaje técnico y organizativos acordes al trabajo de un ingeniero electrónico. Algunas instancias de aprendizaje incluyen 
+la compra de componentes que no cumplían con las especificaciones técnicas pedidas y la extensión del alcance establecido por los integrantes.
+En conclusión, consideramos que de hacer otra vez un trabajo de este estilo contamos con el conocimiento del tiempo que conlleva, con el conocimiento del
+ desarrollo en STM32, con una noción organizativa y profesional requerida por este tipo de tareas.
 
 ---
 
