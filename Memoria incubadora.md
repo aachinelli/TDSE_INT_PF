@@ -526,14 +526,15 @@ El valor devuelto es el tiempo en microsegundos (µs) devuelto por el DWT.
 En la tabla 4.X se observa la suma de los WCET de todas las tareas, simulando el peor caso posible del tiempo de vuelta del ciclo de ejecución. 
 
 <div align="center">
+
 |Tarea| WCET[µs]|
 |:---:|:---:|
-|`task_sensor`||
-|`task_memory`||
-|`task_system`||
-|`task_actuator`||
-|`task_display`||
-|TOTAL (ciclo completo)||
+| `task_sensor` | X|
+| `task_memory` | X |
+| `task_system`| X |
+|`task_actuator`| X |
+|`task_display`| X |
+|TOTAL (ciclo completo)| X |
 
 <em>Tabla 4.X: Peores casos de tiempo de ejecución según tarea.</em>
 
@@ -547,10 +548,20 @@ mejora temporal mediante código.
 
 ## 4.5 Cálculo del Factor de Uso (U) de la CPU
 
+El factor de uso de la CPU se calcula como el cociente entre el peor caso de ejecución (C) y el tiempo de vuelta del ejecutor cíclico (T), siendo T los 1000 us seteados por el SysTick.
+Este cociente se expresa en la ecuación 
+
+$$U = \frac{C}{T} \qquad (4.1)$$
+
+Reemplazando C con el tiempo total de obtenido en la Tabla 4.X se obtiene un factor de uso de 0. , es decir un % del total del CPU 
+
 
 
 ## 4.6 Medición y análisis de consumo
  
+Se midió el consumo energético del sistema poniendo un multímetro en modo amperímetro en serie con la alimentación mientras se ejecutaban las diferentes tareas.
+El prototipo en funcionamiento no cuenta con ningún dispositivo térmico para ofrecer el calor, por lo que el consumo estará dictado por el de la placa NUCLEO y los 
+periféricos previamente mencionados. 
 
  
 ## 4.7 Cumplimiento de requisitos
@@ -604,7 +615,7 @@ posibles agregados que podrían mejorar el atractivo y la viabilidad del product
 - Implementación de un cooler para disminuir la temperatura y la humedad.
 - Implementación del servomotor para accionar un dispositivo humidificador.
 - Implementación de las alarmas mediante buzzers. 
-- Agregado de un modo de reposo para cuidado del consumo. Podría disminuir el uso de la resistencia térmica, bajar o apagar la pantalla LCD y disminuir al mínimo las funciones.
+- Agregado de un modo de reposo para cuidado del consumo. Podría disminuir el uso de la resistencia térmica, bajar el brillo o apagar la pantalla LCD y disminuir al mínimo las funciones.
 
 
 ## 5.3 Aprendizajes
@@ -612,7 +623,7 @@ posibles agregados que podrían mejorar el atractivo y la viabilidad del product
 Este trabajo nos proporcionó aprendizaje técnico y organizativos acordes al trabajo de un ingeniero electrónico. Algunas instancias de aprendizaje incluyen 
 la compra de componentes que no cumplían con las especificaciones técnicas pedidas y la extensión del alcance establecido por los integrantes.
 En conclusión, consideramos que de hacer otra vez un trabajo de este estilo contamos con el conocimiento del tiempo que conlleva, con el conocimiento del
- desarrollo en STM32, con una noción organizativa y profesional requerida por este tipo de tareas.
+ desarrollo en STM32 y con una noción organizativa y profesional requerida por este tipo de tareas.
 
 ---
 
