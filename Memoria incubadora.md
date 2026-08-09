@@ -8,7 +8,7 @@
 Curso 2 – Grupo 1
 
 # Incubadora automática de huevos de ave  
-Sistema de monitoreo atmósferico y control de humedad y temperatura.  (a revisar)
+Sistema de monitoreo atmósferico, control de humedad y temperatura y rotación de huevos.
 
 ## Autores
 Pablo Martínez Madero — Legajo 106516  
@@ -18,7 +18,7 @@ Agustín Ezequiel Achinelli — Legajo 110124
 **Fecha:** 08/08/2026  
 **Cuatrimestre de cursada:** 1er cuatrimestre 2026  
 
-*Trabajo realizado en Haedo, Tigre y la Ciudad Autonóma de Buenos Aires entre junio 2026 y agosto 2026.*
+*Trabajo realizado en Haedo, Tigre y la Ciudad Autonóma de Buenos Aires entre junio y agosto 2026.*
 </div>
 
 ---
@@ -76,7 +76,7 @@ La Tabla 0.1 resume el historial de revisiones y entregas de esta memoria.
 - [Capítulo 4: Ensayos y resultados](#capítulo-4-ensayos-y-resultados)
   - [4.1 Integración](#41-integración)
   - [4.2 Pruebas funcionales de hardware Y software](#42-pruebas-funcionales-de-hardware-y-software)
-  - [4.3 Ocupación de memoria: Console & Build Analyzer](#43-ocupación-de-memoria:-console-&-build-analyzer)
+  - [4.3 Ocupación de memoria: Console & Build Analyzer](#43-ocupación-de-memoria-console-&-build-analyzer)
   - [4.4 Medición y análisis de tiempos de ejecución (WCET)](#44-medición-y-análisis-de-tiempos-de-ejecución-(WCET))
   - [4.5 Cálculo del Factor de Uso (U) de la CPU](#45-Cálculo-del-Factor-de-Uso-(U)-de-la-CPU)
   - [4.6 Medición y análisis de consumo](#46-medición-y-análisis-de-consumo)
@@ -192,6 +192,7 @@ En la sección 4.7 se detalla el cumplimiento final de los requisitos.
 ||6\.3|El sistema emitirá una alarma si el motor de rotación no completa el giro en el tiempo esperado.|
 |**Almacenamiento**|7\.1|El sistema almacenará en la EEPROM externa el historial de temperatura, humedad y eventos de rotación.|
 ||7\.2|El sistema preservará la configuración activa y el día del ciclo ante cortes de energía.|
+
 <em>Tabla 2.1 — Requisitos iniciales del proyecto.</em><br><br>
 
 A medida que se avanzó con el prototipado se actualizaron los requisitos, generando un informe de avance diseñado a la mitad del tiempo de desarrollo del prototipo.
@@ -291,7 +292,7 @@ El actuador que simula el funcionamiento de un componente que aporte calor (resi
 Este mismo se usa para demostrar que se conecta el led en un bus con suministro eléctrico, logrando calentar el recinto cuando sea necesario solamente alimentando el relé
 
 <div align="center">
-<img width="500" alt="RELÉ" src="" />
+<img width="500" alt="RELÉ" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Rele.jpg" />
 <p><em>Figura 2.4: Relé.</em></p>
 </div>
 
@@ -341,28 +342,33 @@ Conociendo los requisitos propuestos y el hardware elegido se diseñó un diagra
 
 En la Figura 3.1 se presenta el diagrama en bloques general. En el se presentan los distintos módulos y se muestran los sensores, actuadores y displays.
 
+<div align="center">
+
 <img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Incubadora-diagrama.jpeg" width="600" />
 <em>Figura 3.1 — Diagrama en bloques general.</em><br><br>
 
+</div>
 
 A partir del diagrama de la figura 3.1 se obtuvo una idea de la cantidad de conexiones con la placa NUCLEO. 
 A medida que las pruebas fueron avanzando y considerando los puertos disponibles por la placa NUCLEO, se optó por utilizar esquema de la Figura 3.2:
 
+
+<div align="center">
+
 <img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Diagrama%20incubadora.jpeg" width="600" />
 <em>Figura 3.2 — Plano de las conexiones de los periféricos.</em><br><br>
 
+</div>
 
 
 
 ## 3.2 Diseño de hardware
 
-En el siguiente apartado se detallan las soluciones de Hardware adoptadas en línea con las pautas de entrega. El objetivo final es conseguir un conexionado de todo el Hardware de (prolijidad, soldado, etc.)
-Se optó por usar una placa experimental, sin cables dupont,  ...
+En el siguiente apartado se detallan las soluciones de Hardware adoptadas en línea con las pautas de entrega. EEl objetivo final es conseguir un conexionado de todo el hardware de forma ordenada procurando que no queden cortocircuitos en las soludaduras y conexiones firmes para que no se interrumpan las comunicaciones. Para esto se opto por el montaje sobre una placa experimental, sin cables dupont extremo a extremo.
 
-Como se mencionó previamente, se utilizó el diagrama 3.X de guía para el conexionado con la placa. Considerando que es necesario conectar los siguientes actuadores y sensores.
-Se procedieron a asignar los siguientes pines 
+Como se mencionó previamente, se utilizo el diagrama 3.2 de guia para el conexionado de la placa y los periféricos. Considerando que es necesario conectar actuadores y el sensor principal, se definieron los siguientes pines:
 
-CENTRAR*******
+<div align="center">
 
 | Función | Puerto | Protocolo |
 | :--- | :--- | :--- |
@@ -380,6 +386,10 @@ CENTRAR*******
 
 <p align="center"><em>Tabla 3.1: Asignación de pines de la placa núcleo.</em></p>
 
+</div>
+
+
+
 Además se tuvieron en cuenta las necesidades de alimentación de la placa así que se le proporcionaron 5 V de alimentación a la placa NUCLEO y se diseñó un bus con 5 V 
 para alimentar los periféricos. 
 
@@ -394,7 +404,7 @@ Se buscó cuidar el consumo energético, la memoria y obtener un código legible
 ### 3.3.1 Arquitectura de ejecución
 
 Todas las tareas a realizar se rigen por un ejecutor cíclico con velocidad de 1kHz, obteniendo tareas que se realizan en su totalidad en menos de 1 ms. El ejecutor cíclico se 
-guía por el `SysTick`, que al ejecutar un loop se ejecuta la lista de tareas vistas en la figura 3.X. ****REVISAR****
+guía por el `SysTick`, que al ejecutar un loop ejecuta la lista de tareas.
 
 Además, se utilizan tareas no bloqueantes, es decir no se utiliza el `HAL_Delay()` para generar una temporización. 
 
@@ -414,18 +424,23 @@ Cada tarea se ejecuta en cada tick y su tiempo se mide con contador de ciclos (`
 <p><em>Figura 3.3: Orden de tareas en un ciclo de ejecución.</em></p>
 </div>
  
-********El orden que muestra la Figura 3.9 no es arbitrario: garantiza que un evento generado por un sensor en el tick *N* sea procesado por la FSM y ejecutado por los actuadores en ese mismo tick, acotando la latencia de punta a punta a 1 ms.
  
-Ninguna tarea bloquea. No se utiliza `HAL_Delay()` en el lazo principal: todas las temporizaciones (mensajes, refresco de UI, inactividad, pulsos de alarma, ciclo de escritura de la EEPROM) se resuelven con contadores de ticks. 
+No se utilizan tareas bloqueantes, ni se utiliza el `HAL_DELAY()`. Todos las temporizaciones se rigen por contadores de ticks.
 Además, las tareas se comunican por interfaces. No hay comunicación por variables globales. Cada tarea tiene asignada una interfaz: 
 
+<div align="center">
 
-| Tarea | Interfaz|
+| Tarea | Interfaz |
+| --- | --- |
 | `task_sensor_update` | `task_sensor_interface` |
 | `task_memory_update` | `task_memory_interface` |
 | `task_system_update` | `task_system_interface` |
 | `task_actuator_update` | `task_actuator_interface` |
 | `task_display_update`| `task_display_interface` |
+
+<p><em>Tabla 3.2: Interfaces .</em></p>
+
+</div>
 
 
 ### 3.3.2 Máquina de estados del sistema
@@ -438,7 +453,16 @@ El código se modeló utilizando la maquina de estados del sistema. Esta misma s
 </div>
 
 
-En la figura 3.4 se puede seguir el orden de acciones del sistema. Al iniciar el sistema, se muestra un mensaje de bienvenida ********
+En la figura 3.4 se puede seguir el orden de acciones del sistema. Al iniciar el sistema, se muestra un mensaje de bienvenida que nos lleva a una pantalla donde 
+se pueden tomar dos caminos: `Continuar` y `Nuevo inicio`. La opción `Nuevo inicio` nos lleva a establecer los parámetros del ciclo de icubación, ya sean los precargados en la memoria
+o datos de una sesión personalizada. Una vez seleccionados los parámetros se entra en el proceso de incubación donde se muestran por pantalla la humedad y temperatura actuales y
+el tiempo restante en días y horas. Si se elige la opción `Continuar` se verifica que efectivamente haya una sesión en progreso y se continúa al ciclo de incubación en proceso, con el tiempo restante.
+
+Durante el proceso de incubación, el sistema recibe datos del sensor de temperatura y humedad. Si la temperatura es menor a la necesaria se envía la señal al módulo del relé que simula el encendido del componente térmico.
+En simultáneo se envían los datos de temperatura y humedad al display. La rotación está dada por un contador. Se envía la señal al servomotor por PWM para rotar los huevos algunos grados cada cierta cantidad de horas. Este proceso se detiene
+al alcanzar los últimos días de la incubación.
+
+
 
 ---
 
@@ -458,6 +482,7 @@ VÍDEO
 
 Se redactaron las siguientes pruebas para verificar el funcionamiente esperado del prototipo:
 
+<div align="center">
 
 | Subsistema | Ensayo realizado | Resultado / Criterio de validación | Estado |
 | :--- | :--- | :--- | :---: |
@@ -471,6 +496,9 @@ Se redactaron las siguientes pruebas para verificar el funcionamiente esperado d
 | **Firmware** | Máquina de estados global | Transiciones robustas entre las pantallas del menú. Correcto traspaso entre la entrada de datos y el proceso de incubación | ✅ |
 
 <p align="center"><em>Tabla 4.1: Resumen de ensayos funcionales de hardware y firmware.</em></p>
+
+</div>
+
 
 Estas pruebas determinan un correcto ensamblaje y comunicación entre las entradas/salidas analógicas y el código. Se espera que hayan conexiones robustas, por lo que se 
 soldaron los componentes a una placa experimental y se utilizaron zócalos.
@@ -492,7 +520,7 @@ Se realiza una tabla para facilitar la comprensión de lo obtenido en la depurac
 <div align="center">
 
 | MEMORIA | Usado [Bytes] | Total Disponible [Bytes] | Porcentaje de ocupación |
-| :--- | :--- | :---: | :---: | :---: |
+| :--- | :--- | :---: | :---: |
 | **RAM** | 2.91 k  | 20 k | 14.57% |
 | **FLASH** | 41.7 k  | 128 k | 32.57% |
 
@@ -593,6 +621,8 @@ consumen desde los 30 W por lo que el consumo del prototipo es reducido en compa
 
 En la siguiente tabla se expone el cumplimiento de los requisitos expuestos en la tabla 2.2:
 
+
+
 | Estado | Descripción      |
 |-----|---------------------|
 | 🟢 | Implementado |
@@ -624,7 +654,7 @@ En la siguiente tabla se expone el cumplimiento de los requisitos expuestos en l
 | 🟢 |   | 7.2 | El sistema preservará la configuración activa y el día del ciclo ante cortes de energía. |
 
 
-<em>Tabla 4.5: Cumplimiento de requisitos.</em>
+<p align="center"><em>Tabla 4.5: Cumplimiento de requisitos.</em></p>
 
 ---
 
@@ -669,3 +699,8 @@ Se explicita el uso de herramientas de Inteligencia Artificial en las siguientes
 
 # Capítulo 7: Bibliografía y referencias
 
+[1] STMicroelectronics, *UM1724 - STM32 Nucleo-64 boards user manual*.  
+[2] STMicroelectronics, *MB1136 - Electrical Schematic - STM32 Nucleo-64 boards*.  
+[3] STMicroelectronics, *STM32F103RB Datasheet*.  
+[4] Sensirion, *SHT30 Datasheet*
+[5] The Microchip Technology Inc., *24LC256 Datasheet* (memoria EEPROM)
