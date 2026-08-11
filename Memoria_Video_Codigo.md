@@ -44,10 +44,9 @@ La Tabla 0.1 resume el historial de revisiones y entregas de esta memoria.
 | :---: | --- | :---: |
 | 1.0 | Escritura inicial de la memoria | 02/08/2026 |
 | 1.1 | Primer entrega: sin video | 08/08/2026 |
-
-
-<em>Tabla 0.1 — Registro de versiones del documento.</em><br><br>
-
+<p align="center">
+  <b>Tabla 0.1</b>: Registro de versiones del documento.
+</p>
 ---
 
 
@@ -111,9 +110,11 @@ Se realizó un relevamiento del mercado local y se encontraron 2 alternativas si
 La marca Tinzer vende incubadoras para uso doméstico e industrial. Estas incubadoras tienen capacidad de hasta 90 huevos de gallina. 
 Las mismas tienen un diseño industrial, utilizando metales y plásticos, similar a un horno eléctrico, cómo se puede ver en la figura 1.1.
 
-<img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/incubadoraTinzer.jpg" width="500" />
-<em>**Figura 1.1**: Imágen ilustrativa de una incubadora estilo industrial de la marca Tinzer, tomada de la página del fabricante.</em><br><br>
 
+<div align="center">
+<img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/incubadoraTinzer.jpg" width="500" />
+<b>Figura 1.1</b>: Imágen ilustrativa de una incubadora estilo industrial de la marca Tinzer, tomada de la página del fabricante.
+</div>
 Incubadora Tinzer. Características: 
 Costo aproximado: $350.000 ARS ($230 USD)
 
@@ -124,7 +125,7 @@ Son incubadoras listas para la conexión a la red doméstica. Tienen modelos que
 como se ilustra en la figura 1.2.
 
 <img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/incubadora-brinsea.jpg" width="600" />
-<em>**Figura 1.2**: Imágen ilustrativa de una incubadora estilo doméstico de la marca Brinsea, tomada de la página de un revendedor.</em><br><br>
+Figura 1.2**: Imágen ilustrativa de una incubadora estilo doméstico de la marca Brinsea, tomada de la página de un revendedor.</em><br><br>
 
 Incubadora Brinsea. Características: 
 Costo aproximado: $450000 ARS ($300 USD)
@@ -132,7 +133,7 @@ Costo aproximado: $450000 ARS ($300 USD)
 
 La Tabla 1.1 contrasta las prestaciones de los dos productos comerciales de referencia contra el prototipo desarrollado en este trabajo.
 
-<em>*Tabla 1.1*: Comparación entre características de modelos comerciales y el prototipo.</em><br><br>
+*Tabla 1.1*: Comparación entre características de modelos comerciales y el prototipo.</em><br><br>
 | *Aspecto* | *TINZER*  | *BRINSEA* | *Prototipo desarrollado* |
 | :--- | :--- | :--- | :--- |
 | **Monitoreo de temperatura y humedad** | POSEE | POSEE | POSEE |
@@ -179,7 +180,9 @@ Se plantearon una serie de requisitos a cumplir por el prototipo. Estos sirviero
 del período de desarrollo con los tutores del proyecto. Al inicio del proyecto se estipularon los requisitos presentes en la tabla 2.1.
 
 
-<em>**Tabla 2.1**: Requisitos iniciales del proyecto.</em><br><br>
+<div align="center">
+<b>Tabla 2.1</b>: Requisitos iniciales del proyecto.<br><br>
+
 |**Grupo**|**ID**|**Descripción**|
 | :-: | :-: | :-: |
 |**Temperatura**|1\.1|El sistema medirá continuamente la temperatura interior mediante un sensor dedicado.|
@@ -203,7 +206,7 @@ del período de desarrollo con los tutores del proyecto. Al inicio del proyecto 
 ||6\.3|El sistema emitirá una alarma si el motor de rotación no completa el giro en el tiempo esperado.|
 |**Almacenamiento**|7\.1|El sistema almacenará en la EEPROM externa el historial de temperatura, humedad y eventos de rotación.|
 ||7\.2|El sistema preservará la configuración activa y el día del ciclo ante cortes de energía.|
-
+</div>
 
 A medida que se avanzó con el prototipado se actualizaron los requisitos, generando un informe de avance diseñado a la mitad del tiempo de desarrollo del prototipo.
 Los requisitos actualizados son los presentes en la tabla 2.2: 
