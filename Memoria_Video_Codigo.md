@@ -112,7 +112,7 @@ La marca Tinzer vende incubadoras para uso doméstico e industrial. Estas incuba
 Las mismas tienen un diseño industrial, utilizando metales y plásticos, similar a un horno eléctrico, cómo se puede ver en la figura 1.1.
 
 <img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/incubadoraTinzer.jpg" width="500" />
-<em>*Figura 1.1*: Imágen ilustrativa de una incubadora estilo industrial de la marca Tinzer, tomada de la página del fabricante.</em><br><br>
+<em>**Figura 1.1**: Imágen ilustrativa de una incubadora estilo industrial de la marca Tinzer, tomada de la página del fabricante.</em><br><br>
 
 Incubadora Tinzer. Características: 
 Costo aproximado: $350.000 ARS ($230 USD)
@@ -124,7 +124,7 @@ Son incubadoras listas para la conexión a la red doméstica. Tienen modelos que
 como se ilustra en la figura 1.2.
 
 <img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/incubadora-brinsea.jpg" width="600" />
-<em>*Figura 1.2*: Imágen ilustrativa de una incubadora estilo doméstico de la marca Brinsea, tomada de la página de un revendedor.</em><br><br>
+<em>**Figura 1.2**: Imágen ilustrativa de una incubadora estilo doméstico de la marca Brinsea, tomada de la página de un revendedor.</em><br><br>
 
 Incubadora Brinsea. Características: 
 Costo aproximado: $450000 ARS ($300 USD)
@@ -133,7 +133,6 @@ Costo aproximado: $450000 ARS ($300 USD)
 La Tabla 1.1 contrasta las prestaciones de los dos productos comerciales de referencia contra el prototipo desarrollado en este trabajo.
 
 <em>*Tabla 1.1*: Comparación entre características de modelos comerciales y el prototipo.</em><br><br>
-
 | *Aspecto* | *TINZER*  | *BRINSEA* | *Prototipo desarrollado* |
 | :--- | :--- | :--- | :--- |
 | **Monitoreo de temperatura y humedad** | POSEE | POSEE | POSEE |
@@ -180,8 +179,7 @@ Se plantearon una serie de requisitos a cumplir por el prototipo. Estos sirviero
 del período de desarrollo con los tutores del proyecto. Al inicio del proyecto se estipularon los requisitos presentes en la tabla 2.1.
 
 
-<em>*Tabla 2.1*: Requisitos iniciales del proyecto.</em><br><br>
-
+<em>**Tabla 2.1**: Requisitos iniciales del proyecto.</em><br><br>
 |**Grupo**|**ID**|**Descripción**|
 | :-: | :-: | :-: |
 |**Temperatura**|1\.1|El sistema medirá continuamente la temperatura interior mediante un sensor dedicado.|
@@ -210,9 +208,9 @@ del período de desarrollo con los tutores del proyecto. Al inicio del proyecto 
 A medida que se avanzó con el prototipado se actualizaron los requisitos, generando un informe de avance diseñado a la mitad del tiempo de desarrollo del prototipo.
 Los requisitos actualizados son los presentes en la tabla 2.2: 
 
-<em>*Tabla 2.2*: Requisitos ajustados en el informe de avances (alcance reducido por tiempos).</em><br><br>
-
-| GRUPO | ID | TAREA |
+<div align="center">
+<em>**Tabla 2.2**: Requisitos ajustados en el informe de avances (alcance reducido por tiempos).</em><br><br>
+| **GRUPO** | **ID** | **TAREA** |
 |----|----|----|
 | Teperatura | 1.1 | El sistema medirá continuamente la temperatura interior mediante un sensor dedicado. |
 |   | 1.2 | El sistema activará el elemento calefactor cuando la temperatura esté por debajo del umbral configurado. |
@@ -236,6 +234,7 @@ Los requisitos actualizados son los presentes en la tabla 2.2:
 | Almacenamiento | 7.1 | El sistema almacenará en la EEPROM externa el historial de temperatura, humedad y eventos de rotación. |
 |   | 7.2 | El sistema preservará la configuración activa y el día del ciclo ante cortes de energía. |
 
+</div>
 
 Estos requisitos son los tenidos en cuenta al avanzar en el diseño, escritura de código, compra de componentes y armado final. 
 
@@ -243,8 +242,9 @@ Estos requisitos son los tenidos en cuenta al avanzar en el diseño, escritura d
 
 En las tablas 2.3 a 2.5 se presentan 3 casos de uso para el sistema. En estos casos de uso se puede apreciar el funcionamiento esperado del prototipo con flujos principales y flujos alternativos.
 
-<em>*Tabla 2.3*: Caso de uso 1 — El usuario inicia un ciclo de incubación</em><br><br>
+<div align="center">
 
+<em>**Tabla 2.3**: Caso de uso 1 — El usuario inicia un ciclo de incubación</em><br><br>
 |**Disparador**|El usuario desea iniciar un ciclo de incubación seleccionando un modo y confirmando los parámetros.|
 | :- | :- |
 |**Precondiciones**|El sistema está encendido. No hay un ciclo de incubación activo. La pantalla LCD muestra el menú principal.|
@@ -252,8 +252,7 @@ En las tablas 2.3 a 2.5 se presentan 3 casos de uso para el sistema. En estos ca
 |**Flujos alternativos**|a. El usuario cancela la selección con la tecla de retroceso: el sistema vuelve al menú principal sin iniciar ningún ciclo. b. La temperatura inicial está fuera del rango objetivo: el sistema activa inmediatamente el calentador y espera hasta alcanzar el rango antes de dar la confirmación sonora.|
 
 
-<em>*Tabla 2.4*: Caso de uso 2 — El sistema detecta temperatura fuera de rango</em><br><br>
-
+<em>**Tabla 2.4**: Caso de uso 2 — El sistema detecta temperatura fuera de rango</em><br><br>
 |**Disparador**|La temperatura interior sale del rango permitido para el modo activo.|
 | :- | :- |
 |**Precondiciones**|El sistema está encendido con un ciclo de incubación activo. El sensor DHT22 está operativo.|
@@ -261,15 +260,14 @@ En las tablas 2.3 a 2.5 se presentan 3 casos de uso para el sistema. En estos ca
 |**Flujos alternativos**|a. La temperatura supera el umbral crítico (fallo grave): el sistema emite una alarma sonora prolongada mediante el buzzer, parpadea el LED de alarma y muestra un mensaje de error en el LCD hasta que el usuario reconozca la alarma. b. El sensor no responde: el sistema emite una alarma y detiene el ciclo de forma segura, registrando el fallo en la EEPROM.|
 
 
-<em>*Tabla 2.5*: Caso de uso 3 — El sistema rota los huevos automáticamente.</em><br><br>
-
+<em>**Tabla 2.5**: Caso de uso 3 — El sistema rota los huevos automáticamente.</em><br><br>
 |**Disparador**|Se alcanza el intervalo de tiempo programado para la rotación de huevos.|
 | :- | :- |
 |**Precondiciones**|El sistema está encendido con un ciclo de incubación activo. No se está en el período de lockdown (últimos días antes de la eclosión).|
 |**Flujo principal**|El temporizador de rotación expira. El sistema activa el motor de paso para girar los huevos el ángulo configurado (típicamente 45° alternados). El LED de rotación parpadea durante el movimiento. El buzzer emite un pitido breve de confirmación. El sistema registra el evento de rotación en la EEPROM con timestamp. El motor se detiene y el sistema reanuda el monitoreo normal.|
 |**Flujos alternativos**|a. El motor no completa el movimiento en el tiempo esperado (posible traba mecánica): el sistema emite una alarma sonora y visual, detiene el motor y registra el fallo en la EEPROM. b. El ciclo está en período de lockdown: el sistema omite la rotación, registra el evento y muestra en el LCD un mensaje indicando que la rotación está inhibida.|
 
-
+</div>
 
 ## 2.3 Descripción de módulos y Hardware
 
@@ -295,7 +293,7 @@ El mismo es analógico, tiene comunicación por I2C, es de bajo consumo y de rá
 
 <div align="center">
 <img width="500" alt="SHT30" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/SHT30.jfif" />
-<p><em>*Figura 2.2*: Imágen ilustrativa del sensor de temperatura y humedad SHT30.</em></p>
+<p><em>**Figura 2.2**: Imágen ilustrativa del sensor de temperatura y humedad SHT30.</em></p>
 </div>
 
 
@@ -306,7 +304,7 @@ La figura 2.3 ilustra el modelo utilizado.
 
 <div align="center">
 <img width="500" alt="SERVO" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/servo.jpg" />
-<p><em>*Figura 2.3*: Figura ilustrativa de un servomotor SG90.</em></p>
+<p><em>**Figura 2.3**: Figura ilustrativa de un servomotor SG90.</em></p>
 </div>
 
 El actuador que simula el funcionamiento de un componente que aporte calor (resistencia térmica o lámparas de calor) es un led en serie con un relé genérico de 5 V. 
@@ -315,12 +313,12 @@ En la figura 2.4 se puede ver el relé utilizado, mientras que se utilizaron led
 
 <div align="center">
 <img width="500" alt="RELÉ" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Rele.jpg" />
-<p><em>*Figura 2.4*: Relé.</em></p>
+<p><em>**Figura 2.4**: Imágen ilustrativa de un relé de 5 V.</em></p>
 </div>
 
 <div align="center">
 <img width="500" alt="RELÉ/LED" src="https://github.com/aachinelli/TDSE_INT_PF/raw/5c0944f3a0e169877e78a95acd58ae4edaa9749e/leds.png" />
-<p><em>*Figura 2.5*: LEDs indicadores.</em></p>
+<p><em>**Figura 2.5**: Imágen ilustrativa de LEDs genéricos, utilizados como indicadores.</em></p>
 </div>
 
 Se simula también el funcionamiento de un vaporizador, que aporta humedad al ambiente cuando es necesario. Para esto, se utiliza un led indicador como el de la figura 2.5 que se enciende cuando la humedad está
@@ -333,7 +331,7 @@ El componente elegido fue un display LCD 16x2, como el visto en la figura 2.6. N
 
 <div align="center">
 <img width="500" alt="LCD" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/display_LCD.jpg" />
-<p><em>*Figura 2.6*: Imágen ilustrativa del display LCD 16x2 con backlight.</em></p>
+<p><em>**Figura 2.6**: Imágen ilustrativa del display LCD 16x2 con backlight.</em></p>
 </div>
 
 Se diseñaron opciones de entrada de datos al sistema acotadas y sencillas para disminuir el código y la lógica. Por esto se optó por un teclado de membrana de 4x1, como el visto en la figura
@@ -341,7 +339,7 @@ Se diseñaron opciones de entrada de datos al sistema acotadas y sencillas para 
 
 <div align="center">
 <img width="500" alt="TECLADO" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Teclado-Matricial-de-Membrana-4-Teclas-1-1.jpg" />
-<p><em>*Figura 2.7*: Imágen ilustrativa de un teclado de membrana de 4 botones.</em></p>
+<p><em>**Figura 2.7**: Imágen ilustrativa de un teclado de membrana de 4 botones.</em></p>
 </div>
 
 
@@ -353,7 +351,7 @@ con STM32, como el visto en la figura 2.8, lo que nos permite una fácil integra
 
 <div align="center">
 <img width="500" alt="EEPROM" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/memoria_eeprom.jpg" />
-<p><em>*Figura 2.8*: Imágen del shield y la memoria EEPROM 24C256 utilizados.</em></p>
+<p><em>**Figura 2.8**: Imágen del shield y la memoria EEPROM 24C256 utilizados.</em></p>
 </div>
 ---
 
@@ -366,8 +364,7 @@ En la Figura 3.1 se presenta el diagrama en bloques general. En el se presentan 
 <div align="center">
 
 <img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Incubadora-diagrama.jpeg" width="600" />
-
-<em>*Figura 3.1*: Diagrama en bloques general.</em><br><br>
+<em>**Figura 3.1**: Diagrama en bloques general.</em><br><br>
 
 </div>
 
@@ -378,8 +375,7 @@ A medida que las pruebas fueron avanzando y considerando los puertos disponibles
 <div align="center">
 
 <img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Diagrama%20incubadora.jpeg" width="600" />
-
-<em>*Figura 3.2*: Plano de las conexiones de los periféricos.</em><br><br>
+<em>**Figura 3.2**: Plano de las conexiones de los periféricos.</em><br><br>
 
 </div>
 
@@ -393,8 +389,7 @@ Como se mencionó previamente, se utilizo el diagrama 3.2 de guia para el conexi
 
 <div align="center">
 
-<em>*Tabla 3.1*: Asignación de pines de la placa núcleo.</em>
-
+<em>**Tabla 3.1**: Asignación de pines de la placa núcleo.</em>
 | Función | Puerto | Protocolo |
 | :--- | :--- | :--- |
 |Teclado-Volver|PC7|GPIO|
@@ -444,15 +439,14 @@ La figura 3.3 describe como se ejecutan las tareas.0
 
 <div align="center">
 <img width="650" alt="ejecutor cíclico" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Diagrama%20en%20blanco.jpeg" />
-<p><em>*Figura 3.3*: Orden de tareas en un ciclo de ejecución.</em></p>
+<p><em>**Figura 3.3**: Orden de tareas en un ciclo de ejecución.</em></p>
 </div>
  
 Además, las tareas se comunican por interfaces. No hay comunicación por variables globales. Cada tarea tiene asignada una interfaz, como se ve en la tabla 3.2. 
 
 <div align="center">
 
-<p><em>*Tabla 3.2*: Interfaces asignadas a cada tarea.</em></p>
-
+<p><em>**Tabla 3.2**: Interfaces asignadas a cada tarea.</em></p>
 | Tarea | Interfaz |
 | --- | --- |
 | `task_sensor_update` | `task_sensor_interface` |
@@ -470,10 +464,8 @@ El código se modeló utilizando la maquina de estados del sistema. Esta misma s
 
 <div align="center">
 <img width="650" alt="máquina de estados" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/flujo_menu.png" />
-<p><em>*Figura 3.4*: Statechart del menú interactivo.</em></p>
+<p><em>**Figura 3.4**: Statechart del menú interactivo.</em></p>
 </div>
-
-
 
 En la figura 3.4 se puede seguir el orden de acciones del sistema. Al iniciar el sistema, se muestra un mensaje de bienvenida que nos lleva a una pantalla donde 
 se pueden tomar dos caminos: `Continuar` y `Nuevo inicio`. La opción `Nuevo inicio` nos lleva a establecer los parámetros del ciclo de icubación, ya sean los precargados en la memoria
@@ -483,8 +475,6 @@ el tiempo restante en días y horas. Si se elige la opción `Continuar` se verif
 Durante el proceso de incubación, el sistema recibe datos del sensor de temperatura y humedad. Si la temperatura es menor a la necesaria se envía la señal al módulo del relé que simula el encendido del componente térmico.
 En simultáneo se envían los datos de temperatura y humedad al display. La rotación está dada por un contador. Se envía la señal al servomotor por PWM para rotar los huevos algunos grados cada cierta cantidad de horas. Este proceso se detiene
 al alcanzar los últimos días de la incubación.
-
-
 
 ---
 
@@ -506,8 +496,7 @@ Se redactaron pruebas para verificar el funcionamiente esperado del prototipo, p
 Las mismas se muestran en la tabla 4.1.
 
 <div align="center">
-<p align="center"><em>*Tabla 4.1*: Resumen de ensayos funcionales de hardware y firmware.</em></p
-
+<p align="center"><em>**Tabla 4.1**: Resumen de ensayos funcionales de hardware y firmware.</em></p
 | Subsistema | Ensayo realizado | Resultado / Criterio de validación | Estado |
 | :--- | :--- | :--- | :---: |
 | **Hardware** | Verificación de continuidad  | Ausencia de cortocircuitos o falsos contactos en la placa experimental | ✅ |
@@ -537,15 +526,14 @@ Se muestran los resultados de una instancia de depuración del prototipo en la f
 
 <div align="center">
 <img width="500" alt="MEMORIA" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/mem_usage.png" />
-<p><em>*Figura 4.2*: Uso de memoria visible en el Build Analyzer.</em></p>
+<p><em>**Figura 4.2**: Uso de memoria visible en el Build Analyzer.</em></p>
 </div>
 
 
 En la tabla 4.2 se vuelcan estos resultados para facilitar la comprensión de lo obtenido en la depuración.
 
 <div align="center">
-<em>*Tabla 4.2*: Uso y ocupación de memoria.</em>
-
+<em>**Tabla 4.2**: Uso y ocupación de memoria.</em>
 | MEMORIA | Usado [Bytes] | Total Disponible [Bytes] | Porcentaje de ocupación |
 | :--- | :--- | :---: | :---: |
 | **RAM** | 2.91 k  | 20 k | 14.57% |
@@ -571,7 +559,7 @@ En la figura 4.3 se observan los resultados observados en la pantalla *Live Expr
 
 <div align="center">
 <img width="500" alt="WCET" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/ov_umbral.png" />
-<p><em>*Figura 4.3*: Pantalla de Live Expressions con los peores tiempos de ejecución.</em></p>
+<p><em>**Figura 4.3**: Pantalla de Live Expressions con los peores tiempos de ejecución.</em></p>
 </div>
 
 Se toman en cuenta los resultados de los valores de `task_dta_list[].WCET`, siendo que cada uno de los elementos de `task_dta_list[]` es una de las tareas del ciclo de ejecución.
@@ -579,8 +567,7 @@ El valor devuelto es el tiempo en microsegundos (µs) devuelto por el DWT.
 En la Tabla 4.3 se observa la suma de los WCET de todas las tareas, simulando el peor caso posible del tiempo de vuelta del ciclo de ejecución. 
 
 <div align="center">
-<em>*Tabla 4.3*: Peores casos de tiempo de ejecución según tarea.</em>
-
+<em>**Tabla 4.3**: Peores casos de tiempo de ejecución según tarea.</em>
 | Tarea | WCET[µs]|
 | :---: | :---: |
 | `task_sensor` | 229 |
@@ -628,8 +615,7 @@ $$P = {V}*{I} \qquad (4.2)$$
 
 <div align="center">
 
-<em>*Tabla 4.4*: Mediciones de consumo eléctrico.</em>
-
+<em>**Tabla 4.4**: Mediciones de consumo eléctrico.</em>
 | Medición | Corriente consumida[mA] | Potencia consumida[mW] |
 | :---: | :---: | :---: |
 | Placa + Display + Sensor | 100 | 500 |
@@ -649,8 +635,7 @@ consumen desde los 30 W por lo que el consumo del prototipo es reducido en compa
 En la siguiente tabla se expone el cumplimiento de los requisitos expuestos en la tabla 2.2:
 
 
-<p align="center"><em>*Tabla 4.5*: Cumplimiento de requisitos.</em></p>
-
+<p align="center"><em>**Tabla 4.5**: Cumplimiento de requisitos.</em></p>
 | Estado | Descripción      |
 |-----|---------------------|
 | 🟢 | Implementado |
