@@ -458,7 +458,7 @@ Además, las tareas se comunican por interfaces. No hay comunicación por variab
 
 <div align="center">
 
-<p><b>Tabla 3.2</b>: Interfaces asignadas a cada tarea.</p><br>
+<p>**Tabla 3.2**: Interfaces asignadas a cada tarea.</p>
 
 | Tarea | Interfaz |
 | --- | --- |
@@ -477,7 +477,7 @@ El código se modeló utilizando la maquina de estados del sistema. Esta misma s
 
 <div align="center">
 <img width="650" alt="máquina de estados" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/flujo_menu.png" />
-<p><em>**Figura 3.4**: Statechart del menú interactivo.</em></p>
+<p><b>Figura 3.4</b>: Statechart del menú interactivo.</p>
 </div>
 
 En la figura 3.4 se puede seguir el orden de acciones del sistema. Al iniciar el sistema, se muestra un mensaje de bienvenida que nos lleva a una pantalla donde 
@@ -509,7 +509,8 @@ Se redactaron pruebas para verificar el funcionamiente esperado del prototipo, p
 Las mismas se muestran en la tabla 4.1.
 
 <div align="center">
-<p align="center"><em>**Tabla 4.1**: Resumen de ensayos funcionales de hardware y firmware.</em></p
+<p><b>Tabla 4.1</b>: Resumen de ensayos funcionales de hardware y firmware.</p>
+
 | Subsistema | Ensayo realizado | Resultado / Criterio de validación | Estado |
 | :--- | :--- | :--- | :---: |
 | **Hardware** | Verificación de continuidad  | Ausencia de cortocircuitos o falsos contactos en la placa experimental | ✅ |
@@ -538,15 +539,15 @@ Al depurar el código, el STM32CubeIDE reproduce una pantalla llamada *Build Ana
 Se muestran los resultados de una instancia de depuración del prototipo en la figura 4.2.
 
 <div align="center">
-<img width="500" alt="MEMORIA" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/mem_usage.png" />
-<p><em>**Figura 4.2**: Uso de memoria visible en el Build Analyzer.</em></p>
+<img width="500" alt="MEMORIA" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/mem_usage.png" /><br>
+<p><b>Figura 4.2</b>: Uso de memoria visible en el Build Analyzer.</p>
 </div>
 
 
 En la tabla 4.2 se vuelcan estos resultados para facilitar la comprensión de lo obtenido en la depuración.
 
 <div align="center">
-<em>**Tabla 4.2**: Uso y ocupación de memoria.</em>
+<p><b>Tabla 4.2<b>: Uso y ocupación de memoria.</p>
 | MEMORIA | Usado [Bytes] | Total Disponible [Bytes] | Porcentaje de ocupación |
 | :--- | :--- | :---: | :---: |
 | **RAM** | 2.91 k  | 20 k | 14.57% |
