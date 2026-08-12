@@ -135,7 +135,8 @@ Costo aproximado: $450000 ARS ($300 USD)
 La Tabla 1.1 contrasta las prestaciones de los dos productos comerciales de referencia contra el prototipo desarrollado en este trabajo.
 
 <div align="center">
-*Tabla 1.1*: Comparación entre características de modelos comerciales y el prototipo.</em><br><br>
+<b>Tabla 1.1</b>: Comparación entre características de modelos comerciales y el prototipo.<br>
+
 | *Aspecto* | *TINZER*  | *BRINSEA* | *Prototipo desarrollado* |
 | :--- | :--- | :--- | :--- |
 | **Monitoreo de temperatura y humedad** | POSEE | POSEE | POSEE |
@@ -185,6 +186,7 @@ del período de desarrollo con los tutores del proyecto. Al inicio del proyecto 
 <p align="center">
 <b>Tabla 2.1</b>: Requisitos iniciales del proyecto.<br>
 </p>
+
 |**Grupo**|**ID**|**Descripción**|
 | :-: | :-: | :-: |
 |**Temperatura**|1\.1|El sistema medirá continuamente la temperatura interior mediante un sensor dedicado.|
@@ -216,6 +218,7 @@ Los requisitos actualizados son los presentes en la tabla 2.2:
 <p align="center">
 <b>Tabla 2.2</b>: Requisitos ajustados en el informe de avances (alcance reducido por tiempos).<br>
 </p>
+
 | <b>GRUPO</b> | <b>ID</b> | <b>TAREA</b> |
 |----|----|----|
 | Teperatura | 1.1 | El sistema medirá continuamente la temperatura interior mediante un sensor dedicado. |
