@@ -299,7 +299,7 @@ en la figura 2.1.
 
 ### 2.3.2 Módulo sensor de temperatura y humedad
 
-Para la tarea de sensado atmósferico de temperatura y humedad se optó por un shield compatible con STM32 que contiene un sensor SHT30.
+Para la tarea de sensado atmósferico de temperatura y humedad se optó por un <i>shield</i> compatible con STM32 que contiene un sensor SHT30.
 El mismo es analógico, tiene comunicación por I2C, es de bajo consumo y de rápido funcionamiento (400 kHz). Como se ve en la figura 2.2.<br>
 
 <div align="center">
@@ -357,7 +357,7 @@ Se diseñaron opciones de entrada de datos al sistema acotadas y sencillas para 
 
 ### 2.3.5 Memoria EEPROM
 
-Para proporcionar una memoria externa con lectura y escritura se utilizó una memoria EEPROM 24C256. La misma nos da versatilidad y aproximadamente 32 kB de memoria. En este proyecto se utilizó un shield compatible
+Para proporcionar una memoria externa con lectura y escritura se utilizó una memoria EEPROM 24C256. La misma nos da versatilidad y aproximadamente 32 kB de memoria. En este proyecto se utilizó un <i>shield</i> compatible
 con STM32, como el visto en la figura 2.8, lo que nos permite una fácil integración al sistema y comunicación por I2C. El uso de esta memoria será monitoreado en la sección 4.3. <br><br>
 
 <div align="center">
@@ -402,9 +402,9 @@ En el siguiente apartado se detallan las soluciones de Hardware adoptadas en lí
 Como se mencionó previamente, se utilizo el diagrama 3.2 de guia para el conexionado de la placa y los periféricos. Considerando que es necesario conectar actuadores y el sensor principal, se definieron los pines como se puede ver en la tabla 3.1.
 
 <div align="center">
+<b>Tabla 3.1</b>: Asignación de pines de la placa núcleo.
 
-**Tabla 3.1**: Asignación de pines de la placa núcleo.
-| <b>Función</b> | <b>Puerto</b> | <b>Protocolo</b> |
+| <b>Función | Puerto | Protocolo</b> |
 | :--- | :--- | :--- |
 |Teclado-Volver|PC7|GPIO|
 |Teclado-Enter|PB6|GPIO|
@@ -572,16 +572,17 @@ se obtiene invocando el contador de ciclos del DWT (<i>Data Watchpoint and Trace
 Es común observar que las tareas más costosas generan mayor tiempo de ejecución por lo que se procedió a la depuración y se simuló una incubación completa, es decir
 que incluya todas las acciones disponibles por nuestro prototipo.
 
-En la figura 4.3 se observan los resultados observados en la pantalla *Live Expressions* de la depuración en el STM32CubeIDE.<br>
+En la figura 4.3 se observan los resultados observados en la pantalla *Live Expressions* de la depuración en el STM32CubeIDE.<br><br>
 
 <div align="center">
 <img width="500" alt="WCET" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/ov_umbral.png" />
 <p><em><b>Figura 4.3</b>: Pantalla de Live Expressions con los peores tiempos de ejecución.</em></p>
 </div>
+<br>
 
 Se toman en cuenta los resultados de los valores de `task_dta_list[].WCET`, siendo que cada uno de los elementos de `task_dta_list[]` es una de las tareas del ciclo de ejecución.
 El valor devuelto es el tiempo en microsegundos (µs) devuelto por el DWT. 
-En la Tabla 4.3 se observa la suma de los WCET de todas las tareas, simulando el peor caso posible del tiempo de vuelta del ciclo de ejecución.<br>
+En la Tabla 4.3 se observa la suma de los WCET de todas las tareas, simulando el peor caso posible del tiempo de vuelta del ciclo de ejecución.<br><br>
 
 <div align="center">
 <b>Tabla 4.3</b>: Peores casos de tiempo de ejecución según tarea.
