@@ -458,7 +458,7 @@ Además, las tareas se comunican por interfaces. No hay comunicación por variab
 
 <div align="center">
 
-<p><b>Tabla 3.2</b>: Interfaces asignadas a cada tarea.</p>
+<b>Tabla 3.2</b>: Interfaces asignadas a cada tarea.
 
 | Tarea | Interfaz |
 | --- | --- |
@@ -547,7 +547,7 @@ Se muestran los resultados de una instancia de depuración del prototipo en la f
 En la tabla 4.2 se vuelcan estos resultados para facilitar la comprensión de lo obtenido en la depuración.
 
 <div align="center">
-<p><b>Tabla 4.2</b>: Uso y ocupación de memoria.</p>
+<b>Tabla 4.2</b>: Uso y ocupación de memoria.
 
 | <b>MEMORIA | Usado [Bytes] | Total Disponible [Bytes] | Porcentaje de ocupación</b> |
 | :--- | :--- | :---: | :---: |
@@ -570,20 +570,19 @@ se obtiene invocando el contador de ciclos del DWT (<i>Data Watchpoint and Trace
 Es común observar que las tareas más costosas generan mayor tiempo de ejecución por lo que se procedió a la depuración y se simuló una incubación completa, es decir
 que incluya todas las acciones disponibles por nuestro prototipo.
 
-En la figura 4.3 se observan los resultados observados en la pantalla *Live Expressions* de la depuración en el STM32CubeIDE.
+En la figura 4.3 se observan los resultados observados en la pantalla *Live Expressions* de la depuración en el STM32CubeIDE.<br>
 
 <div align="center">
 <img width="500" alt="WCET" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/ov_umbral.png" />
-<p><b>Figura 4.3</b>: Pantalla de Live Expressions con los peores tiempos de ejecución.</em></p>
+<p><em><b>Figura 4.3</b>: Pantalla de Live Expressions con los peores tiempos de ejecución.</em></p>
 </div>
 
 Se toman en cuenta los resultados de los valores de `task_dta_list[].WCET`, siendo que cada uno de los elementos de `task_dta_list[]` es una de las tareas del ciclo de ejecución.
 El valor devuelto es el tiempo en microsegundos (µs) devuelto por el DWT. 
-En la Tabla 4.3 se observa la suma de los WCET de todas las tareas, simulando el peor caso posible del tiempo de vuelta del ciclo de ejecución. 
+En la Tabla 4.3 se observa la suma de los WCET de todas las tareas, simulando el peor caso posible del tiempo de vuelta del ciclo de ejecución.<br>
 
 <div align="center">
-<p><b>Tabla 4.3</b>: Peores casos de tiempo de ejecución según tarea.</p>
-
+<em><b>Tabla 4.3</b>: Peores casos de tiempo de ejecución según tarea.</em>
 | <b>Tarea | WCET[µs]</b>|
 | :---: | :---: |
 | `task_sensor` | 229 |
@@ -594,7 +593,7 @@ En la Tabla 4.3 se observa la suma de los WCET de todas las tareas, simulando el
 |TOTAL (ciclo completo)| 905 |
 
 
-</div>
+<br></div>
 
 
 Como se observa, en el peor de los casos, es decir cuando se acumulan todos los peores tiempos de ejecución, se obtiene un WCET total de 905 µs. Es un resultado
@@ -638,7 +637,7 @@ $$P = {V}*{I} \qquad (4.2)$$
 | Placa + Display + Sensor + Servomotor | 130 | 650 |
 
 
-</div>
+<br></div>
  
 Las mediciones nos muestran que la potencia consumida por la placa y el display la mayoría del tiempo (cuando no funciona), es de 0.5 W. Esto es acorde a la cantidad
 de periféricos utilizados, como el display LCD al máximo del brillo. Es un consumo relativamente bajo, aunque la incubadora debe estar en funcionamiento largos períodos de tiempo.
@@ -650,8 +649,9 @@ consumen desde los 30 W por lo que el consumo del prototipo es reducido en compa
 
 Se hizo un relevamiento de los requisitos expuestos en la tabla 2.2 y se verificó su cumplimiento. La tabla 4.5 pone en manifiesto los requisitos y su estado final.
 
-<p align="center"><em>**Tabla 4.5**: Cumplimiento de requisitos.</em></p>
-| Estado | Descripción      |
+<p align="center"><em><b>Tabla 4.5</b>: Cumplimiento de requisitos.</em></p>
+
+| Estado | Descripción |
 |-----|---------------------|
 | 🟢 | Implementado |
 | 🟡 | Implementado parcialmente |
@@ -682,8 +682,8 @@ Se hizo un relevamiento de los requisitos expuestos en la tabla 2.2 y se verific
 | 🟢 |   | 7.2 | El sistema preservará la configuración activa y el día del ciclo ante cortes de energía. |
 
 Como se muestra en la tabla 4.5, no todos los requisitos fueron cumplidos. A raíz de la disponibilidad, percances y cambios necesarios en el desarrollo fundamental se optó
-por disminuir el alcance. Aunque pueda significar una mejora en el proyecto, consideramos que era el requisito menos relevante. Obviando este cambio en el alcance el resto de los 
-requisitos fue cumplido satisfactoriamente.
+por disminuir el alcance. Aunque pueda significar una mejora en el proyecto, consideramos que los requerimientos descartados eran los menos relevantes: las alarmas. Siendo las alarmas una herramienta que 
+mejora la experiencia de usuario, no son fundamentales en el funcionamiento de las incubadoras. Obviando este cambio en el alcance el resto de los requisitos fue cumplido satisfactoriamente.
 
 ---
 
