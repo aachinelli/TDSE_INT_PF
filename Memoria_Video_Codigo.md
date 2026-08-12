@@ -315,7 +315,7 @@ La figura 2.3 ilustra el modelo utilizado.
 
 <div align="center">
 <img width="500" alt="SERVO" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/servo.jpg" /><br>
-<b>Figura 2.3</b>: Figura ilustrativa de un servomotor SG90.<br>
+<b>Figura 2.3</b>: Figura ilustrativa de un servomotor SG90.<br><br>
 </div>
 
 El actuador que simula el funcionamiento de un componente que aporte calor (resistencia térmica o lámparas de calor) es un led en serie con un relé genérico de 5 V. 
@@ -328,8 +328,8 @@ En la figura 2.4 se puede ver el relé utilizado, mientras que se utilizaron led
 </div>
 
 <div align="center">
-<img width="500" alt="RELÉ/LED" src="https://github.com/aachinelli/TDSE_INT_PF/raw/5c0944f3a0e169877e78a95acd58ae4edaa9749e/leds.png" />
-<b>Figura 2.5</b>: Imágen ilustrativa de LEDs genéricos, utilizados como indicadores.<br>
+<img width="500" alt="RELÉ/LED" src="https://github.com/aachinelli/TDSE_INT_PF/raw/5c0944f3a0e169877e78a95acd58ae4edaa9749e/leds.png" /><br>
+<b>Figura 2.5</b>: Imágen ilustrativa de LEDs genéricos, utilizados como indicadores.<br><br>
 </div>
 
 Se simula también el funcionamiento de un vaporizador, que aporta humedad al ambiente cuando es necesario. Para esto, se utiliza un led indicador como el de la figura 2.5 que se enciende cuando la humedad está
@@ -342,7 +342,7 @@ El componente elegido fue un display LCD 16x2, como el visto en la figura 2.6. N
 
 <div align="center">
 <img width="500" alt="LCD" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/display_LCD.jpg" /><br>
-<b>Figura 2.6</b>: Imágen ilustrativa del display LCD 16x2 con backlight.<br>
+<b>Figura 2.6</b>: Imágen ilustrativa del display LCD 16x2 con backlight.<br><br>
 </div>
 
 Se diseñaron opciones de entrada de datos al sistema acotadas y sencillas para disminuir el código y la lógica. Por esto se optó por un teclado de membrana de 4x1, como el visto en la figura
@@ -375,8 +375,8 @@ En la Figura 3.1 se presenta el diagrama en bloques general. En el se presentan 
 
 <div align="center">
 
-<img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Incubadora-diagrama.jpeg" width="600" />
-<em>**Figura 3.1**: Diagrama en bloques general.</em><br><br>
+<img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Incubadora-diagrama.jpeg" width="600" /><br>
+<b>Figura 3.1</b>: Diagrama en bloques general.<br><br>
 
 </div>
 
@@ -386,8 +386,8 @@ A medida que las pruebas fueron avanzando y considerando los puertos disponibles
 
 <div align="center">
 
-<img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Diagrama%20incubadora.jpeg" width="600" />
-<em>**Figura 3.2**: Plano de las conexiones de los periféricos.</em><br><br>
+<img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Diagrama%20incubadora.jpeg" width="600" /><br>
+<br>Figura 3.2</b>: Plano de las conexiones de los periféricos.<br><br>
 
 </div>
 
@@ -401,8 +401,8 @@ Como se mencionó previamente, se utilizo el diagrama 3.2 de guia para el conexi
 
 <div align="center">
 
-<em>**Tabla 3.1**: Asignación de pines de la placa núcleo.</em>
-| Función | Puerto | Protocolo |
+**Tabla 3.1**: Asignación de pines de la placa núcleo.
+| <b>Función</b> | <b>Puerto</b> | <b>Protocolo</b> |
 | :--- | :--- | :--- |
 |Teclado-Volver|PC7|GPIO|
 |Teclado-Enter|PB6|GPIO|
@@ -450,15 +450,16 @@ Cada tarea se ejecuta en cada tick y su tiempo se mide con contador de ciclos (`
 La figura 3.3 describe como se ejecutan las tareas.0
 
 <div align="center">
-<img width="650" alt="ejecutor cíclico" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Diagrama%20en%20blanco.jpeg" />
-<p><em>**Figura 3.3**: Orden de tareas en un ciclo de ejecución.</em></p>
+<img width="650" alt="ejecutor cíclico" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Diagrama%20en%20blanco.jpeg" /><br>
+<p><b>Figura 3.3</b>: Orden de tareas en un ciclo de ejecución.</p>
 </div>
  
 Además, las tareas se comunican por interfaces. No hay comunicación por variables globales. Cada tarea tiene asignada una interfaz, como se ve en la tabla 3.2. 
 
 <div align="center">
 
-<p><em>**Tabla 3.2**: Interfaces asignadas a cada tarea.</em></p>
+<p><b>Tabla 3.2</b>: Interfaces asignadas a cada tarea.</p><br>
+
 | Tarea | Interfaz |
 | --- | --- |
 | `task_sensor_update` | `task_sensor_interface` |
