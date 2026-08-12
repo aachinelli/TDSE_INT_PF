@@ -176,7 +176,7 @@ El detalle de los requisitos cumplidos se aborda en la sección 4.7.
 
 # Capítulo 2: Introducción específica
 
-Se procede a listar los requisitos a cumplir en el presente trabajo, en su propuesta inicial (link) y en el informe de avance (link). Además, se listan los casos de uso.
+Se procede a listar los requisitos a cumplir en el presente trabajo, en su [propuesta inicial](https://github.com/pmartinez-madero/tdse-tf_2026-1erC_2-01/blob/main/PROPUESTA.md) y en el [informe de avance](https://github.com/pmartinez-madero/tdse-tf_2026-1erC_2-01/blob/main/Informe_de_Avance.md). Además, se listan los casos de uso.
 En la sección 4.7 se detalla el cumplimiento final de los requisitos.
 
 ## 2.1 Requisitos
@@ -215,35 +215,42 @@ del período de desarrollo con los tutores del proyecto. Al inicio del proyecto 
 
 
 A medida que se avanzó con el prototipado se actualizaron los requisitos, generando un informe de avance diseñado a la mitad del tiempo de desarrollo del prototipo.
-Los requisitos actualizados son los presentes en la tabla 2.2: 
+El detalle del avance de los requisitos se encuentra presente en la tabla 2.2: 
 
 <p align="center">
-<b>Tabla 2.2</b>: Requisitos ajustados en el informe de avances (alcance reducido por tiempos).<br>
+<b>Tabla 2.2</b>: Requisitos revisados en el informe de avances.<br>
 </p>
 
-| <b>GRUPO</b> | <b>ID</b> | <b>TAREA</b> |
-|----|----|----|
-| Teperatura | 1.1 | El sistema medirá continuamente la temperatura interior mediante un sensor dedicado. |
-|   | 1.2 | El sistema activará el elemento calefactor cuando la temperatura esté por debajo del umbral configurado. |
-|   | 1.3 | El sistema desactivará el elemento calefactor cuando la temperatura supere el umbral configurado. |
-| Humedad | 2.1 | El sistema medirá continuamente la humedad relativa interior. |
-|   | 2.2 | El sistema activará el humidificador cuando la humedad esté por debajo del umbral configurado. |
-|   | 2.3 | El sistema desactivará el humidificador cuando la humedad supere el umbral configurado. |
-| Rotación | 3.1 | El sistema rotará los huevos automáticamente a intervalos de tiempo configurables por tipo de huevo. |
-|   | 3.2 | El sistema indicará mediante un LED cada vez que se realice una rotación. |
-|   | 3.3 | El sistema inhibirá la rotación durante los últimos días del ciclo de incubación (lockdown), según el modo seleccionado. |
-| Interfaz | 4.1 | El sistema contará con una pantalla LCD para mostrar temperatura, humedad, día del ciclo y modo activo. |
-|   | 4.2 | El sistema contará con un teclado matricial para navegar entre menús y configurar parámetros. |
-|   | 4.3 | El sistema contará con LEDs indicadores de estado: calentador activo, humidificador activo y rotación. |
-|   | 4.4 | El sistema contará con un buzzer para alertas sonoras (alarmas y confirmaciones). |
-| Modos de incubación | 5.1 | El sistema soportará al menos tres modos predefinidos: huevo de gallina, pato y codorniz, con sus respectivos parámetros de temperatura, humedad y ciclo. |
-|   | 5.2 | El usuario podrá seleccionar el modo desde el menú de la interfaz gráfica. |
-|   | 5.3 | El sistema indicará en el display el día actual del ciclo de incubación. |
-| Alarmas | 6.1 | El sistema emitirá una alarma sonora y visual si la temperatura supera un umbral crítico configurable. |
-|   | 6.2 | El sistema emitirá una alarma sonora y visual si la humedad supera o cae por debajo de umbrales críticos. |
-|   | 6.3 | El sistema emitirá una alarma si el motor de rotación no completa el giro en el tiempo esperado. |
-| Almacenamiento | 7.1 | El sistema almacenará en la EEPROM externa el historial de temperatura, humedad y eventos de rotación. |
-|   | 7.2 | El sistema preservará la configuración activa y el día del ciclo ante cortes de energía. |
+
+| <b>Estado | Descripción</b> |
+|-----|---------------------|
+| 🟢 | Implementado |
+| 🟡 | Sin Implementar |
+| 🔴 | Requerimiento descartado |
+
+| <b>ESTADO | GRUPO | ID | TAREA</b> |
+|:--:|----|----|----|
+| 🟢 | Temperatura | 1.1 | El sistema medirá continuamente la temperatura interior mediante un sensor dedicado. |
+| 🟡 |   | 1.2 | El sistema activará el elemento calefactor cuando la temperatura esté por debajo del umbral configurado. |
+| 🟡 |   | 1.3 | El sistema desactivará el elemento calefactor cuando la temperatura supere el umbral configurado. |
+| 🟢 | Humedad | 2.1 | El sistema medirá continuamente la humedad relativa interior. |
+| 🟡 |   | 2.2 | El sistema activará el humidificador cuando la humedad esté por debajo del umbral configurado. |
+| 🟡 |   | 2.3 | El sistema desactivará el humidificador cuando la humedad supere el umbral configurado. |
+| 🟡 | Rotación | 3.1 | El sistema rotará los huevos automáticamente a intervalos de tiempo configurables por tipo de huevo. |
+| 🟡 |   | 3.2 | El sistema indicará mediante un LED cada vez que se realice una rotación. |
+| 🟡 |   | 3.3 | El sistema inhibirá la rotación durante los últimos días del ciclo de incubación (lockdown), según el modo seleccionado. |
+| 🟡 | Interfaz | 4.1 | El sistema contará con una pantalla LCD para mostrar temperatura, humedad, día del ciclo y modo activo. |
+| 🟢 |   | 4.2 | El sistema contará con un teclado matricial para navegar entre menús y configurar parámetros. |
+| 🟡 |   | 4.3 | El sistema contará con LEDs indicadores de estado: calentador activo, humidificador activo y rotación. |
+| 🟡 |   | 4.4 | El sistema contará con un buzzer para alertas sonoras (alarmas y confirmaciones). |
+| 🟡 | Modos de incubación | 5.1 | El sistema soportará al menos tres modos predefinidos: huevo de gallina, pato y codorniz, con sus respectivos parámetros de temperatura, humedad y ciclo. |
+| 🟡 |   | 5.2 | El usuario podrá seleccionar el modo desde el menú de la interfaz gráfica. |
+| 🟡 |   | 5.3 | El sistema indicará en el display el día actual del ciclo de incubación. |
+| 🟡 | Alarmas | 6.1 | El sistema emitirá una alarma sonora y visual si la temperatura supera un umbral crítico configurable. |
+| 🟡 |   | 6.2 | El sistema emitirá una alarma sonora y visual si la humedad supera o cae por debajo de umbrales críticos. |
+| 🟡 |   | 6.3 | El sistema emitirá una alarma si el motor de rotación no completa el giro en el tiempo esperado. |
+| 🟡 | Almacenamiento | 7.1 | El sistema almacenará en la EEPROM externa el historial de temperatura, humedad y eventos de rotación. |
+| 🟡 |   | 7.2 | El sistema preservará la configuración activa y el día del ciclo ante cortes de energía. |
 
 
 
@@ -284,7 +291,7 @@ En las tablas 2.3 a 2.5 se presentan 3 casos de uso para el sistema. En estos ca
 
 En esta sección se muestran los principales módulos de hardware utilizados. Los mismos fueron seleccionados para cumplir con los requisitos mínimos de Hardware y su posibilidad de implementación junto a la placa NUCLEO STM32.
 Además, se busco que los componentes sean compatibles con los requisitos de Software y permitan un ciclo de ejecución menor a 1 ms, es decir, no sean bloqueantes a la hora de sincronizarse con el resto del sistema. Por ejemplo, 
-en el caso de los sensores de humedad y temperatura, la familia DHT (muy común en desarrollos de este estilo) utiliza un protocolo de comunicación propietario por el cual transmite las lecturas actuales en un lapso de unos 20 ms, por lo 
+en el caso de los sensores de humedad y temperatura, la familia DHT (muy común en desarrollos de este estilo) utiliza un protocolo de comunicación propietario por el cual transmite las lecturas actuales en un lapso de unos 3.5 ms, por lo 
 que fue descartada.
 
 
@@ -377,7 +384,7 @@ En la Figura 3.1 se presenta el diagrama en bloques general. En el se presentan 
 
 <div align="center">
 
-<img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Incubadora-diagrama.jpeg" width="600" /><br>
+<img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Incubadora%20Final.jpeg" width="600" /><br>
 <b>Figura 3.1</b>: Diagrama en bloques general.<br><br>
 
 </div>
@@ -388,7 +395,7 @@ A medida que las pruebas fueron avanzando y considerando los puertos disponibles
 
 <div align="center">
 
-<img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Diagrama%20incubadora.jpeg" width="600" />
+<img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Diagrama%20conexiones.jpeg" width="600" />
 <br><b>Figura 3.2</b>: Plano de las conexiones de los periféricos.<br><br>
 
 </div>
@@ -437,8 +444,8 @@ Se buscó cuidar el consumo energético, la memoria y obtener un código legible
 ### 3.3.1 Arquitectura de ejecución
 
 Todas las tareas a realizar se rigen por un ejecutor cíclico con velocidad de 1kHz, obteniendo tareas que se realizan en su totalidad en menos de 1 ms. El ejecutor cíclico se 
-guía por el `SysTick`, que al ejecutar un loop ejecuta la lista de tareas.
-No se utilizan tareas bloqueantes, ni se utiliza el `HAL_DELAY()`. Todos las temporizaciones se rigen por contadores de ticks.
+guía por el `SysTick`, que a lo largo del <i>loop</i> ejecuta la lista de tareas.
+Además, se utiliza el `SysTick` para no utilizar tareas bloqueantes, ni utilizar `HAL_DELAY()`. Todos las temporizaciones se rigen por estos contadores de ticks.
 
 Se recorren las tareas en el siguiente orden:
 
@@ -456,7 +463,7 @@ La figura 3.3 describe como se ejecutan las tareas.<br>
 <p><b>Figura 3.3</b>: Orden de tareas en un ciclo de ejecución.</p><br>
 </div>
  
-Además, las tareas se comunican por interfaces. No hay comunicación por variables globales. Cada tarea tiene asignada una interfaz, como se ve en la tabla 3.2. 
+Las tareas se comunican por interfaces. No hay comunicación por variables globales. Cada tarea tiene asignada una interfaz, como se ve en la tabla 3.2. 
 
 <div align="center">
 
@@ -491,7 +498,7 @@ Durante el proceso de incubación, el sistema recibe datos del sensor de tempera
 En simultáneo se envían los datos de temperatura y humedad al display. La rotación está dada por un contador. Se envía la señal al servomotor por PWM para rotar los huevos algunos grados cada cierta cantidad de horas. Este proceso se detiene
 al alcanzar los últimos días de la incubación.
 
----
+
 
 # Capítulo 4: Ensayos y resultados
 
@@ -501,7 +508,7 @@ Esta sección está dedicada a mostrar los resultados de la integración de Soft
 
 En el siguiente video se muestra el correcto funcionamiento del prototipo integrado, simulando distintas situaciones atmósfericas y mostrando las respuestas del sistema a estas.
 
-VÍDEO 
+[VIDEO](https://drive.google.com/file/d/1lzKZgfwIwhwxn-eZ1z3Sk5OSUK5yr5XN/view?usp=sharing) 
 
 
 
@@ -673,7 +680,7 @@ Se hizo un relevamiento de los requisitos expuestos en la tabla 2.2 y se verific
 | 🟢 |   | 2.2 | El sistema activará el humidificador cuando la humedad esté por debajo del umbral configurado. |
 | 🟢 |   | 2.3 | El sistema desactivará el humidificador cuando la humedad supere el umbral configurado. |
 | 🟢 | Rotación | 3.1 | El sistema rotará los huevos automáticamente a intervalos de tiempo configurables por tipo de huevo. |
-| 🟢 |   | 3.2 | El sistema indicará mediante un LED cada vez que se realice una rotación. |
+| 🔴 |   | 3.2 | El sistema indicará mediante un LED cada vez que se realice una rotación. |
 | 🟢 |   | 3.3 | El sistema inhibirá la rotación durante los últimos días del ciclo de incubación (lockdown), según el modo seleccionado. |
 | 🟢 | Interfaz | 4.1 | El sistema contará con una pantalla LCD para mostrar temperatura, humedad, día del ciclo y modo activo. |
 | 🟢 |   | 4.2 | El sistema contará con un teclado matricial para navegar entre menús y configurar parámetros. |
@@ -691,7 +698,9 @@ Se hizo un relevamiento de los requisitos expuestos en la tabla 2.2 y se verific
 <br>
 Como se muestra en la tabla 4.5, no todos los requisitos fueron cumplidos. A raíz de la disponibilidad, percances y cambios necesarios en el desarrollo fundamental se optó
 por disminuir el alcance. Aunque pueda significar una mejora en el proyecto, consideramos que los requerimientos descartados eran los menos relevantes: las alarmas. Siendo las alarmas una herramienta que 
-mejora la experiencia de usuario, no son fundamentales en el funcionamiento de las incubadoras. Obviando este cambio en el alcance el resto de los requisitos fue cumplido satisfactoriamente.
+mejoran la experiencia de usuario, no son fundamentales en el funcionamiento de las incubadoras. Por último, consideramos finalmente que el requisito 3.2 era redundante en la tarea de indicar que los huevos están rotando. 
+Al implementar un servomotor, se ve que el grupo "Rotación" está en correcto funcionamiento.
+Obviando este cambio en el alcance el resto de los requisitos fue cumplido satisfactoriamente y consideramos que se simula correctamente un ciclo de incubación.
 
 ---
 
