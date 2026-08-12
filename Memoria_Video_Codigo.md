@@ -44,6 +44,7 @@ La Tabla 0.1 resume el historial de revisiones y entregas de esta memoria.
 | :---: | --- | :---: |
 | 1.0 | Escritura inicial de la memoria | 02/08/2026 |
 | 1.1 | Primer entrega: sin video | 08/08/2026 |
+| 1.2 | Corrección de errores de formato y agregado del video. | 08/08/2026 |
 <p align="center">
   <b>Tabla 0.1</b>: Registro de versiones del documento.
 </p>
@@ -181,7 +182,7 @@ del período de desarrollo con los tutores del proyecto. Al inicio del proyecto 
 
 
 <div align="center">
-<b>Tabla 2.1</b>: Requisitos iniciales del proyecto.<br><br>
+<b>Tabla 2.1</b>: Requisitos iniciales del proyecto.<br>
 
 |**Grupo**|**ID**|**Descripción**|
 | :-: | :-: | :-: |
@@ -212,7 +213,7 @@ A medida que se avanzó con el prototipado se actualizaron los requisitos, gener
 Los requisitos actualizados son los presentes en la tabla 2.2: 
 
 <div align="center">
-<em>**Tabla 2.2**: Requisitos ajustados en el informe de avances (alcance reducido por tiempos).</em><br><br>
+<b>Tabla 2.2</b>: Requisitos ajustados en el informe de avances (alcance reducido por tiempos).<br>
 | **GRUPO** | **ID** | **TAREA** |
 |----|----|----|
 | Teperatura | 1.1 | El sistema medirá continuamente la temperatura interior mediante un sensor dedicado. |
@@ -635,8 +636,7 @@ consumen desde los 30 W por lo que el consumo del prototipo es reducido en compa
 
 ## 4.7 Cumplimiento de requisitos
 
-En la siguiente tabla se expone el cumplimiento de los requisitos expuestos en la tabla 2.2:
-
+Se hizo un relevamiento de los requisitos expuestos en la tabla 2.2 y se verificó su cumplimiento. La tabla 4.5 pone en manifiesto los requisitos y su estado final.
 
 <p align="center"><em>**Tabla 4.5**: Cumplimiento de requisitos.</em></p>
 | Estado | Descripción      |
@@ -651,25 +651,27 @@ En la siguiente tabla se expone el cumplimiento de los requisitos expuestos en l
 | 🟢 |   | 1.2 | El sistema activará el elemento calefactor cuando la temperatura esté por debajo del umbral configurado. |
 | 🟢 |   | 1.3 | El sistema desactivará el elemento calefactor cuando la temperatura supere el umbral configurado. |
 | 🟢 | Humedad | 2.1 | El sistema medirá continuamente la humedad relativa interior. |
-| 🟡 |   | 2.2 | El sistema activará el humidificador cuando la humedad esté por debajo del umbral configurado. |
-| 🟡 |   | 2.3 | El sistema desactivará el humidificador cuando la humedad supere el umbral configurado. |
+| 🟢 |   | 2.2 | El sistema activará el humidificador cuando la humedad esté por debajo del umbral configurado. |
+| 🟢 |   | 2.3 | El sistema desactivará el humidificador cuando la humedad supere el umbral configurado. |
 | 🟢 | Rotación | 3.1 | El sistema rotará los huevos automáticamente a intervalos de tiempo configurables por tipo de huevo. |
 | 🟢 |   | 3.2 | El sistema indicará mediante un LED cada vez que se realice una rotación. |
 | 🟢 |   | 3.3 | El sistema inhibirá la rotación durante los últimos días del ciclo de incubación (lockdown), según el modo seleccionado. |
 | 🟢 | Interfaz | 4.1 | El sistema contará con una pantalla LCD para mostrar temperatura, humedad, día del ciclo y modo activo. |
 | 🟢 |   | 4.2 | El sistema contará con un teclado matricial para navegar entre menús y configurar parámetros. |
 | 🟢 |   | 4.3 | El sistema contará con LEDs indicadores de estado: calentador activo, humidificador activo y rotación. |
-| 🟡 |   | 4.4 | El sistema contará con un buzzer para alertas sonoras (alarmas y confirmaciones). |
+| 🔴 |   | 4.4 | El sistema contará con un buzzer para alertas sonoras (alarmas y confirmaciones). |
 | 🟢 | Modos de incubación | 5.1 | El sistema soportará al menos tres modos predefinidos: huevo de gallina, pato y codorniz, con sus respectivos parámetros de temperatura, humedad y ciclo. |
 | 🟢 |   | 5.2 | El usuario podrá seleccionar el modo desde el menú de la interfaz gráfica. |
 | 🟢 |   | 5.3 | El sistema indicará en el display el día actual del ciclo de incubación. |
-| 🟡 | Alarmas | 6.1 | El sistema emitirá una alarma sonora y visual si la temperatura supera un umbral crítico configurable. |
-| 🟡 |   | 6.2 | El sistema emitirá una alarma sonora y visual si la humedad supera o cae por debajo de umbrales críticos. |
-| 🟡 |   | 6.3 | El sistema emitirá una alarma si el motor de rotación no completa el giro en el tiempo esperado. |
+| 🔴 | Alarmas | 6.1 | El sistema emitirá una alarma sonora y visual si la temperatura supera un umbral crítico configurable. |
+| 🔴 |   | 6.2 | El sistema emitirá una alarma sonora y visual si la humedad supera o cae por debajo de umbrales críticos. |
+| 🔴 |   | 6.3 | El sistema emitirá una alarma si el motor de rotación no completa el giro en el tiempo esperado. |
 | 🟢 | Almacenamiento | 7.1 | El sistema almacenará en la EEPROM externa el historial de temperatura, humedad y eventos de rotación. |
 | 🟢 |   | 7.2 | El sistema preservará la configuración activa y el día del ciclo ante cortes de energía. |
 
-
+Como se muestra en la tabla 4.5, no todos los requisitos fueron cumplidos. A raíz de la disponibilidad, percances y cambios necesarios en el desarrollo fundamental se optó
+por disminuir el alcance. Aunque pueda significar una mejora en el proyecto, consideramos que era el requisito menos relevante. Obviando este cambio en el alcance el resto de los 
+requisitos fue cumplido satisfactoriamente.
 
 ---
 
