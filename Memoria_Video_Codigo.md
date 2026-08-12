@@ -300,7 +300,7 @@ en la figura 2.1.
 ### 2.3.2 Módulo sensor de temperatura y humedad
 
 Para la tarea de sensado atmósferico de temperatura y humedad se optó por un shield compatible con STM32 que contiene un sensor SHT30.
-El mismo es analógico, tiene comunicación por I2C, es de bajo consumo y de rápido funcionamiento (400 kHz). Como se ve en la figura 2.2
+El mismo es analógico, tiene comunicación por I2C, es de bajo consumo y de rápido funcionamiento (400 kHz). Como se ve en la figura 2.2.<br>
 
 <div align="center">
 <img width="500" alt="SHT30" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/SHT30.jfif" /><br>
@@ -338,7 +338,7 @@ por debajo del umbral.
 ### 2.3.4 Módulo de interfaz
 
 Por la necesidad de mostrar el estado actual de la incubación, la elección de modos, de mostrar estados previos a cortes de suministro y la elección de parámetros personalizados se buscó un componente único que pueda mostrar estos mensajes con facilidad.
-El componente elegido fue un display LCD 16x2, como el visto en la figura 2.6. Nos permite mostrar simbolos alfanuméricos y presentar los mensajes necesarios con un bajo consumo y con la posibilidad de cambiar su brillo.
+El componente elegido fue un display LCD 16x2, como el visto en la figura 2.6. Nos permite mostrar simbolos alfanuméricos y presentar los mensajes necesarios con un bajo consumo y con la posibilidad de cambiar su brillo.<br>
 
 <div align="center">
 <img width="500" alt="LCD" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/display_LCD.jpg" /><br>
@@ -346,7 +346,7 @@ El componente elegido fue un display LCD 16x2, como el visto en la figura 2.6. N
 </div>
 
 Se diseñaron opciones de entrada de datos al sistema acotadas y sencillas para disminuir el código y la lógica. Por esto se optó por un teclado de membrana de 4x1, como el visto en la figura
-2.7 al que se le mapearon 4 funciones: "OK/CONTINUAR", "VOLVER", "ARRIBA" y "ABAJO". Se conectó mediante las entradas GPIO a la placa NUCLEO.
+2.7 al que se le mapearon 4 funciones: "OK/CONTINUAR", "VOLVER", "ARRIBA" y "ABAJO". Se conectó mediante las entradas GPIO a la placa NUCLEO.<br>
 
 <div align="center">
 <img width="500" alt="TECLADO" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Teclado-Matricial-de-Membrana-4-Teclas-1-1.jpg" /><br>
@@ -358,7 +358,7 @@ Se diseñaron opciones de entrada de datos al sistema acotadas y sencillas para 
 ### 2.3.5 Memoria EEPROM
 
 Para proporcionar una memoria externa con lectura y escritura se utilizó una memoria EEPROM 24C256. La misma nos da versatilidad y aproximadamente 32 kB de memoria. En este proyecto se utilizó un shield compatible
-con STM32, como el visto en la figura 2.8, lo que nos permite una fácil integración al sistema y comunicación por I2C. El uso de esta memoria será monitoreado en la sección 4.3. <br>
+con STM32, como el visto en la figura 2.8, lo que nos permite una fácil integración al sistema y comunicación por I2C. El uso de esta memoria será monitoreado en la sección 4.3. <br><br>
 
 <div align="center">
 <img width="500" alt="EEPROM" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/memoria_eeprom.jpg" /><br>
@@ -368,6 +368,8 @@ con STM32, como el visto en la figura 2.8, lo que nos permite una fácil integra
 
 
 # Capítulo 3: Diseño e implementación
+
+En el siguiente capítulo se expone el diseño de Hardware y Firmware implementados en este prototipo.
 
 ## 3.1 Arquitectura general
 
@@ -387,7 +389,7 @@ A medida que las pruebas fueron avanzando y considerando los puertos disponibles
 <div align="center">
 
 <img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Diagrama%20incubadora.jpeg" width="600" />
-<br>Figura 3.2</b>: Plano de las conexiones de los periféricos.<br><br>
+<br><b>Figura 3.2</b>: Plano de las conexiones de los periféricos.<br><br>
 
 </div>
 
@@ -509,7 +511,7 @@ Se redactaron pruebas para verificar el funcionamiente esperado del prototipo, p
 Las mismas se muestran en la tabla 4.1.
 
 <div align="center">
-<p><b>Tabla 4.1</b>: Resumen de ensayos funcionales de hardware y firmware.</p>
+<b>Tabla 4.1</b>: Resumen de ensayos funcionales de hardware y firmware.
 
 | Subsistema | Ensayo realizado | Resultado / Criterio de validación | Estado |
 | :--- | :--- | :--- | :---: |
@@ -582,7 +584,8 @@ El valor devuelto es el tiempo en microsegundos (µs) devuelto por el DWT.
 En la Tabla 4.3 se observa la suma de los WCET de todas las tareas, simulando el peor caso posible del tiempo de vuelta del ciclo de ejecución.<br>
 
 <div align="center">
-<em><b>Tabla 4.3</b>: Peores casos de tiempo de ejecución según tarea.</em>
+<b>Tabla 4.3</b>: Peores casos de tiempo de ejecución según tarea.
+
 | <b>Tarea | WCET[µs]</b>|
 | :---: | :---: |
 | `task_sensor` | 229 |
@@ -629,8 +632,8 @@ $$P = {V}*{I} \qquad (4.2)$$
 
 
 <div align="center">
+<b>Tabla 4.4</b>: Mediciones de consumo eléctrico.
 
-<em>**Tabla 4.4**: Mediciones de consumo eléctrico.</em>
 | Medición | Corriente consumida[mA] | Potencia consumida[mW] |
 | :---: | :---: | :---: |
 | Placa + Display + Sensor | 100 | 500 |
@@ -649,13 +652,16 @@ consumen desde los 30 W por lo que el consumo del prototipo es reducido en compa
 
 Se hizo un relevamiento de los requisitos expuestos en la tabla 2.2 y se verificó su cumplimiento. La tabla 4.5 pone en manifiesto los requisitos y su estado final.
 
-<p align="center"><em><b>Tabla 4.5</b>: Cumplimiento de requisitos.</em></p>
+<div align="center">
+<b>Tabla 4.5</b>: Cumplimiento de requisitos.
 
 | Estado | Descripción |
 |-----|---------------------|
 | 🟢 | Implementado |
 | 🟡 | Implementado parcialmente |
 | 🔴 | Sin implementar/requerimiento descartado |
+
+</div>
 
 | ESTADO | GRUPO | ID | TAREA |
 |:--:|----|----|----|
@@ -681,6 +687,7 @@ Se hizo un relevamiento de los requisitos expuestos en la tabla 2.2 y se verific
 | 🟢 | Almacenamiento | 7.1 | El sistema almacenará en la EEPROM externa el historial de temperatura, humedad y eventos de rotación. |
 | 🟢 |   | 7.2 | El sistema preservará la configuración activa y el día del ciclo ante cortes de energía. |
 
+<br>
 Como se muestra en la tabla 4.5, no todos los requisitos fueron cumplidos. A raíz de la disponibilidad, percances y cambios necesarios en el desarrollo fundamental se optó
 por disminuir el alcance. Aunque pueda significar una mejora en el proyecto, consideramos que los requerimientos descartados eran los menos relevantes: las alarmas. Siendo las alarmas una herramienta que 
 mejora la experiencia de usuario, no son fundamentales en el funcionamiento de las incubadoras. Obviando este cambio en el alcance el resto de los requisitos fue cumplido satisfactoriamente.
