@@ -134,6 +134,7 @@ Costo aproximado: $450000 ARS ($300 USD)
 
 La Tabla 1.1 contrasta las prestaciones de los dos productos comerciales de referencia contra el prototipo desarrollado en este trabajo.
 
+<div align="center">
 *Tabla 1.1*: Comparación entre características de modelos comerciales y el prototipo.</em><br><br>
 | *Aspecto* | *TINZER*  | *BRINSEA* | *Prototipo desarrollado* |
 | :--- | :--- | :--- | :--- |
@@ -146,7 +147,7 @@ La Tabla 1.1 contrasta las prestaciones de los dos productos comerciales de refe
 | **Rotación de huevos** | Motor eléctrico de bajo consumo | Servomotor | Servomotor SG90 |
 | **Construcción de la capsula** | Acero, melamina y policarbonato | Plástico transparente | No implementada (fuera de alcance) |
 | **Costo** | ~$350.000 ARS | ~$300 USD a ~$700  | Prototipo de laboratorio - Precio estimado en componentes: ~$50000 ARS |
-
+</div>
 
 En resumen, el mercado ofrece soluciones parciales que cubren algunos de los objetivos del proyecto, pero ninguna combina la personalización por modo de incubación, el registro de estado en EEPROM y la interfaz configurable mediante display LCD y teclado. 
 Esto justifica el desarrollo de un sistema propio que cubra todas estas funcionalidades con hardware disponible localmente.
@@ -181,9 +182,9 @@ Se plantearon una serie de requisitos a cumplir por el prototipo. Estos sirviero
 del período de desarrollo con los tutores del proyecto. Al inicio del proyecto se estipularon los requisitos presentes en la tabla 2.1.
 
 
-<div align="center">
+<p align="center">
 <b>Tabla 2.1</b>: Requisitos iniciales del proyecto.<br>
-
+</p>
 |**Grupo**|**ID**|**Descripción**|
 | :-: | :-: | :-: |
 |**Temperatura**|1\.1|El sistema medirá continuamente la temperatura interior mediante un sensor dedicado.|
@@ -207,13 +208,14 @@ del período de desarrollo con los tutores del proyecto. Al inicio del proyecto 
 ||6\.3|El sistema emitirá una alarma si el motor de rotación no completa el giro en el tiempo esperado.|
 |**Almacenamiento**|7\.1|El sistema almacenará en la EEPROM externa el historial de temperatura, humedad y eventos de rotación.|
 ||7\.2|El sistema preservará la configuración activa y el día del ciclo ante cortes de energía.|
-</div>
+
 
 A medida que se avanzó con el prototipado se actualizaron los requisitos, generando un informe de avance diseñado a la mitad del tiempo de desarrollo del prototipo.
 Los requisitos actualizados son los presentes en la tabla 2.2: 
 
+<p align="center">
 <b>Tabla 2.2</b>: Requisitos ajustados en el informe de avances (alcance reducido por tiempos).<br>
-
+</p>
 | <b>GRUPO</b> | <b>ID</b> | <b>TAREA</b> |
 |----|----|----|
 | Teperatura | 1.1 | El sistema medirá continuamente la temperatura interior mediante un sensor dedicado. |
@@ -248,29 +250,29 @@ En las tablas 2.3 a 2.5 se presentan 3 casos de uso para el sistema. En estos ca
 
 <div align="center">
 
-<em>**Tabla 2.3**: Caso de uso 1 — El usuario inicia un ciclo de incubación</em><br><br>
+<b>Tabla 2.3</b>: Caso de uso 1 — El usuario inicia un ciclo de incubación<br>
 |**Disparador**|El usuario desea iniciar un ciclo de incubación seleccionando un modo y confirmando los parámetros.|
 | :- | :- |
 |**Precondiciones**|El sistema está encendido. No hay un ciclo de incubación activo. La pantalla LCD muestra el menú principal.|
 |**Flujo principal**|El usuario navega con el teclado hasta el menú «Nuevo ciclo». Selecciona el tipo de huevo (gallina, pato o codorniz). El sistema muestra en el display los parámetros predefinidos para ese modo (temperatura, humedad, duración, intervalo de rotación). El usuario confirma con la tecla de aceptar. El sistema guarda la configuración en la EEPROM y comienza el ciclo: activa el calentador si es necesario, programa las rotaciones y emite un pitido de confirmación. El LCD pasa a mostrar la pantalla de monitoreo con temperatura, humedad y día del ciclo.|
 |**Flujos alternativos**|a. El usuario cancela la selección con la tecla de retroceso: el sistema vuelve al menú principal sin iniciar ningún ciclo. b. La temperatura inicial está fuera del rango objetivo: el sistema activa inmediatamente el calentador y espera hasta alcanzar el rango antes de dar la confirmación sonora.|
+<br>
 
-
-<em>**Tabla 2.4**: Caso de uso 2 — El sistema detecta temperatura fuera de rango</em><br><br>
+<b>Tabla 2.4</b>: Caso de uso 2 — El sistema detecta temperatura fuera de rango<br>
 |**Disparador**|La temperatura interior sale del rango permitido para el modo activo.|
 | :- | :- |
 |**Precondiciones**|El sistema está encendido con un ciclo de incubación activo. El sensor DHT22 está operativo.|
 |**Flujo principal**|El sensor detecta que la temperatura supera o cae por debajo del umbral configurado. El sistema activa o desactiva el elemento calefactor según corresponda. El LED de calentador activo se enciende o apaga acorde. El LCD actualiza el valor de temperatura en tiempo real. Cuando la temperatura vuelve al rango, el sistema estabiliza el calentador y registra el evento en la EEPROM.|
 |**Flujos alternativos**|a. La temperatura supera el umbral crítico (fallo grave): el sistema emite una alarma sonora prolongada mediante el buzzer, parpadea el LED de alarma y muestra un mensaje de error en el LCD hasta que el usuario reconozca la alarma. b. El sensor no responde: el sistema emite una alarma y detiene el ciclo de forma segura, registrando el fallo en la EEPROM.|
+<br>
 
-
-<em>**Tabla 2.5**: Caso de uso 3 — El sistema rota los huevos automáticamente.</em><br><br>
+<b>Tabla 2.5</b>: Caso de uso 3 — El sistema rota los huevos automáticamente.<br>
 |**Disparador**|Se alcanza el intervalo de tiempo programado para la rotación de huevos.|
 | :- | :- |
 |**Precondiciones**|El sistema está encendido con un ciclo de incubación activo. No se está en el período de lockdown (últimos días antes de la eclosión).|
 |**Flujo principal**|El temporizador de rotación expira. El sistema activa el motor de paso para girar los huevos el ángulo configurado (típicamente 45° alternados). El LED de rotación parpadea durante el movimiento. El buzzer emite un pitido breve de confirmación. El sistema registra el evento de rotación en la EEPROM con timestamp. El motor se detiene y el sistema reanuda el monitoreo normal.|
 |**Flujos alternativos**|a. El motor no completa el movimiento en el tiempo esperado (posible traba mecánica): el sistema emite una alarma sonora y visual, detiene el motor y registra el fallo en la EEPROM. b. El ciclo está en período de lockdown: el sistema omite la rotación, registra el evento y muestra en el LCD un mensaje indicando que la rotación está inhibida.|
-
+<br>
 </div>
 
 ## 2.3 Descripción de módulos y Hardware
