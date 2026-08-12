@@ -212,9 +212,9 @@ del período de desarrollo con los tutores del proyecto. Al inicio del proyecto 
 A medida que se avanzó con el prototipado se actualizaron los requisitos, generando un informe de avance diseñado a la mitad del tiempo de desarrollo del prototipo.
 Los requisitos actualizados son los presentes en la tabla 2.2: 
 
-<div align="center">
 <b>Tabla 2.2</b>: Requisitos ajustados en el informe de avances (alcance reducido por tiempos).<br>
-| **GRUPO** | **ID** | **TAREA** |
+
+| <b>GRUPO</b> | <b>ID</b> | <b>TAREA</b> |
 |----|----|----|
 | Teperatura | 1.1 | El sistema medirá continuamente la temperatura interior mediante un sensor dedicado. |
 |   | 1.2 | El sistema activará el elemento calefactor cuando la temperatura esté por debajo del umbral configurado. |
@@ -238,7 +238,7 @@ Los requisitos actualizados son los presentes en la tabla 2.2:
 | Almacenamiento | 7.1 | El sistema almacenará en la EEPROM externa el historial de temperatura, humedad y eventos de rotación. |
 |   | 7.2 | El sistema preservará la configuración activa y el día del ciclo ante cortes de energía. |
 
-</div>
+
 
 Estos requisitos son los tenidos en cuenta al avanzar en el diseño, escritura de código, compra de componentes y armado final. 
 
