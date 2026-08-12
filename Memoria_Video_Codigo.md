@@ -386,7 +386,7 @@ A medida que las pruebas fueron avanzando y considerando los puertos disponibles
 
 <div align="center">
 
-<img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Diagrama%20incubadora.jpeg" width="600" /><br>
+<img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Diagrama%20incubadora.jpeg" width="600" />
 <br>Figura 3.2</b>: Plano de las conexiones de los periféricos.<br><br>
 
 </div>
@@ -418,7 +418,7 @@ Como se mencionó previamente, se utilizo el diagrama 3.2 de guia para el conexi
 |Servo|PA15|PWM (TIM2 CH1)|
 
 
-</div>
+<br></div>
 
 
 Además se tuvieron en cuenta las necesidades de alimentación de la placa, por lo que se le proporcionaron 5 V de alimentación a la placa NUCLEO y se diseñó un bus con 5 V 
@@ -447,18 +447,18 @@ Se recorren las tareas en el siguiente orden:
 5. `task_display_update`
 
 Cada tarea se ejecuta en cada tick y su tiempo se mide con contador de ciclos (`DWT->CYCCNT`) para cálculo de WCET.
-La figura 3.3 describe como se ejecutan las tareas.0
+La figura 3.3 describe como se ejecutan las tareas.<br>
 
 <div align="center">
 <img width="650" alt="ejecutor cíclico" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Diagrama%20en%20blanco.jpeg" /><br>
-<p><b>Figura 3.3</b>: Orden de tareas en un ciclo de ejecución.</p>
+<p><b>Figura 3.3</b>: Orden de tareas en un ciclo de ejecución.</p><br>
 </div>
  
 Además, las tareas se comunican por interfaces. No hay comunicación por variables globales. Cada tarea tiene asignada una interfaz, como se ve en la tabla 3.2. 
 
 <div align="center">
 
-<p>**Tabla 3.2**: Interfaces asignadas a cada tarea.</p>
+<p><b>Tabla 3.2</b>: Interfaces asignadas a cada tarea.</p>
 
 | Tarea | Interfaz |
 | --- | --- |
@@ -523,7 +523,7 @@ Las mismas se muestran en la tabla 4.1.
 | **Firmware** | Máquina de estados global | Transiciones robustas entre las pantallas del menú. Correcto traspaso entre la entrada de datos y el proceso de incubación | ✅ |
 
 
-</div>
+<br></div>
 
 Durante el ensayo "Correcto funcionamiento del sensor" se observó un problema con un sensor previamente elegido. Se había elegido un DHT22 que necesitaba de algunos milisegundos
 para enviar los datos a la placa NUCLEO, lo que generaba un retardo general en el resto del sistema. Por esto, se optó por el sensor SHT30, como se explica en la 
@@ -547,11 +547,12 @@ Se muestran los resultados de una instancia de depuración del prototipo en la f
 En la tabla 4.2 se vuelcan estos resultados para facilitar la comprensión de lo obtenido en la depuración.
 
 <div align="center">
-<p><b>Tabla 4.2<b>: Uso y ocupación de memoria.</p>
-| MEMORIA | Usado [Bytes] | Total Disponible [Bytes] | Porcentaje de ocupación |
+<p><b>Tabla 4.2</b>: Uso y ocupación de memoria.</p>
+
+| <b>MEMORIA | Usado [Bytes] | Total Disponible [Bytes] | Porcentaje de ocupación</b> |
 | :--- | :--- | :---: | :---: |
-| **RAM** | 2.91 k  | 20 k | 14.57% |
-| **FLASH** | 41.7 k  | 128 k | 32.57% |
+| RAM | 2.91 k  | 20 k | 14.57% |
+| FLASH | 41.7 k  | 128 k | 32.57% |
 
 
 </div>
@@ -564,8 +565,8 @@ a la hora de realizar depuraciones.
 ## 4.4 Medición y análisis de tiempos de ejecución (WCET)
 
 En esta sección se busca comprender el comportamiento temporal del programa en la búsqueda de cumplir con los requisitos máximos de tiempo del ejecutor cíclico.
-Para esto se observa la variable **WCET** (*Worst-Case Execution Time*), lo que nos mostrará el peor caso de ejecución de una tarea durante su depuración. La misma
-se obtiene invocando el contador de ciclos del DWT (*Data Watchpoint and Trace*) del Cortex-M3, que cuenta el tiempo de ejecución de cada tarea en el ciclo de ejecución. 
+Para esto se observa la variable <b>WCET</b> (<i>Worst-Case Execution Time</i>), lo que nos mostrará el peor caso de ejecución de una tarea durante su depuración. La misma
+se obtiene invocando el contador de ciclos del DWT (<i>Data Watchpoint and Trace</i>) del Cortex-M3, que cuenta el tiempo de ejecución de cada tarea en el ciclo de ejecución. 
 Es común observar que las tareas más costosas generan mayor tiempo de ejecución por lo que se procedió a la depuración y se simuló una incubación completa, es decir
 que incluya todas las acciones disponibles por nuestro prototipo.
 
@@ -573,7 +574,7 @@ En la figura 4.3 se observan los resultados observados en la pantalla *Live Expr
 
 <div align="center">
 <img width="500" alt="WCET" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/ov_umbral.png" />
-<p><em>**Figura 4.3**: Pantalla de Live Expressions con los peores tiempos de ejecución.</em></p>
+<p><b>Figura 4.3</b>: Pantalla de Live Expressions con los peores tiempos de ejecución.</em></p>
 </div>
 
 Se toman en cuenta los resultados de los valores de `task_dta_list[].WCET`, siendo que cada uno de los elementos de `task_dta_list[]` es una de las tareas del ciclo de ejecución.
@@ -581,8 +582,9 @@ El valor devuelto es el tiempo en microsegundos (µs) devuelto por el DWT.
 En la Tabla 4.3 se observa la suma de los WCET de todas las tareas, simulando el peor caso posible del tiempo de vuelta del ciclo de ejecución. 
 
 <div align="center">
-<em>**Tabla 4.3**: Peores casos de tiempo de ejecución según tarea.</em>
-| Tarea | WCET[µs]|
+<p><b>Tabla 4.3</b>: Peores casos de tiempo de ejecución según tarea.</p>
+
+| <b>Tarea | WCET[µs]</b>|
 | :---: | :---: |
 | `task_sensor` | 229 |
 | `task_memory` | 1 |
