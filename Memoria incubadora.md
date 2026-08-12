@@ -345,6 +345,7 @@ En la Figura 3.1 se presenta el diagrama en bloques general. En el se presentan 
 <div align="center">
 
 <img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Incubadora-diagrama.jpeg" width="600" />
+
 <em>Figura 3.1 — Diagrama en bloques general.</em><br><br>
 
 </div>
@@ -356,6 +357,7 @@ A medida que las pruebas fueron avanzando y considerando los puertos disponibles
 <div align="center">
 
 <img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Diagrama%20incubadora.jpeg" width="600" />
+
 <em>Figura 3.2 — Plano de las conexiones de los periféricos.</em><br><br>
 
 </div>
@@ -384,7 +386,7 @@ Como se mencionó previamente, se utilizo el diagrama 3.2 de guia para el conexi
 |Relé|PC9|GPIO|
 |Servo|PA15|PWM (TIM2 CH1)|
 
-<p align="center"><em>Tabla 3.1: Asignación de pines de la placa núcleo.</em></p>
+<em>Tabla 3.1: Asignación de pines de la placa núcleo.</em>
 
 </div>
 
