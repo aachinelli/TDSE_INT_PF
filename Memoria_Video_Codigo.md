@@ -113,7 +113,7 @@ Las mismas tienen un diseño industrial, utilizando metales y plásticos, simila
 
 
 <div align="center">
-<img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/incubadoraTinzer.jpg" width="500" />
+<img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/incubadoraTinzer.jpg" width="500" /><br>
 <b>Figura 1.1</b>: Imágen ilustrativa de una incubadora estilo industrial de la marca Tinzer, tomada de la página del fabricante.
 </div>
 Incubadora Tinzer. Características: 
@@ -126,7 +126,7 @@ Son incubadoras listas para la conexión a la red doméstica. Tienen modelos que
 como se ilustra en la figura 1.2.
 
 <img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/incubadora-brinsea.jpg" width="600" />
-Figura 1.2**: Imágen ilustrativa de una incubadora estilo doméstico de la marca Brinsea, tomada de la página de un revendedor.</em><br><br>
+<b>Figura 1.2</b>: Imágen ilustrativa de una incubadora estilo doméstico de la marca Brinsea, tomada de la página de un revendedor.<br>
 
 Incubadora Brinsea. Características: 
 Costo aproximado: $450000 ARS ($300 USD)
@@ -292,7 +292,7 @@ en la figura 2.1.
 
 <div align="center">
 <img width="500" alt="NUCLEO" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/nucleo_f103rb.jpg" />
-<p><em>*Figura 2.1*: Imágen de la placa NUCLEO F103RB, tomada de la página oficial de su fabricante.</em></p>
+<b>Figura 2.1</b>: Imágen de la placa NUCLEO F103RB, tomada de la página oficial de su fabricante.
 </div>
 
 ### 2.3.2 Módulo sensor de temperatura y humedad
@@ -302,7 +302,7 @@ El mismo es analógico, tiene comunicación por I2C, es de bajo consumo y de rá
 
 <div align="center">
 <img width="500" alt="SHT30" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/SHT30.jfif" />
-<p><em>**Figura 2.2**: Imágen ilustrativa del sensor de temperatura y humedad SHT30.</em></p>
+<b>Figura 2.2</b>: Imágen ilustrativa del sensor de temperatura y humedad SHT30.
 </div>
 
 
@@ -313,7 +313,7 @@ La figura 2.3 ilustra el modelo utilizado.
 
 <div align="center">
 <img width="500" alt="SERVO" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/servo.jpg" />
-<p><em>**Figura 2.3**: Figura ilustrativa de un servomotor SG90.</em></p>
+<b>Figura 2.3</b>: Figura ilustrativa de un servomotor SG90.
 </div>
 
 El actuador que simula el funcionamiento de un componente que aporte calor (resistencia térmica o lámparas de calor) es un led en serie con un relé genérico de 5 V. 
@@ -322,12 +322,12 @@ En la figura 2.4 se puede ver el relé utilizado, mientras que se utilizaron led
 
 <div align="center">
 <img width="500" alt="RELÉ" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Rele.jpg" />
-<p><em>**Figura 2.4**: Imágen ilustrativa de un relé de 5 V.</em></p>
+<b>Figura 2.4</b>: Imágen ilustrativa de un relé de 5 V.
 </div>
 
 <div align="center">
 <img width="500" alt="RELÉ/LED" src="https://github.com/aachinelli/TDSE_INT_PF/raw/5c0944f3a0e169877e78a95acd58ae4edaa9749e/leds.png" />
-<p><em>**Figura 2.5**: Imágen ilustrativa de LEDs genéricos, utilizados como indicadores.</em></p>
+<b>Figura 2.5</b>: Imágen ilustrativa de LEDs genéricos, utilizados como indicadores.
 </div>
 
 Se simula también el funcionamiento de un vaporizador, que aporta humedad al ambiente cuando es necesario. Para esto, se utiliza un led indicador como el de la figura 2.5 que se enciende cuando la humedad está
@@ -340,7 +340,7 @@ El componente elegido fue un display LCD 16x2, como el visto en la figura 2.6. N
 
 <div align="center">
 <img width="500" alt="LCD" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/display_LCD.jpg" />
-<p><em>**Figura 2.6**: Imágen ilustrativa del display LCD 16x2 con backlight.</em></p>
+<b>Figura 2.6</b>: Imágen ilustrativa del display LCD 16x2 con backlight.
 </div>
 
 Se diseñaron opciones de entrada de datos al sistema acotadas y sencillas para disminuir el código y la lógica. Por esto se optó por un teclado de membrana de 4x1, como el visto en la figura
@@ -348,7 +348,7 @@ Se diseñaron opciones de entrada de datos al sistema acotadas y sencillas para 
 
 <div align="center">
 <img width="500" alt="TECLADO" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Teclado-Matricial-de-Membrana-4-Teclas-1-1.jpg" />
-<p><em>**Figura 2.7**: Imágen ilustrativa de un teclado de membrana de 4 botones.</em></p>
+<b>Figura 2.7</b>: Imágen ilustrativa de un teclado de membrana de 4 botones.
 </div>
 
 
@@ -360,7 +360,7 @@ con STM32, como el visto en la figura 2.8, lo que nos permite una fácil integra
 
 <div align="center">
 <img width="500" alt="EEPROM" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/memoria_eeprom.jpg" />
-<p><em>**Figura 2.8**: Imágen del shield y la memoria EEPROM 24C256 utilizados.</em></p>
+<b>Figura 2.8</b>: Imágen del shield y la memoria EEPROM 24C256 utilizados.
 </div>
 ---
 
