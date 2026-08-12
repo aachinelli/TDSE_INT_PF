@@ -114,8 +114,9 @@ Las mismas tienen un diseño industrial, utilizando metales y plásticos, simila
 
 <div align="center">
 <img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/incubadoraTinzer.jpg" width="500" /><br>
-<b>Figura 1.1</b>: Imágen ilustrativa de una incubadora estilo industrial de la marca Tinzer, tomada de la página del fabricante.
+<b>Figura 1.1</b>: Imágen ilustrativa de una incubadora estilo industrial de la marca Tinzer, tomada de la página del fabricante.<br>
 </div>
+
 Incubadora Tinzer. Características: 
 Costo aproximado: $350.000 ARS ($230 USD)
 
@@ -125,9 +126,10 @@ Las incubadoras de la marca Brinsea son productos de estilo doméstico o aptos p
 Son incubadoras listas para la conexión a la red doméstica. Tienen modelos que incuban desde 6 hasta 56 huevos de gallina. Son de un diseño sencillo, con pocas funcionalidades y de carcasa de plástico,
 como se ilustra en la figura 1.2.
 
-<img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/incubadora-brinsea.jpg" width="600" />
+<div align="center">
+<img src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/incubadora-brinsea.jpg" width="600" /><br>
 <b>Figura 1.2</b>: Imágen ilustrativa de una incubadora estilo doméstico de la marca Brinsea, tomada de la página de un revendedor.<br>
-
+</div>
 Incubadora Brinsea. Características: 
 Costo aproximado: $450000 ARS ($300 USD)
 
@@ -291,7 +293,7 @@ La placa NUCLEO-F103RB fue la provista para ser de procesador central. Todos los
 en la figura 2.1.
 
 <div align="center">
-<img width="500" alt="NUCLEO" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/nucleo_f103rb.jpg" />
+<img width="500" alt="NUCLEO" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/nucleo_f103rb.jpg" /><br>
 <b>Figura 2.1</b>: Imágen de la placa NUCLEO F103RB, tomada de la página oficial de su fabricante.
 </div>
 
@@ -301,7 +303,7 @@ Para la tarea de sensado atmósferico de temperatura y humedad se optó por un s
 El mismo es analógico, tiene comunicación por I2C, es de bajo consumo y de rápido funcionamiento (400 kHz). Como se ve en la figura 2.2
 
 <div align="center">
-<img width="500" alt="SHT30" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/SHT30.jfif" />
+<img width="500" alt="SHT30" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/SHT30.jfif" /><br>
 <b>Figura 2.2</b>: Imágen ilustrativa del sensor de temperatura y humedad SHT30.
 </div>
 
@@ -312,8 +314,8 @@ Para simular el funcionamiento de un motor que rote los huevos con cierta period
 La figura 2.3 ilustra el modelo utilizado.
 
 <div align="center">
-<img width="500" alt="SERVO" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/servo.jpg" />
-<b>Figura 2.3</b>: Figura ilustrativa de un servomotor SG90.
+<img width="500" alt="SERVO" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/servo.jpg" /><br>
+<b>Figura 2.3</b>: Figura ilustrativa de un servomotor SG90.<br>
 </div>
 
 El actuador que simula el funcionamiento de un componente que aporte calor (resistencia térmica o lámparas de calor) es un led en serie con un relé genérico de 5 V. 
@@ -321,13 +323,13 @@ Este mismo se usa para demostrar que se conecta el led en un bus con suministro 
 En la figura 2.4 se puede ver el relé utilizado, mientras que se utilizaron leds de colores genéricos como los que se ven en la figura 2.5.
 
 <div align="center">
-<img width="500" alt="RELÉ" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Rele.jpg" />
-<b>Figura 2.4</b>: Imágen ilustrativa de un relé de 5 V.
+<img width="500" alt="RELÉ" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Rele.jpg" /><br>
+<b>Figura 2.4</b>: Imágen ilustrativa de un relé de 5 V.<br><br>
 </div>
 
 <div align="center">
 <img width="500" alt="RELÉ/LED" src="https://github.com/aachinelli/TDSE_INT_PF/raw/5c0944f3a0e169877e78a95acd58ae4edaa9749e/leds.png" />
-<b>Figura 2.5</b>: Imágen ilustrativa de LEDs genéricos, utilizados como indicadores.
+<b>Figura 2.5</b>: Imágen ilustrativa de LEDs genéricos, utilizados como indicadores.<br>
 </div>
 
 Se simula también el funcionamiento de un vaporizador, que aporta humedad al ambiente cuando es necesario. Para esto, se utiliza un led indicador como el de la figura 2.5 que se enciende cuando la humedad está
@@ -339,15 +341,15 @@ Por la necesidad de mostrar el estado actual de la incubación, la elección de 
 El componente elegido fue un display LCD 16x2, como el visto en la figura 2.6. Nos permite mostrar simbolos alfanuméricos y presentar los mensajes necesarios con un bajo consumo y con la posibilidad de cambiar su brillo.
 
 <div align="center">
-<img width="500" alt="LCD" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/display_LCD.jpg" />
-<b>Figura 2.6</b>: Imágen ilustrativa del display LCD 16x2 con backlight.
+<img width="500" alt="LCD" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/display_LCD.jpg" /><br>
+<b>Figura 2.6</b>: Imágen ilustrativa del display LCD 16x2 con backlight.<br>
 </div>
 
 Se diseñaron opciones de entrada de datos al sistema acotadas y sencillas para disminuir el código y la lógica. Por esto se optó por un teclado de membrana de 4x1, como el visto en la figura
 2.7 al que se le mapearon 4 funciones: "OK/CONTINUAR", "VOLVER", "ARRIBA" y "ABAJO". Se conectó mediante las entradas GPIO a la placa NUCLEO.
 
 <div align="center">
-<img width="500" alt="TECLADO" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Teclado-Matricial-de-Membrana-4-Teclas-1-1.jpg" />
+<img width="500" alt="TECLADO" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/Teclado-Matricial-de-Membrana-4-Teclas-1-1.jpg" /><br>
 <b>Figura 2.7</b>: Imágen ilustrativa de un teclado de membrana de 4 botones.
 </div>
 
@@ -356,13 +358,14 @@ Se diseñaron opciones de entrada de datos al sistema acotadas y sencillas para 
 ### 2.3.5 Memoria EEPROM
 
 Para proporcionar una memoria externa con lectura y escritura se utilizó una memoria EEPROM 24C256. La misma nos da versatilidad y aproximadamente 32 kB de memoria. En este proyecto se utilizó un shield compatible
-con STM32, como el visto en la figura 2.8, lo que nos permite una fácil integración al sistema y comunicación por I2C. El uso de esta memoria será monitoreado en la sección 4.3. 
+con STM32, como el visto en la figura 2.8, lo que nos permite una fácil integración al sistema y comunicación por I2C. El uso de esta memoria será monitoreado en la sección 4.3. <br>
 
 <div align="center">
-<img width="500" alt="EEPROM" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/memoria_eeprom.jpg" />
+<img width="500" alt="EEPROM" src="https://github.com/aachinelli/TDSE_INT_PF/blob/main/Gr%C3%A1ficos%20y%20fotos/memoria_eeprom.jpg" /><br>
 <b>Figura 2.8</b>: Imágen del shield y la memoria EEPROM 24C256 utilizados.
 </div>
----
+
+
 
 # Capítulo 3: Diseño e implementación
 
